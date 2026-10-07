@@ -29,6 +29,9 @@ type CaptionOverlayProps = {
   // Separator rendered between words. Space-delimited languages want the
   // default " "; CJK languages (no inter-word spacing) should pass "".
   wordSeparator?: string;
+  // Vertical anchor of the caption block as % of frame height (centered on that line).
+  // Omit to keep the default bottom-anchored layout.
+  topPercent?: number;
 };
 
 interface CaptionPage {
@@ -65,9 +68,10 @@ const PageRenderer: React.FC<{
   backgroundColor: string;
   fontFamily: string;
   wordSeparator: string;
-}> = ({ page, fontSize, color, highlightColor, backgroundColor, fontFamily, wordSeparator }) => {
+  topPercent?: number;
+}> = ({ page, fontSize, color, highlightColor, backgroundColor, fontFamily, wordSeparator, topPercent }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, height } = useVideoConfig();
 
   const currentMs = page.startMs + (frame / fps) * 1000;
 
@@ -80,11 +84,11 @@ const PageRenderer: React.FC<{
 
   return (
     <AbsoluteFill
-      style={{
-        justifyContent: "flex-end",
-        alignItems: "center",
-        paddingBottom: 80,
-      }}
+      style={
+        topPercent === undefined
+          ? { justifyContent: "flex-end", alignItems: "center", paddingBottom: 80 }
+          : { justifyContent: "flex-start", alignItems: "center", paddingTop: Math.round((height * topPercent) / 100) }
+      }
     >
       <div
         style={{
@@ -125,7 +129,7 @@ const PageRenderer: React.FC<{
                     : "0 2px 4px rgba(0,0,0,0.5)",
                 }}
               >
-                {w.word}{i < page.words.length - 1 ? wordSeparator : ""}
+                {w.word}{i < page.words.length - 1 ? (wordSeparator === " " ? " " : wordSeparator) : ""}
               </span>
             );
           })}
@@ -144,6 +148,7 @@ export const CaptionOverlay: React.FC<CaptionOverlayProps> = ({
   backgroundColor = "rgba(15, 23, 42, 0.75)",
   fontFamily = "Space Grotesk, Inter, system-ui, sans-serif",
   wordSeparator = " ",
+  topPercent,
 }) => {
   const { fps } = useVideoConfig();
   const pages = buildPages(words, wordsPerPage);
@@ -168,6 +173,7 @@ export const CaptionOverlay: React.FC<CaptionOverlayProps> = ({
               backgroundColor={backgroundColor}
               fontFamily={fontFamily}
               wordSeparator={wordSeparator}
+              topPercent={topPercent}
             />
           </Sequence>
         );
