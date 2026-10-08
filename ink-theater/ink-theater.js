@@ -157,7 +157,13 @@
     settle: springEase({ stiffness: 180, damping: 18 }),   // minimal overshoot
     overshoot: springEase({ stiffness: 200, damping: 11 }),// clear overshoot + settle
     bouncy: springEase({ stiffness: 260, damping: 8 }),    // springy
-    soft: springEase({ stiffness: 120, damping: 20 })      // gentle, no overshoot
+    soft: springEase({ stiffness: 120, damping: 20 }),     // gentle, no overshoot
+    // --- pro-polish eases (pure functions of progress p in [0,1]) ---
+    smooth: function (p) { p = p < 0 ? 0 : p > 1 ? 1 : p; return p * p * (3 - 2 * p); },                         // smoothstep: zero velocity at both ends
+    smoother: function (p) { p = p < 0 ? 0 : p > 1 ? 1 : p; return p * p * p * (p * (p * 6 - 15) + 10); },       // smootherstep: also zero acceleration
+    glide: function (p) { p = p < 0 ? 0 : p > 1 ? 1 : p; return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }, // cubic in-out
+    anticipate: function (p) { p = p < 0 ? 0 : p > 1 ? 1 : p; var c = 1.1; return p * p * ((c + 1) * p - c); },     // slight pull-back, then go
+    pop: springEase({ stiffness: 170, damping: 15 })       // soft overshoot for props popping in (less bouncy than overshoot)
   };
 
   // ---- FABRIK 2D inverse kinematics -----------------------------------------
