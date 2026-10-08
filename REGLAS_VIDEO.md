@@ -34,8 +34,12 @@ Flujo exacto del video `fondos-indexados`. Cuando el usuario pida un video nuevo
 ## 5. Render
 - Partes por sección (el corte cae entre escenas), **una parte a la vez, `--workers 1`, 30 fps**, pausa entre partes y esperar RAM libre (≥1 GB). La RAM de este equipo es baja: no lanzar nada pesado en paralelo.
 
-## 6. Música y mezcla
-- Pista lo-fi libre de Pixabay (`tools/audio/pixabay_music.py`), guardada en `assets/music/` con créditos. Volumen 0.20 (≈18 dB bajo la voz; 0.10 quedaba casi inaudible), bucle con fundido cruzado, fade in 3 s / out 5 s, limitador sin renormalizar.
+## 6. Música y mezcla (audio: presencia, -14 LUFS, true peak <= -2 dB)
+- Pista lo-fi libre de Pixabay (`tools/audio/pixabay_music.py`), guardada en `assets/music/` con créditos; bucle con fundido cruzado, fade in 3 s / out 5 s.
+- **La voz se procesa SIEMPRE desde `narration_raw.wav` (sin procesar), nunca desde `narration.wav`.** `VOZ_CHAIN` en `fabrica_video.py`: -4 dB de margen, highpass 80 Hz, +1.5 dB a 150 Hz (cuerpo/cercanía), -2 dB a 250 Hz (quita caja/lejanía), +3 dB a 3 kHz (presencia), de-esser, compresión dinámica 3:1 y limitador.
+- La música va **18 LUFS por debajo de la voz, medido con ebur128** (no por un volumen fijo).
+- Mezcla final a **-14 LUFS** (estándar YouTube) con ganancia medida + limitador de picos; el techo del limitador es -3.2 dB para que el AAC deje el **true peak <= -2 dBTP**. El script reintenta con más ganancia y **se detiene** si queda fuera de -14 ±0.4 LUFS o TP > -2 dB.
+- **Lección (2026-10-08):** `alimiter` renormaliza el pico por defecto; siempre usar `level=disabled`. Sin eso la locución quedaba en +0.8 dBFS con 4,671 muestras saturadas y 1.7 LU de rango (plana y "lejana"). Nunca encadenar compresor con makeup alto + limitador sin `level=disabled`.
 
 ## 7. Final
 - Unir partes (concat) + mezcla → `renders/final.mp4`; comprobar que la duración coincide con la locución.

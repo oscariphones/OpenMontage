@@ -16,14 +16,19 @@ Etapas (cada una se salta si su resultado ya existe; --force las repite):
 
 Uso:  python fabrica_video.py <proyecto> [--musica "lo-fi chill instrumental"] [--force] [--sin-render]
 """
-import argparse, ctypes, json, shutil, subprocess, sys, time
+import argparse, ctypes, json, re, shutil, subprocess, sys, time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent
 PLANTILLA = REPO / "projects/fondos-indexados"
 PAUSA_ENTRE_PARTES = 20      # s
 RAM_MIN_MB = 1000            # espera hasta tener al menos esta RAM libre antes de cada parte
-VOL_MUSICA = 0.20            # musica ~18 dB por debajo de la voz
+MUSICA_DB_BAJO_VOZ = 18      # la musica va 18 LUFS por debajo de la voz
+LUFS_OBJ, TP_OBJ = -14.0, -2.0   # estandar YouTube y techo de true peak
+# Voz: -4 dB de margen (la salida de Piper+rubberband llega a 0 dBFS), quita retumbo, -2 dB en 250 Hz (caja/lejania),
+# +1.5 dB en 150 Hz (cuerpo/cercania), +3 dB en 3 kHz (presencia), de-esser, compresion dinamica suave (3:1) y limitador sin renormalizar.
+VOZ_CHAIN = ("volume=-4dB,highpass=f=80,equalizer=f=150:t=q:w=1:g=1.5,equalizer=f=250:t=q:w=1:g=-2,equalizer=f=3000:t=q:w=1:g=3,"
+             "deesser=i=0.4:m=0.5:f=0.5,acompressor=threshold=-22dB:ratio=3:attack=8:release=140:knee=6:makeup=4,alimiter=limit=0.89:level=disabled")
 
 
 def run(cmd, cwd=None, check=True, **kw):
@@ -36,6 +41,22 @@ def ram_libre_mb():
         _fields_ = [("l", ctypes.c_ulong), ("load", ctypes.c_ulong), ("tp", ctypes.c_ulonglong), ("ap", ctypes.c_ulonglong),
                     ("tpf", ctypes.c_ulonglong), ("apf", ctypes.c_ulonglong), ("tv", ctypes.c_ulonglong), ("av", ctypes.c_ulonglong), ("ae", ctypes.c_ulonglong)]
     m = M(); m.l = ctypes.sizeof(M); ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(m)); return m.ap // 2**20
+
+
+def ff(args):
+    subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", *args], check=True)
+
+
+def loudness(path):
+    """(LUFS integrado, true peak dBTP) de un archivo."""
+    t = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(path), "-af", "ebur128=peak=true", "-f", "null", "-"], capture_output=True, text=True).stderr
+    t = t[t.rindex("Summary"):]
+    return float(re.search(r"I:\s+(-?[\d.]+) LUFS", t).group(1)), float(re.search(r"Peak:\s+(-?[\d.]+) dBFS", t).group(1))
+
+
+def _loudnorm_medir_no_usado(path):
+    t = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(path), "-af", f"loudnorm=I={LUFS_OBJ}:TP={TP_OBJ}:LRA=11:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
+    return json.loads(t[t.rindex("{"):t.rindex("}") + 1])
 
 
 def dur(path):
@@ -89,7 +110,7 @@ def main():
             if not out.exists() or out.stat().st_size == 0:
                 sys.exit(f"Fallo el render de {d}")
 
-    print("[6] musica y mezcla")
+    print("[6] musica y mezcla (voz con presencia, -14 LUFS, true peak <= -2 dB)")
     mus = P / "assets/music/lofi.mp3"; mix = AU / "final_mix.m4a"
     if not mus.exists():
         mus.parent.mkdir(parents=True, exist_ok=True)
@@ -100,10 +121,29 @@ def main():
         (P / "assets/music/CREDITOS.txt").write_text(json.dumps(r.data, ensure_ascii=False, indent=1), encoding="utf-8")
     total = tl["duration"]
     if a.force or not mix.exists():
-        # pista en bucle con fundido cruzado, volumen bajo la voz, fundidos de entrada/salida, limitador sin renormalizar
-        filt = (f"[1:a]asplit=3[x1][x2][x3];[x1][x2]acrossfade=d=3[y];[y][x3]acrossfade=d=3,atrim=0:{total + 1:.2f},volume={VOL_MUSICA},afade=t=in:d=3,afade=t=out:st={total - 5:.2f}:d=5[m];"
-                f"[0:a]apad=whole_dur={total:.2f}[v];[v][m]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95:level=disabled,atrim=0:{total:.2f}")
-        run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(AU / "narration.wav"), "-i", str(mus), "-filter_complex", filt, "-c:a", "aac", "-b:a", "192k", str(mix)])
+        tmp = AU / "tmp"; tmp.mkdir(exist_ok=True)
+        voz, musica = tmp / "voz.wav", tmp / "musica.wav"
+        # 1) voz DESDE LA LOCUCION SIN PROCESAR: margen, EQ de presencia, de-esser, compresion dinamica y limitador sin renormalizar
+        ff(["-i", str(AU / "narration_raw.wav"), "-af", VOZ_CHAIN, "-ar", "48000", str(voz)])
+        # 2) pista lo-fi en bucle con fundido cruzado, fundidos de entrada/salida
+        ff(["-i", str(mus), "-filter_complex", f"[0:a]asplit=3[x1][x2][x3];[x1][x2]acrossfade=d=3[y];[y][x3]acrossfade=d=3,atrim=0:{total + 1:.2f},afade=t=in:d=3,afade=t=out:st={total - 5:.2f}:d=5", "-ar", "48000", str(musica)])
+        # 3) la musica queda MUSICA_DB_BAJO_VOZ dB por debajo de la voz, medido en LUFS (no a ojo)
+        gain = (loudness(voz)[0] - MUSICA_DB_BAJO_VOZ) - loudness(musica)[0]
+        print(f"  voz {loudness(voz)[0]:.1f} LUFS, musica {gain:+.1f} dB -> {MUSICA_DB_BAJO_VOZ} dB bajo la voz")
+        mezcla = tmp / "mezcla.wav"
+        ff(["-i", str(voz), "-i", str(musica), "-filter_complex", f"[0:a]apad=whole_dur={total:.2f}[v];[1:a]volume={gain:.2f}dB[m];[v][m]amix=inputs=2:duration=first:normalize=0,atrim=0:{total:.2f}", str(mezcla)])
+        # 4) -14 LUFS: ganancia medida + limitador de picos (techo -3.2 dB para que el AAC no pase de -2 dBTP)
+        li0 = loudness(mezcla)[0]; techo = 10 ** ((TP_OBJ - 1.2) / 20)
+        for extra in (0.3, 0.8, 1.3, 1.8, 2.3, 2.8):                      # el limitador recorta algo de nivel: se reintenta con mas ganancia
+            ff(["-i", str(mezcla), "-af", f"volume={LUFS_OBJ - li0 + extra:.2f}dB,alimiter=limit={techo:.4f}:attack=3:release=50:level=disabled,aresample=48000",
+                "-c:a", "aac", "-b:a", "192k", str(mix)])
+            li, tp = loudness(mix)
+            print(f"  intento +{extra} dB: {li:.2f} LUFS, true peak {tp:+.2f} dBTP")
+            if li >= LUFS_OBJ - 0.4 and tp <= TP_OBJ: break
+        shutil.rmtree(tmp, ignore_errors=True)
+    li, tp = loudness(mix)
+    print(f"  mezcla final: {li:.1f} LUFS, true peak {tp:+.1f} dBTP")
+    if abs(li - LUFS_OBJ) > 1.0 or tp > TP_OBJ: sys.exit(f"Mezcla fuera de objetivo ({LUFS_OBJ} LUFS, TP<=-2 dB): {li:.1f} LUFS / {tp:+.1f} dBTP")
 
     if a.sin_render: return
     print("[7] union final")

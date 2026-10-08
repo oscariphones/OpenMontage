@@ -12,7 +12,7 @@ VOICE = dict(model="es_ES-davefx-medium", length_scale=0.90, noise_scale=0.90, n
 PITCH_ST, TEMPO = 2.5, 1.09
 GAP_S, GAP_SEC, LEAD, TAIL = 0.28, 0.65, 0.35, 1.2
 CHAIN = ("highpass=f=90,equalizer=f=180:t=q:w=1.2:g=1.0,equalizer=f=3500:t=q:w=1.0:g=3.5,equalizer=f=9000:t=q:w=0.8:g=2.0,"
-         "acompressor=threshold=-22dB:ratio=4:attack=3:release=80:makeup=6,alimiter=limit=0.93")
+         "acompressor=threshold=-22dB:ratio=4:attack=3:release=80:makeup=6,alimiter=limit=0.93:level=disabled")
 
 sents, sec = [], None
 for line in (PROJ / "guion_fondos.txt").read_text(encoding="utf-8").splitlines():
