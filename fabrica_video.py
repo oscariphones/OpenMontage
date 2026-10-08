@@ -7,7 +7,7 @@ Hace de forma desatendida todo lo mecanico, a partir de un proyecto que ya tiene
 
 Etapas (cada una se salta si su resultado ya existe; --force las repite):
   1 plantilla  copia motor/voz/audit desde projects/fondos-indexados si el proyecto no los tiene
-  2 voz        Piper davefx + rubberband + cadena broadcast  -> assets/audio/narration.wav + timeline.json
+  2 voz        Piper es_ES-sharvard-medium (voz oficial, sin rubberband) -> assets/audio/narration_raw.wav + timeline.json
   3 build      compone las partes HyperFrames (f1..fN)
   4 auditoria  recorre la linea de tiempo y exige 0 solapes / 0 elementos fuera de su celda
   5 render     UNA parte a la vez, 1 hilo, pausa entre partes y espera de RAM libre
@@ -25,10 +25,19 @@ PAUSA_ENTRE_PARTES = 20      # s
 RAM_MIN_MB = 1000            # espera hasta tener al menos esta RAM libre antes de cada parte
 MUSICA_DB_BAJO_VOZ = 18      # la musica va 18 LUFS por debajo de la voz
 LUFS_OBJ, TP_OBJ = -14.0, -2.0   # estandar YouTube y techo de true peak
-# Voz: -4 dB de margen (la salida de Piper+rubberband llega a 0 dBFS), quita retumbo, -2 dB en 250 Hz (caja/lejania),
-# +1.5 dB en 150 Hz (cuerpo/cercania), +3 dB en 3 kHz (presencia), de-esser, compresion dinamica suave (3:1) y limitador sin renormalizar.
-VOZ_CHAIN = ("volume=-4dB,highpass=f=80,equalizer=f=150:t=q:w=1:g=1.5,equalizer=f=250:t=q:w=1:g=-2,equalizer=f=3000:t=q:w=1:g=3,"
-             "deesser=i=0.4:m=0.5:f=0.5,acompressor=threshold=-22dB:ratio=3:attack=8:release=140:knee=6:makeup=4,alimiter=limit=0.89:level=disabled")
+# Voz OFICIAL: Piper es_ES-sharvard-medium, speaker_id 0 (masculina, 125 Hz), noise_scale 0.667, noise_w 0.8, length_scale 0.83, SIN rubberband (voice.py).
+# Cadena de voz. DIAGNOSTICO (2026-10-08): Piper sale YA a 0 dBFS (saturado en origen) y su modelo es de 22 kHz (solo ~1 % de la energia por
+# encima de 5 kHz = voz "lejana"). Por eso: -6 dB de margen, adeclip (repara los picos saturados), cuerpo +2 dB a 110 Hz, -2.5 dB a 280 Hz
+# (caja), presencia +2.5 dB a 3.2 kHz, aexciter + shelf para reconstruir agudos (~8 % de la energia >5 kHz, natural), de-esser,
+# compresion densa tipo radio/podcast en dos etapas (5:1 y 2.5:1) y limitador que solo recorta ~1 dB (level=disabled = no renormaliza).
+# Musica: la pista lo-fi trae siseo/crujido de vinilo (suelo ~ -52 dBFS) que se oia en las pausas: afftdn + adeclick.
+MUSICA_CHAIN = "adeclick=w=55:o=75:a=2:t=2:b=2,afftdn=nr=18:nf=-48:tn=1"
+VOZ_CHAIN = ("highpass=f=70,volume=-6dB,adeclip=w=55:o=75:a=8:t=10:n=1000,"
+             "agate=threshold=0.008:ratio=20:attack=3:release=100:range=0.001:knee=2:detection=peak,"
+             "highshelf=f=4000:g=3,"
+             "acompressor=threshold=-26dB:ratio=5:attack=5:release=110:knee=5:makeup=6,"
+             "acompressor=threshold=-14dB:ratio=2.5:attack=2:release=50:knee=3:makeup=2,"
+             "alimiter=limit=0.84:attack=6:release=80:level=disabled")
 
 
 def run(cmd, cwd=None, check=True, **kw):
@@ -63,9 +72,49 @@ def dur(path):
     return float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(path)], capture_output=True, text=True).stdout.strip())
 
 
+def asegurar_musica(P, consulta):
+    mus = P / "assets/music/lofi.mp3"
+    if not mus.exists():
+        mus.parent.mkdir(parents=True, exist_ok=True)
+        sys.path.insert(0, str(REPO)); from tools.tool_registry import registry
+        registry.discover()
+        r = registry._tools["pixabay_music"].execute({"query": consulta, "min_duration": 90, "max_duration": 300, "output_path": str(mus)})
+        if not r.success: sys.exit(f"No pude bajar musica: {r.error}")
+        (P / "assets/music/CREDITOS.txt").write_text(json.dumps(r.data, ensure_ascii=False, indent=1), encoding="utf-8")
+    return mus
+
+
+def mezclar_audio(AU, mus, total, mix, codec, narracion=None):
+    """Voz (desde narration_raw) + musica -> mezcla a -14 LUFS / TP <= -2 dB. total = segundos a mezclar desde el inicio."""
+    tmp = AU / ("tmp_" + mix.stem); tmp.mkdir(exist_ok=True)
+    voz, musica = tmp / "voz.wav", tmp / "musica.wav"
+    # 1) voz DESDE LA LOCUCION SIN PROCESAR: margen, EQ de presencia, de-esser, compresion dinamica y limitador sin renormalizar
+    ff(["-t", f"{total:.2f}", "-i", str(narracion or AU / "narration_raw.wav"), "-af", VOZ_CHAIN, "-ar", "48000", str(voz)])
+    # 2) pista lo-fi en bucle con fundido cruzado, fundidos de entrada/salida
+    ff(["-i", str(mus), "-filter_complex", f"[0:a]asplit=3[x1][x2][x3];[x1][x2]acrossfade=d=3[y];[y][x3]acrossfade=d=3,atrim=0:{total + 1:.2f},{MUSICA_CHAIN}", "-ar", "48000", str(musica)])
+    # 3) la musica queda MUSICA_DB_BAJO_VOZ dB por debajo de la voz, medido en LUFS (no a ojo)
+    gain = (loudness(voz)[0] - MUSICA_DB_BAJO_VOZ) - loudness(mus)[0]   # sobre la pista completa: igual en prueba y en video final
+    print(f"  voz {loudness(voz)[0]:.1f} LUFS, musica {gain:+.1f} dB -> {MUSICA_DB_BAJO_VOZ} dB bajo la voz")
+    mezcla = tmp / "mezcla.wav"
+    ff(["-i", str(voz), "-i", str(musica), "-filter_complex", f"[0:a]apad=whole_dur={total:.2f}[v];[1:a]volume={gain:.2f}dB,afade=t=in:d=3,afade=t=out:st={total - 5:.2f}:d=5[m];[v][m]amix=inputs=2:duration=first:normalize=0,atrim=0:{total:.2f}", str(mezcla)])
+    # 4) -14 LUFS: ganancia medida + limitador de picos (techo -3.2 dB para que el AAC no pase de -2 dBTP)
+    li0 = loudness(mezcla)[0]; techo = 10 ** ((TP_OBJ - 1.2) / 20)
+    for extra in (0.3, 0.8, 1.3, 1.8, 2.3, 2.8):                      # el limitador recorta algo de nivel: se reintenta con mas ganancia
+        ff(["-i", str(mezcla), "-af", f"volume={LUFS_OBJ - li0 + extra:.2f}dB,alimiter=limit={techo:.4f}:attack=3:release=50:level=disabled,aresample=48000",
+            *codec, str(mix)])
+        li, tp = loudness(mix)
+        print(f"  intento +{extra} dB: {li:.2f} LUFS, true peak {tp:+.2f} dBTP")
+        if li >= LUFS_OBJ - 0.4 and tp <= TP_OBJ: break
+    shutil.rmtree(tmp, ignore_errors=True)
+    return loudness(mix)
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("proyecto"); ap.add_argument("--musica", default="lo-fi chill instrumental")
     ap.add_argument("--force", action="store_true"); ap.add_argument("--sin-render", action="store_true")
+    ap.add_argument("--prueba-nombre", default="prueba_audio.mp3")
+    ap.add_argument("--narracion", help="narration_raw alternativa (solo para pruebas de audio)")
+    ap.add_argument("--prueba-audio", type=float, metavar="SEG", help="solo mezcla los primeros SEG segundos de voz+musica en prueba_audio.mp3 y sale (sin build ni render)")
     a = ap.parse_args()
     P = REPO / "projects" / a.proyecto; HF = P / "hyperframes"; R = P / "renders"; AU = P / "assets/audio"
     guiones = sorted(P.glob("guion_*.txt"))
@@ -74,11 +123,17 @@ def main():
 
     print("[1] plantilla")
     if P != PLANTILLA:
-        for f in ["voice.py", "hyperframes/audit_dyn.cjs", "hyperframes/render_film2d.sh"] + [f"film2d/{x}" for x in ["engine.js", "kitshim.js", "widgets.js", "template.tpl", "gsap.min.js", "props.js", "build.py"]]:
+        for f in ["voice.py", "hyperframes/audit_dyn.cjs", "hyperframes/chk_items.cjs", "hyperframes/render_film2d.sh"] + [f"film2d/{x}" for x in ["engine.js", "kitshim.js", "widgets.js", "template.tpl", "gsap.min.js", "props.js", "build.py"]]:
             if not (P / f).exists():
                 (P / f).parent.mkdir(parents=True, exist_ok=True); shutil.copy(PLANTILLA / f, P / f)
         if guiones[0].name != "guion_fondos.txt":                       # voice.py lee guion_fondos.txt
             t = (P / "voice.py").read_text(encoding="utf-8").replace("guion_fondos.txt", guiones[0].name); (P / "voice.py").write_text(t, encoding="utf-8")
+
+    if a.prueba_audio:
+        print(f"[prueba de audio] primeros {a.prueba_audio:.0f} s")
+        out = P / a.prueba_nombre
+        li, tp = mezclar_audio(AU, asegurar_musica(P, a.musica), a.prueba_audio, out, ["-c:a", "libmp3lame", "-b:a", "192k"], narracion=Path(a.narracion) if a.narracion else None)
+        print(f"  {out}  {li:.1f} LUFS, true peak {tp:+.1f} dBTP"); return
 
     print("[2] voz")
     if a.force or not (AU / "timeline.json").exists():
@@ -95,6 +150,9 @@ def main():
         print("  " + out.strip().replace("\n", "\n  "))
         if " issues 0 " not in out:
             sys.exit(f"Auditoria con problemas en {d}: corrige spec.js y repite.")
+        ck = subprocess.run(["node", "chk_items.cjs", d], cwd=HF, capture_output=True, text=True)
+        print("  " + ck.stdout.strip().replace(chr(10), chr(10) + "  "))
+        if ck.returncode: sys.exit(f"Hay elementos fuera de su escena en {d} (los tiempos de la voz cambiaron): ajusta spec.js.")
 
     if not a.sin_render:
         print("[5] render por partes (1 hilo, una a la vez)")
@@ -111,36 +169,10 @@ def main():
                 sys.exit(f"Fallo el render de {d}")
 
     print("[6] musica y mezcla (voz con presencia, -14 LUFS, true peak <= -2 dB)")
-    mus = P / "assets/music/lofi.mp3"; mix = AU / "final_mix.m4a"
-    if not mus.exists():
-        mus.parent.mkdir(parents=True, exist_ok=True)
-        sys.path.insert(0, str(REPO)); from tools.tool_registry import registry
-        registry.discover()
-        r = registry._tools["pixabay_music"].execute({"query": a.musica, "min_duration": 90, "max_duration": 300, "output_path": str(mus)})
-        if not r.success: sys.exit(f"No pude bajar musica: {r.error}")
-        (P / "assets/music/CREDITOS.txt").write_text(json.dumps(r.data, ensure_ascii=False, indent=1), encoding="utf-8")
+    mus = asegurar_musica(P, a.musica); mix = AU / "final_mix.m4a"
     total = tl["duration"]
     if a.force or not mix.exists():
-        tmp = AU / "tmp"; tmp.mkdir(exist_ok=True)
-        voz, musica = tmp / "voz.wav", tmp / "musica.wav"
-        # 1) voz DESDE LA LOCUCION SIN PROCESAR: margen, EQ de presencia, de-esser, compresion dinamica y limitador sin renormalizar
-        ff(["-i", str(AU / "narration_raw.wav"), "-af", VOZ_CHAIN, "-ar", "48000", str(voz)])
-        # 2) pista lo-fi en bucle con fundido cruzado, fundidos de entrada/salida
-        ff(["-i", str(mus), "-filter_complex", f"[0:a]asplit=3[x1][x2][x3];[x1][x2]acrossfade=d=3[y];[y][x3]acrossfade=d=3,atrim=0:{total + 1:.2f},afade=t=in:d=3,afade=t=out:st={total - 5:.2f}:d=5", "-ar", "48000", str(musica)])
-        # 3) la musica queda MUSICA_DB_BAJO_VOZ dB por debajo de la voz, medido en LUFS (no a ojo)
-        gain = (loudness(voz)[0] - MUSICA_DB_BAJO_VOZ) - loudness(musica)[0]
-        print(f"  voz {loudness(voz)[0]:.1f} LUFS, musica {gain:+.1f} dB -> {MUSICA_DB_BAJO_VOZ} dB bajo la voz")
-        mezcla = tmp / "mezcla.wav"
-        ff(["-i", str(voz), "-i", str(musica), "-filter_complex", f"[0:a]apad=whole_dur={total:.2f}[v];[1:a]volume={gain:.2f}dB[m];[v][m]amix=inputs=2:duration=first:normalize=0,atrim=0:{total:.2f}", str(mezcla)])
-        # 4) -14 LUFS: ganancia medida + limitador de picos (techo -3.2 dB para que el AAC no pase de -2 dBTP)
-        li0 = loudness(mezcla)[0]; techo = 10 ** ((TP_OBJ - 1.2) / 20)
-        for extra in (0.3, 0.8, 1.3, 1.8, 2.3, 2.8):                      # el limitador recorta algo de nivel: se reintenta con mas ganancia
-            ff(["-i", str(mezcla), "-af", f"volume={LUFS_OBJ - li0 + extra:.2f}dB,alimiter=limit={techo:.4f}:attack=3:release=50:level=disabled,aresample=48000",
-                "-c:a", "aac", "-b:a", "192k", str(mix)])
-            li, tp = loudness(mix)
-            print(f"  intento +{extra} dB: {li:.2f} LUFS, true peak {tp:+.2f} dBTP")
-            if li >= LUFS_OBJ - 0.4 and tp <= TP_OBJ: break
-        shutil.rmtree(tmp, ignore_errors=True)
+        mezclar_audio(AU, mus, total, mix, ["-c:a", "aac", "-b:a", "192k"])
     li, tp = loudness(mix)
     print(f"  mezcla final: {li:.1f} LUFS, true peak {tp:+.1f} dBTP")
     if abs(li - LUFS_OBJ) > 1.0 or tp > TP_OBJ: sys.exit(f"Mezcla fuera de objetivo ({LUFS_OBJ} LUFS, TP<=-2 dB): {li:.1f} LUFS / {tp:+.1f} dBTP")
