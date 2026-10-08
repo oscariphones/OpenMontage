@@ -1,0 +1,4 @@
+Pista: "Lo-Fi Chill" - ZephiraMusic (Pixabay), 178 s
+Licencia: Pixabay Content License (gratis, sin atribucion obligatoria)
+Descarga: python fabrica_video.py <proyecto> --musica "lo-fi chill instrumental"  (tools/audio/pixabay_music.py)
+Archivo local: assets/music/lofi.mp3 (no se versiona)
