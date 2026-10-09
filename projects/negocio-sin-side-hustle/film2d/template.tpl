@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- ENGINE_V2 -->
 <html lang="es" data-resolution="landscape">
   <head>
     <meta charset="UTF-8" />
@@ -55,6 +56,7 @@
       var DATA = __DATA__;
       var tl = gsap.timeline({ paused: true }); window.__timelines["main"] = tl;
       FILM.init({ tl: tl, anchors: DATA.anchors, a: DATA.a, b: DATA.b, scenesEl: document.getElementById("scenes") });
+      FILM.backdrop(document.getElementById("sc"), (window.SENT || []).map(function (s) { return s[0]; }));
       FILM.build(SCENES);
       FILM.captions(DATA.words, document.getElementById("caps"));
       InkTheater.boil(document.getElementById("boilTurb"), tl, { duration: FILM.dur, fps: 10 });

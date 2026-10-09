@@ -15,6 +15,8 @@
  * Poses live in a 360x560 box (ground at y=548) and face RIGHT (toward the graphic cell).
  * Every pose has the same six strokes (head, spine, armL, armR, legL, legR) so the silhouette stays
  * consistent; seated poses also carry their chair as `extra` strokes.
+ * v2.0: transitions use the procedural eases registered by ink-grid.js (ink.spring / ink.snap / ink.glide) with
+ * squash & stretch on landing; falls back to stock GSAP eases if ink-grid.js is not loaded.
  * Deterministic: GSAP tweens only, no clocks, no Math.random.
  */
 (function (root) {
@@ -70,6 +72,9 @@
              legR: [[186, 394], [262, 396], [270, 540]], legL: [[178, 394], [244, 400], [248, 540]] }
   };
 
+  // procedural eases live in ink-grid.js (loaded after this file, but resolved at call time)
+  function ez(name, fallback) { return root.InkGrid && root.InkGrid.ease ? root.InkGrid.ease(name, fallback) : fallback; }
+
   function pick(names) { var o = {}; names.forEach(function (n) { if (POSES[n]) o[n] = POSES[n]; }); return o; }
 
   function path(pts, o) {
@@ -102,10 +107,11 @@
       if (prev) tl.to(groups[prev], { opacity: 0, duration: 0.1, ease: "power2.out" }, t);   // quick cut-away: no ghosting
       // opacity and motion are separate tweens so the soft rebound does not drag the cross-fade out
       tl.fromTo(next, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "power2.out", immediateRender: false }, t);
-      var from = { x: 0, y: 0, scale: 1, transformOrigin: "50% 100%" }, to = { x: 0, y: 0, scale: 1, duration: dur, transformOrigin: "50% 100%", immediateRender: false };
-      if (fx === "bounce") { from.y = o2.dy != null ? o2.dy : 12; from.scale = 0.96; to.ease = "back.out(1.7)"; }
-      else if (fx === "slide") { from.x = o2.dx != null ? o2.dx : -26; from.y = o2.dy || 0; to.ease = "power2.out"; }
-      else { to.ease = "power2.out"; }
+      var from = { x: 0, y: 0, scaleX: 1, scaleY: 1, transformOrigin: "50% 100%" }, to = { x: 0, y: 0, scaleX: 1, scaleY: 1, duration: dur, transformOrigin: "50% 100%", immediateRender: false };
+      if (fx === "bounce") { from.y = o2.dy != null ? o2.dy : 12; from.scaleX = 1.05; from.scaleY = 0.93; to.duration = dur + 0.18; to.ease = ez("ink.spring", "back.out(1.7)"); }   // lands squashed, rebounds stretched, settles
+      else if (fx === "slide") { from.x = o2.dx != null ? o2.dx : -26; from.y = o2.dy || 0; to.ease = ez("ink.snap", "power2.out"); }
+      else { to.ease = ez("ink.glide", "power2.out"); }
+      if (o2.ease) to.ease = o2.ease;
       tl.fromTo(next, from, to, t);
       fig.cur = name; return fig;
     };
@@ -114,7 +120,7 @@
     fig.cut = function (tl, name, t) {
       var prev = fig.cur; if (prev === name) return fig;
       if (prev) tl.set(groups[prev], { opacity: 0 }, t);
-      tl.set(groups[name], { opacity: 1, x: 0, y: 0, scale: 1 }, t);
+      tl.set(groups[name], { opacity: 1, x: 0, y: 0, scaleX: 1, scaleY: 1 }, t);
       fig.cur = name; return fig;
     };
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Fabrica de videos de finanzas (estilo 2D stick figure, HyperFrames + GSAP, voz Piper davefx, musica lo-fi).
+"""Fabrica de videos de finanzas v2.0 "premium finance" (fondo tech-grid, subtitulos cineticos, easing GSAP; estilo 2D stick figure, HyperFrames + GSAP, voz clonada Chatterbox, musica lo-fi).
 
 Hace de forma desatendida todo lo mecanico, a partir de un proyecto que ya tiene:
     projects/<proyecto>/guion_*.txt     guion en espanol ("## SECCION" + una frase por linea)
     projects/<proyecto>/film2d/spec.js  plano de escenas (lo disena Claude: ver REGLAS_VIDEO.md)
 
 Etapas (cada una se salta si su resultado ya existe; --force las repite):
-  1 plantilla  copia motor/voz/audit desde projects/fondos-indexados si el proyecto no los tiene
-  2 voz        Piper es_ES-sharvard-medium (voz oficial, sin rubberband) -> assets/audio/narration_raw.wav + timeline.json
+  1 plantilla  copia motor/voz/audit desde projects/fondos-indexados si el proyecto no los tiene (y sube el motor a la v2.0 si es viejo)
+  2 voz        scripts/voice.py: clon Chatterbox de referencia_voz.wav.wav (voz oficial, sin rubberband) -> assets/audio/narration_raw.wav + timeline.json
   3 build      compone las partes HyperFrames (f1..fN)
   4 auditoria  recorre la linea de tiempo y exige 0 solapes / 0 elementos fuera de su celda
   5 render     UNA parte a la vez, 1 hilo, pausa entre partes y espera de RAM libre
@@ -25,8 +25,8 @@ PAUSA_ENTRE_PARTES = 20      # s
 RAM_MIN_MB = 1000            # espera hasta tener al menos esta RAM libre antes de cada parte
 MUSICA_DB_BAJO_VOZ = 18      # la musica va 18 LUFS por debajo de la voz
 LUFS_OBJ, TP_OBJ = -14.0, -2.0   # estandar YouTube y techo de true peak
-# Voz OFICIAL: Piper es_ES-sharvard-medium, speaker_id 0 (masculina, 125 Hz), noise_scale 0.667, noise_w 0.8, length_scale 0.83, SIN rubberband (voice.py).
-# Cadena de voz. DIAGNOSTICO (2026-10-08): Piper sale YA a 0 dBFS (saturado en origen) y su modelo es de 22 kHz (solo ~1 % de la energia por
+# Voz OFICIAL: clon Chatterbox (es) de referencia_voz.wav.wav via scripts/voice.py, SIN rubberband. Esta cadena procesa narration_raw.wav.
+# Cadena de voz. Historico (2026-10-08, disenada con una voz TTS que salia a 0 dBFS y con modelo de 22 kHz, solo ~1 % de la energia por
 # encima de 5 kHz = voz "lejana"). Por eso: -6 dB de margen, adeclip (repara los picos saturados), cuerpo +2 dB a 110 Hz, -2.5 dB a 280 Hz
 # (caja), presencia +2.5 dB a 3.2 kHz, aexciter + shelf para reconstruir agudos (~8 % de la energia >5 kHz, natural), de-esser,
 # compresion densa tipo radio/podcast en dos etapas (5:1 y 2.5:1) y limitador que solo recorta ~1 dB (level=disabled = no renormaliza).
@@ -123,11 +123,22 @@ def main():
 
     print("[1] plantilla")
     if P != PLANTILLA:
-        for f in ["voice.py", "hyperframes/audit_dyn.cjs", "hyperframes/chk_items.cjs", "hyperframes/render_film2d.sh"] + [f"film2d/{x}" for x in ["engine.js", "kitshim.js", "widgets.js", "template.tpl", "gsap.min.js", "props.js", "build.py"]]:
+        for f in ["hyperframes/audit_dyn.cjs", "hyperframes/chk_items.cjs", "hyperframes/render_film2d.sh"] + [f"film2d/{x}" for x in ["engine.js", "kitshim.js", "widgets.js", "template.tpl", "gsap.min.js", "props.js", "build.py"]]:
             if not (P / f).exists():
                 (P / f).parent.mkdir(parents=True, exist_ok=True); shutil.copy(PLANTILLA / f, P / f)
-        if guiones[0].name != "guion_fondos.txt":                       # voice.py lee guion_fondos.txt
-            t = (P / "voice.py").read_text(encoding="utf-8").replace("guion_fondos.txt", guiones[0].name); (P / "voice.py").write_text(t, encoding="utf-8")
+    vw = P / "voice.py"          # voz oficial: envoltorio de scripts/voice.py (clon Chatterbox de referencia_voz.wav.wav); nunca otro sintetizador
+    if P != PLANTILLA and (not vw.exists() or "scripts/voice.py" not in vw.read_text(encoding="utf-8")):
+        vw.write_text(chr(10).join(['"""Wrapper: la locucion la hace scripts/voice.py (clonacion de referencia_voz.wav.wav con Chatterbox)."""',
+                                 "import subprocess, sys", "from pathlib import Path", "P = Path(__file__).resolve().parent",
+                                 f'sys.exit(subprocess.call([sys.executable, str(P.parents[1] / "scripts/voice.py"), P.name, str(P / "{guiones[0].name}")]))', ""]), encoding="utf-8")
+
+    # Motor 2.0 "premium finance" (fondo tech-grid, subtitulos cineticos, easing procedural GSAP): los proyectos con motor viejo se actualizan
+    # desde la plantilla (engine.js + template.tpl); ink-grid.js / ink-pose.js los copia film2d/build.py desde ink-theater/ en cada build.
+    if P != PLANTILLA:
+        for f, marca in (("engine.js", "Film engine V2"), ("template.tpl", "ENGINE_V2")):
+            dst = P / "film2d" / f
+            if marca not in dst.read_text(encoding="utf-8"):
+                print(f"  motor 2.0: actualizo film2d/{f}"); shutil.copy(PLANTILLA / "film2d" / f, dst)
 
     if a.prueba_audio:
         print(f"[prueba de audio] primeros {a.prueba_audio:.0f} s")

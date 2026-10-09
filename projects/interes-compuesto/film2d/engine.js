@@ -1,4 +1,4 @@
-/* Film engine: turns the declarative SCENES spec into strict CSS-grid scenes + one GSAP timeline.
+/* Film engine V2 (premium finance: tech-grid backdrop, kinetic captions, procedural eases). Turns the declarative SCENES spec into strict CSS-grid scenes + one GSAP timeline.
  * Scene = grid of cells (character | graphic cell(s)); items are laid out in flow (flex rows), auto-fitted to
  * their cell, and revealed with GSAP (pop / slide / fade). Subtitles live in their own grid row. */
 (function (root) {
@@ -12,6 +12,12 @@
   E.T = T;
 
   E.init = function (cfg) { tl = cfg.tl; an = cfg.anchors; PA = cfg.a; PB = cfg.b; na = mapRaw(an, PA); scenesEl = cfg.scenesEl; E.dur = mapRaw(an, PB) - na; };
+
+  // dark tech-grid backdrop; beats = absolute times (s) of sentence starts, so the grid pulses with the voice
+  E.backdrop = function (host, beats) {
+    var rel = (beats || []).filter(function (b) { return b >= PA - 1e-3 && b <= PB; }).map(T);
+    return G.techGrid(host, tl, E.dur, { beats: rel });
+  };
 
   // ---------- svg items ----------
   function svgItem(drawFn) {
@@ -57,17 +63,17 @@
     if (kind === "cross") { K.line(o, [[12, 12], [88, 88]], { c: C.red, w: 6 }); K.line(o, [[88, 12], [12, 88]], { c: C.red, w: 6 }); }
     else K.line(o, [[16, 56], [40, 82], [86, 20]], { c: C.green, w: 7 });
     o.style.opacity = 0; wrap.appendChild(o);
-    tl.fromTo(o, { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2)", transformOrigin: "50% 50%", immediateRender: false }, T(t));
+    tl.fromTo(o, { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.55, ease: G.ease("ink.springHard", "back.out(2)"), transformOrigin: "50% 50%", immediateRender: false }, T(t));
   }
   function reveal(node, it) {
     var t = T(it.t == null ? E.cur.a : it.t), fx = it.fx || "pop";
     if (fx === "pop") G.pop(tl, node, t, { y: 14 });
     else if (fx === "drop") G.pop(tl, node, t, { y: -50 });
     else if (fx === "rise") G.pop(tl, node, t, { y: 50 });
-    else if (fx === "stamp") tl.fromTo(node, { opacity: 0, scale: 1.7, rotation: -8, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, rotation: it.rot == null ? -3 : it.rot, duration: 0.4, ease: "back.out(2)", immediateRender: false }, t);
+    else if (fx === "stamp") tl.fromTo(node, { opacity: 0, scale: 1.7, rotation: -8, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, rotation: it.rot == null ? -3 : it.rot, duration: 0.55, ease: G.ease("ink.springHard", "back.out(2)"), immediateRender: false }, t);
     else if (fx === "slide") G.slide(tl, node, t, { x: it.dx != null ? it.dx : 90, y: it.dy || 0 });
-    else tl.fromTo(node, { opacity: 0 }, { opacity: 1, duration: it.d || 0.45, ease: "power2.out", immediateRender: false }, t);
-    if (it.out != null) tl.to(node, { opacity: 0, duration: 0.35, ease: "power2.out" }, T(it.out));
+    else tl.fromTo(node, { opacity: 0 }, { opacity: 1, duration: it.d || 0.45, ease: G.ease("ink.glide", "power2.out"), immediateRender: false }, t);
+    if (it.out != null) tl.to(node, { opacity: 0, duration: 0.35, ease: G.ease("ink.glide", "power2.out") }, T(it.out));
   }
 
   // ---------- fit: shrink a cell's content until it fits (no overflow in either axis) ----------
@@ -110,7 +116,7 @@
         if (e.walk) {
           var w0 = T(e.walk[0]), w1 = T(e.walk[1]), cl = function (v, d) { return Math.max(-30, Math.min(26, v == null ? d : v)); };
           fig.walk(tl, w0, w1);
-          tl.fromTo(svg, { xPercent: cl(e.walk[2], -20) }, { xPercent: cl(e.walk[3], 25), duration: w1 - w0, ease: "sine.inOut", immediateRender: false }, w0);
+          tl.fromTo(svg, { xPercent: cl(e.walk[2], -20) }, { xPercent: cl(e.walk[3], 25), duration: w1 - w0, ease: G.ease("ink.glide", "sine.inOut"), immediateRender: false }, w0);
           tl.set(svg, { xPercent: cl(e.walk[2], -20) }, 0);
           fig.cut(tl, base, w1);                       // stop walking in the scene's base pose
         } else { fig.to(tl, e.pose, T(e.t), { fx: e.fx || "bounce" }); base = e.pose; }
@@ -131,25 +137,12 @@
     var t0 = T(sc.a), t1 = T(sc.b), last = sc.b >= PB - 1e-3;
     var audit = G.audit(el); audit.scene = sc.id || sc.a; E.audit.push(audit);
     tl.set(el, { display: "grid", autoAlpha: 0 }, Math.max(0, t0 - 0.05));
-    tl.to(el, { autoAlpha: 1, duration: 0.3, ease: "power2.out" }, Math.max(0, t0 - 0.05));
+    tl.to(el, { autoAlpha: 1, duration: 0.4, ease: G.ease("ink.snap", "power2.out") }, Math.max(0, t0 - 0.05));
     if (!last) { tl.to(el, { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, Math.max(0, t1 - 0.3)); tl.set(el, { display: "none" }, t1 + 0.03); }
     el.style.display = "none";
   };
   E.build = function (SCENES) { SCENES.forEach(E.scene); };
 
-  E.captions = function (words, capsEl) {
-    var page = [], pages = [];
-    words.forEach(function (w) { page.push(w); if (page.length >= 7 || w.pageBreakAfter) { pages.push(page); page = []; } });
-    if (page.length) pages.push(page);
-    pages.forEach(function (pw, pi) {
-      var div = document.createElement("div"); div.className = "ig-page";
-      pw.forEach(function (w, i) { var s = document.createElement("span"); s.className = "ig-w"; s.textContent = w.word + (i < pw.length - 1 ? " " : ""); div.appendChild(s); w._s = s; });
-      capsEl.appendChild(div);
-      var t0 = pw[0].startMs / 1000, t1 = pw[pw.length - 1].endMs / 1000, nxt = pages[pi + 1] ? pages[pi + 1][0].startMs / 1000 : 1e9;
-      tl.fromTo(div, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.1, immediateRender: false }, Math.max(0, t0 - 0.05));
-      pw.forEach(function (w) { tl.to(w._s, { color: "#ffffff", duration: 0.12 }, w.startMs / 1000); });
-      tl.to(div, { opacity: 0, duration: 0.1 }, Math.max(t0 + 0.1, Math.min(t1 + 0.12, nxt - 0.14)));
-    });
-  };
+  E.captions = function (words, capsEl) { G.captions(tl, words, capsEl); };   // kinetic typography: keywords pop + glow green/orange
   root.FILM = E;
 })(window);

@@ -19,12 +19,13 @@ Flujo exacto del video `fondos-indexados`. Cuando el usuario pida un video nuevo
 ## 1. Guion → `projects/<proyecto>/guion_<tema>.txt`
 - Cabecera `FUENTE:` y `FORMATO:`; luego secciones `## NOMBRE` y **una frase por línea** (frases cortas, gancho al inicio, cierre con llamada a la acción). ~3-4 min.
 
-## 2. Voz (automático) — VOZ OFICIAL
-- **Piper `es_ES-sharvard-medium`, `speaker_id 0` (masculina, ~125 Hz, acento de España)** (`~/.piper/models`). Elegida por el usuario el 2026-10-08 tras comparar pruebas; **no cambiarla sin que lo pida.**
-- Parámetros: `length_scale 0.83` (la velocidad la hace Piper), `noise_scale 0.667`, `noise_w 0.8` (valores de fábrica del modelo; 0.9/1.0 daban aspereza).
-- **PROHIBIDO `rubberband` / cambios de tono o tiempo** sobre la voz sintetizada: degradan la señal (textura robótica y borrosa). Solo remuestreo soxr a 48 kHz. Huecos 0.28 s entre frases, 0.65 s entre secciones.
-- No usar `es_MX-claude-high` (es voz FEMENINA, 208 Hz; el nombre engaña). Ningún modelo de Piper pasa de 22.05 kHz, ni los "high": no prometer "4K".
-- Antes de elegir una voz, **medir su F0** (masculina ~85-155 Hz, femenina ~165-255 Hz) en vez de fiarse del nombre. El parámetro de Piper es `speaker_id`.
+## 2. Voz (automático) — VOZ OFICIAL Y OBLIGATORIA
+- **Desde 2026-10-09, la única voz permitida en TODOS los proyectos es la clonada con Chatterbox Multilingual (español), generada por `scripts/voice.py` a partir del archivo de referencia `referencia_voz.wav.wav` (raíz del repo; ojo: lleva doble extensión).** Decisión del usuario; no cambiarla sin que lo pida.
+- Cada proyecto tiene un `voice.py` que solo es un envoltorio: `python scripts/voice.py <proyecto> projects/<proyecto>/guion_<tema>.txt`. `fabrica_video.py` lo crea solo en los proyectos nuevos y lo ejecuta en la etapa 2. **No usar ningún otro sintetizador.**
+- Salida: `assets/audio/narration_raw.wav` (+ `narration.wav` copia) y `timeline.json` con los tiempos reales de cada frase. Parámetros de generación en `scripts/voice.py` (`GEN`: exaggeration 0.5, cfg_weight 0.5, temperature 0.8; semilla fija por frase). Sin GPU corre en CPU y es lento (≈ 2-3 veces la duración del audio o más): no lanzar nada pesado en paralelo.
+- **PROHIBIDO `rubberband` / cambios de tono o tiempo** sobre la voz sintetizada: degradan la señal (textura robótica y borrosa). Solo remuestreo soxr a 44.1 kHz. Huecos 0.28 s entre frases, 0.65 s entre secciones.
+- La voz clonada habla más lento que una voz de TTS plano: un guion de ~35 frases dura ≈ 2.8 min. Calcular la duración del video con `timeline.json`, no con estimaciones.
+- Si cambia la voz o el guion de un proyecto, borrar `assets/audio/sentences/` (las frases se cachean) y correr `fabrica_video.py <proyecto> --force`.
 
 ## 3. Escenas → `film2d/spec.js` (lo diseña Claude)
 - Muñeco 2D de poses fijas + cuadrícula CSS (celda del personaje / celda de gráficos / subtítulos anclados abajo). **Sin coordenadas**: solo `sc(a, b, "cg", poses, filas)`.
@@ -41,7 +42,7 @@ Flujo exacto del video `fondos-indexados`. Cuando el usuario pida un video nuevo
 ## 6. Música y mezcla (audio: presencia, -14 LUFS, true peak <= -2 dB)
 - Pista lo-fi libre de Pixabay (`tools/audio/pixabay_music.py`), guardada en `assets/music/` con créditos; bucle con fundido cruzado, fade in 3 s / out 5 s.
 - **La voz se procesa SIEMPRE desde `narration_raw.wav` (sin procesar), nunca desde `narration.wav`.** `VOZ_CHAIN` en `fabrica_video.py`: filtro de graves 70 Hz, -6 dB de margen, `adeclip` (repara picos saturados de origen), **puerta de ruido `agate`** (los silencios entre palabras quedan en cero digital), high-shelf +3 dB desde 4 kHz (claridad), compresión densa en dos etapas (5:1 y 2.5:1) y limitador (recorta ~1 dB, no aplasta).
-- **Sin** de-esser, **sin** EQ agresivo (cortes/subidas en 110/150/250/280/3200 Hz), **sin** `aexciter`, **sin** `afftdn` en la voz (no tiene ruido: Piper deja silencio digital entre frases; el filtro empasta), **sin** reverb/eco. Todo eso distorsionaba la voz.
+- **Sin** de-esser, **sin** EQ agresivo (cortes/subidas en 110/150/250/280/3200 Hz), **sin** `aexciter`, **sin** `afftdn` en la voz (el filtro empasta la voz), **sin** reverb/eco. Todo eso distorsionaba la voz.
 - La música pasa por `MUSICA_CHAIN` (`adeclick` + `afftdn`; mejora marginal medida) y va **18 LUFS por debajo de la voz, medido con ebur128** (no por un volumen fijo).
 - Mezcla final a **-14 LUFS** (estándar YouTube) con ganancia medida + limitador de picos; el techo del limitador es -3.2 dB para que el AAC deje el **true peak <= -2 dBTP**. El script reintenta con más ganancia y **se detiene** si queda fuera de -14 ±0.4 LUFS o TP > -2 dB.
 - **Lección (2026-10-08):** `alimiter` renormaliza el pico por defecto; siempre usar `level=disabled`. Sin eso la locución quedaba en +0.8 dBFS con 4,671 muestras saturadas y 1.7 LU de rango (plana y "lejana"). Nunca encadenar compresor con makeup alto + limitador sin `level=disabled`.
