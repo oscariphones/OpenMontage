@@ -98,13 +98,18 @@ def mezclar_audio(AU, mus, total, mix, codec, narracion=None):
     mezcla = tmp / "mezcla.wav"
     ff(["-i", str(voz), "-i", str(musica), "-filter_complex", f"[0:a]apad=whole_dur={total:.2f}[v];[1:a]volume={gain:.2f}dB,afade=t=in:d=3,afade=t=out:st={total - 5:.2f}:d=5[m];[v][m]amix=inputs=2:duration=first:normalize=0,atrim=0:{total:.2f}", str(mezcla)])
     # 4) -14 LUFS: ganancia medida + limitador de picos (techo -3.2 dB para que el AAC no pase de -2 dBTP)
-    li0 = loudness(mezcla)[0]; techo = 10 ** ((TP_OBJ - 1.2) / 20)
-    for extra in (0.3, 0.8, 1.3, 1.8, 2.3, 2.8):                      # el limitador recorta algo de nivel: se reintenta con mas ganancia
-        ff(["-i", str(mezcla), "-af", f"volume={LUFS_OBJ - li0 + extra:.2f}dB,alimiter=limit={techo:.4f}:attack=3:release=50:level=disabled,aresample=48000",
-            *codec, str(mix)])
-        li, tp = loudness(mix)
-        print(f"  intento +{extra} dB: {li:.2f} LUFS, true peak {tp:+.2f} dBTP")
-        if li >= LUFS_OBJ - 0.4 and tp <= TP_OBJ: break
+    li0 = loudness(mezcla)[0]
+    ok = False
+    for margen in (1.2, 1.7, 2.2):                                      # si el AAC aun pasa de -2 dBTP, se baja el techo del limitador
+        techo = 10 ** ((TP_OBJ - margen) / 20)
+        for extra in (0.3, 0.8, 1.3, 1.8, 2.3, 2.8):                      # el limitador recorta algo de nivel: se reintenta con mas ganancia
+            ff(["-i", str(mezcla), "-af", f"volume={LUFS_OBJ - li0 + extra:.2f}dB,alimiter=limit={techo:.4f}:attack=3:release=50:level=disabled,aresample=48000",
+                *codec, str(mix)])
+            li, tp = loudness(mix)
+            print(f"  techo -{margen + 2.0:.1f} dB, intento +{extra} dB: {li:.2f} LUFS, true peak {tp:+.2f} dBTP")
+            if li >= LUFS_OBJ - 0.4 and tp <= TP_OBJ: ok = True; break
+            if tp > TP_OBJ: break                                        # mas ganancia no arregla el pico: probar techo mas bajo
+        if ok: break
     shutil.rmtree(tmp, ignore_errors=True)
     return loudness(mix)
 
