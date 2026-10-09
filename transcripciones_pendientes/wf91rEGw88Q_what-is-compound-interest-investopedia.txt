@@ -1,0 +1,7 @@
+https://www.youtube.com/watch?v=wf91rEGw88Q
+Titulo: What Is Compound Interest? | Investopedia
+Canal: Investopedia
+Vistas: 2,092,926 | Suscriptores: 306,000 | Vistas/Suscriptores: 6.84x
+Transcripcion original: en (autogenerada)
+Extraido: 2026-10-08T19:35:11
+[Music] Compound interest is the interest an investor earns on his original investment plus all the interest earned on the interest that has accumulated over time. It is easier to think of compound interest as interest on interest. To understand compound interest, let's first look at simple interest, the interest earned on the original principal only. Suppose you deposit $10,000 into a highinterest savings account at a 5% simple interest rate for three years. The interest you earn each year is 5% * 10,000 which equals $500 for a total of $1,500 of interest at the end of year 3. $500 + 500 + 500. Now instead suppose that you deposit the same $10,000 at 5% interest compounded annually in year 1. the interest you earn is the same, $500. But in year two, the interest you earn is 5% * $10,500, the original amount plus the interest you earned in year 1. So the second year's interest is $525. In year three, you earn 5% interest on $11,025. $10,000 + 500 year 1 interest plus 525 year 2 interest for an interest payment of $55125. In total, you earn $1,576.25 in interest over 3 years with compounding interest versus $1,500 with simple interest, a difference of $76.25. The effect of compounding becomes especially powerful over longer time periods as the amount of earned interest becomes larger and larger.
