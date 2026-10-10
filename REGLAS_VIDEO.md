@@ -50,8 +50,13 @@ Flujo exacto del video `fondos-indexados`. Cuando el usuario pida un video nuevo
 ## 7. Final
 - Unir partes (concat) + mezcla → `renders/final.mp4`; comprobar que la duración coincide con la locución.
 
-## Todo lo mecánico (pasos 2-7) en un comando
-`python fabrica_video.py <proyecto>`  (usa `--force`, `--sin-render`, `--musica "..."`).
+## 8. Metadatos y YouTube → `agente_metadatos.py` (el brief lo redacta Claude)
+- Junto con el guion y `spec.js`, **Claude redacta `projects/<proyecto>/metadatos_brief.json`**: 3 títulos con fórmula de contraste/clickbait (≤ 70 caracteres ideal, 100 máx.), descripción, 5 hashtags, etiquetas, nombres de capítulos y, para la miniatura, solo `expresion`, `postura`, `objeto` (objeto secundario de la esquina inferior izquierda, según el tema: sobre "DEUDA", alcancía, gráfica en subida, tarjeta de crédito...) y `texto` (2-3 líneas, ≤ 7 palabras).
+- Al terminar el render, `fabrica_video.py` (etapa 8) genera `metadata.json` (capítulos desde `timeline.json`, aviso legal y hashtags al final) y el **Prompt Maestro** de la miniatura: personaje claymation, fondo tech-grid oscuro, rim light naranja, posición/escala del objeto secundario y tipografía son **inamovibles**.
+- Si existen credenciales en `credenciales/`, sube `renders/final.mp4` a YouTube **siempre en Privado** (+ `miniatura.png/jpg` si existe); no vuelve a subir si `metadata.json` ya tiene `youtube`. `--sin-subir` lo evita.
+
+## Todo lo mecánico (pasos 2-8) en un comando
+`python fabrica_video.py <proyecto>`  (usa `--force`, `--sin-render`, `--sin-subir`, `--musica "..."`).
 Claude redacta el guion (1) y diseña `spec.js` (3) — ver la regla estricta de arriba. El script se detiene si falta alguno o si la auditoría no da 0 problemas.
 
 ## Honestidad en el reporte

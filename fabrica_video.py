@@ -13,8 +13,10 @@ Etapas (cada una se salta si su resultado ya existe; --force las repite):
   5 render     UNA parte a la vez, 1 hilo, pausa entre partes y espera de RAM libre
   6 musica     descarga pista lo-fi libre (Pixabay) si falta y mezcla por debajo de la voz
   7 final      une las partes, muxea el audio y verifica la duracion -> renders/final.mp4
+  8 metadatos  agente_metadatos.py: metadata.json (titulos, descripcion, hashtags, etiquetas, Prompt Maestro de miniatura) desde
+               metadatos_brief.json (lo redacta Claude) y subida PRIVADA a YouTube si hay credenciales (--sin-subir la evita)
 
-Uso:  python fabrica_video.py <proyecto> [--musica "lo-fi chill instrumental"] [--force] [--sin-render]
+Uso:  python fabrica_video.py <proyecto> [--musica "lo-fi chill instrumental"] [--force] [--sin-render] [--sin-subir]
 """
 import argparse, ctypes, json, re, shutil, subprocess, sys, time
 from pathlib import Path
@@ -117,6 +119,7 @@ def mezclar_audio(AU, mus, total, mix, codec, narracion=None):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("proyecto"); ap.add_argument("--musica", default="lo-fi chill instrumental")
     ap.add_argument("--force", action="store_true"); ap.add_argument("--sin-render", action="store_true")
+    ap.add_argument("--sin-subir", action="store_true", help="genera metadata.json pero no sube el video a YouTube")
     ap.add_argument("--prueba-nombre", default="prueba_audio.mp3")
     ap.add_argument("--narracion", help="narration_raw alternativa (solo para pruebas de audio)")
     ap.add_argument("--prueba-audio", type=float, metavar="SEG", help="solo mezcla los primeros SEG segundos de voz+musica en prueba_audio.mp3 y sale (sin build ni render)")
@@ -201,6 +204,16 @@ def main():
     dv, esperado = dur(final), total
     print(f"  {final}  {dv:.1f} s (locucion {esperado:.1f} s)  {final.stat().st_size / 2**20:.0f} MB")
     if abs(dv - esperado) > 1.5: sys.exit("La duracion final no coincide con la locucion: revisar las partes.")
+
+    print("[8] metadatos y YouTube (privado)")
+    import agente_metadatos as am
+    if not (P / "metadatos_brief.json").exists():
+        print("  falta metadatos_brief.json: pide a Claude que lo redacte y corre  python agente_metadatos.py subir " + a.proyecto)
+    else:
+        am.generar(a.proyecto)
+        if a.sin_subir: print("  --sin-subir: no se sube")
+        elif not (am.TOKEN.exists() or am.CLIENT_SECRET.exists()): print(f"  sin credenciales de YouTube en {am.CRED}: no se sube (ver agente_metadatos.py)")
+        else: am.subir(a.proyecto)
     print("LISTO")
 
 
