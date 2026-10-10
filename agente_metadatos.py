@@ -19,6 +19,7 @@ Uso:
     python agente_metadatos.py generar <proyecto>             -> projects/<proyecto>/metadata.json
     python agente_metadatos.py autorizar                      -> login OAuth de YouTube una sola vez (abre el navegador)
     python agente_metadatos.py subir <proyecto> [--titulo N] [--force]
+    python agente_metadatos.py miniatura <proyecto>           -> cambia la portada del video ya subido (no lo vuelve a subir)
 Credenciales: credenciales/youtube_client_secret.json (cliente OAuth "App de escritorio" de Google Cloud). El token queda en
 credenciales/youtube_token.json. Ambos estan en .gitignore. Dependencias: pip install -r requirements-youtube.txt
 """
@@ -175,18 +176,39 @@ def subir(proyecto, titulo=None, force=False):
     info = {"id": vid, "url": f"https://youtu.be/{vid}", "studio": f"https://studio.youtube.com/video/{vid}/edit",
             "titulo": body["snippet"]["title"], "privacidad": "private", "subido": datetime.datetime.now().isoformat(timespec="seconds")}
     meta["youtube"] = info; mf.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")   # guardar antes de la miniatura
-    mini = next((P / f for f in ("miniatura.png", "miniatura.jpg", "miniatura.jpeg") if (P / f).exists()), None)
-    if mini:
-        try:
-            yt.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(mini))).execute()
-            info["miniatura_subida"] = True; print(f"  miniatura {mini.name} subida")
-        except Exception as e:   # requiere canal verificado por telefono y archivo < 2 MB
-            info["miniatura_subida"] = False; print(f"  aviso: no se pudo subir la miniatura ({e})")
-        mf.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
-    else:
-        print("  sin miniatura.png/jpg en el proyecto: genera la imagen con el prompt_maestro y subela desde el celular")
+    poner_miniatura(yt, P, meta, mf)
     print(f"[youtube] listo (privado): {info['studio']}")
     return info
+
+
+def poner_miniatura(yt, P, meta, mf, estricto=False):
+    """Sube miniatura.png/jpg del proyecto al video ya subido (thumbnails.set: no toca ni duplica el video)."""
+    from googleapiclient.http import MediaFileUpload
+    info = meta["youtube"]
+    mini = next((P / f for f in ("miniatura.png", "miniatura.jpg", "miniatura.jpeg") if (P / f).exists()), None)
+    if not mini:
+        msg = "sin miniatura.png/jpg en el proyecto: genera la imagen con el prompt_maestro"
+        if estricto: die(msg)
+        print("  " + msg + " y subela desde el celular"); return False
+    if mini.stat().st_size > 2 * 2**20: die(f"{mini.name} pesa {mini.stat().st_size / 2**20:.1f} MB (YouTube acepta hasta 2 MB)")
+    try:
+        yt.thumbnails().set(videoId=info["id"], media_body=MediaFileUpload(str(mini))).execute()
+        info["miniatura_subida"] = True; info["miniatura"] = {"archivo": mini.name, "subida": datetime.datetime.now().isoformat(timespec="seconds")}
+        print(f"  miniatura {mini.name} subida a {info['id']}")
+    except Exception as e:   # requiere canal verificado por telefono y archivo < 2 MB
+        info["miniatura_subida"] = False
+        if estricto: mf.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8"); die(f"no se pudo subir la miniatura: {e}")
+        print(f"  aviso: no se pudo subir la miniatura ({e})")
+    mf.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+    return info["miniatura_subida"]
+
+
+def miniatura(proyecto):
+    P = REPO / "projects" / proyecto; mf = P / "metadata.json"
+    meta = json.loads(mf.read_text(encoding="utf-8")) if mf.exists() else {}
+    if not meta.get("youtube"): die(f"{proyecto} todavia no esta subido a YouTube: usa  python agente_metadatos.py subir {proyecto}")
+    poner_miniatura(youtube_api(), P, meta, mf, estricto=True)
+    print(f"[youtube] portada actualizada: {meta['youtube']['studio']}")
 
 
 def main():
@@ -194,10 +216,12 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("generar").add_argument("proyecto")
     sub.add_parser("autorizar")
+    sub.add_parser("miniatura").add_argument("proyecto")
     s = sub.add_parser("subir"); s.add_argument("proyecto"); s.add_argument("--titulo", type=int, choices=[0, 1, 2]); s.add_argument("--force", action="store_true")
     a = ap.parse_args()
     if a.cmd == "generar": generar(a.proyecto)
     elif a.cmd == "autorizar": youtube_api(); print(f"[youtube] autorizado, token en {TOKEN}")
+    elif a.cmd == "miniatura": miniatura(a.proyecto)
     else: subir(a.proyecto, a.titulo, a.force)
 
 

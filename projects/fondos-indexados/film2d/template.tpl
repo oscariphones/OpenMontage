@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- ENGINE_V2 -->
+<!-- ENGINE_V2 LAYOUT_2 -->
 <html lang="es" data-resolution="landscape">
   <head>
     <meta charset="UTF-8" />
@@ -9,6 +9,7 @@
     <script src="ink-pose.js"></script>
     <script src="ink-grid.js"></script>
     <script src="sent.js"></script>
+    <script src="ilus.js"></script>
     <script src="kitshim.js"></script>
     <script src="props.js"></script>
     <script src="widgets.js"></script>

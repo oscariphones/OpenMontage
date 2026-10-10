@@ -15,8 +15,8 @@
  * v2.0 "premium finance":
  *   InkGrid.techGrid(host, tl, dur, {beats})   -> dark tech-grid backdrop with endless procedural drift (deterministic)
  *   InkGrid.captions(tl, words, capsEl)        -> kinetic subtitles: pages glide up with inertia, keywords pop elastically and glow green/orange
- *   InkGrid.camera(tl, el, t0, t1)             -> slow digital push-in (100 % -> <=105 %) so no shot is ever fully static
- *   InkGrid.inertia(tl, el, t) / draw(tl, svg, t) -> text glides up + fades in; line icons draw their strokes, then fill
+ *   InkGrid.inertia(tl, el, t)                 -> text glides up + fades in with an inertial ease
+ *   Layout 2.0: .ig-win floating windows (rounded, dark translucent, heavy shadow) group each graphic cell; .ig-ill = 2D illustration
  *   Procedural GSAP eases (registered once): ink.spring, ink.springHard, ink.snap, ink.glide
  */
 (function (root) {
@@ -55,6 +55,16 @@
     ".tg-orb.g{left:-200px;top:-260px;background:radial-gradient(circle,rgba(61,220,151,.16) 0%,rgba(61,220,151,0) 66%)}",
     ".tg-orb.o{right:-260px;bottom:-320px;background:radial-gradient(circle,rgba(255,138,31,.13) 0%,rgba(255,138,31,0) 66%)}",
     ".tg-vig{background:radial-gradient(ellipse at 50% 45%,rgba(0,0,0,0) 45%,rgba(0,0,0,.6) 100%)}",
+    /* Layout 2.0: floating windows. No backdrop-filter/CSS filter (expensive per frame); depth comes from layered box-shadows */
+    ".ig-win{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;padding:62px 48px 42px;max-width:100%;",
+    "  border-radius:26px;background:rgba(15,21,30,.80);border:1px solid rgba(234,238,243,.10);opacity:0;",
+    "  box-shadow:0 46px 100px rgba(0,0,0,.70),0 14px 30px rgba(0,0,0,.50),inset 0 1px 0 rgba(255,255,255,.07)}",
+    ".ig-win-bar{position:absolute;left:0;right:0;top:0;height:42px;display:flex;align-items:center;gap:9px;padding:0 22px;border-bottom:1px solid rgba(234,238,243,.07);",
+    "  font-size:24px;color:var(--grey);white-space:nowrap;overflow:hidden}",
+    ".ig-win-bar i{flex:0 0 12px;height:12px;border-radius:50%;background:#3a4452}.ig-win-bar i:nth-child(1){background:rgba(255,90,95,.75)}",
+    ".ig-win-bar i:nth-child(2){background:rgba(255,138,31,.75)}.ig-win-bar i:nth-child(3){background:rgba(61,220,151,.75)}.ig-win-bar span{margin-left:12px}",
+    ".ig-win>.ig-row+.ig-row{margin-top:24px}",   /* margin, not gap: a collapsed row must take no space while the window grows */
+    ".ig-ill img{display:block;width:100%;height:100%;object-fit:contain}",
     ".ig-debug .ig-cell{outline:2px dashed #3a4a63}.ig-debug .ig-caps{outline:2px dashed #63503a}"
   ].join("\n");
 
@@ -90,32 +100,6 @@
   function inertia(tl, el, t, o) {
     o = o || {};
     tl.fromTo(el, { opacity: 0, y: o.y != null ? o.y : 38 }, { opacity: 1, y: 0, duration: o.dur || 0.7, ease: E("ink.inertia", "power4.out"), immediateRender: false }, t);
-  }
-  // line icon draws itself: every stroke unrolls (dashoffset), fills fade in behind, plus a light scale pop of the whole icon
-  function draw(tl, wrap, t, o) {
-    o = o || {}; var dur = o.dur || 0.75;
-    tl.fromTo(wrap, { opacity: 0, scale: 0.9, transformOrigin: "50% 60%" }, { opacity: 1, scale: 1, duration: 0.5, ease: E("ink.spring", "back.out(1.7)"), immediateRender: false }, t);
-    Array.prototype.slice.call(wrap.querySelectorAll("path,line,polyline,polygon,rect,circle,ellipse")).forEach(function (n) {
-      if (n.closest(".ig-ov") || n.getAttribute("stroke-dasharray")) return;           // overlays and dashed props keep their own look
-      var st = n.getAttribute("stroke"), len = 0;
-      if (st && st !== "none" && n.getTotalLength) { try { len = n.getTotalLength(); } catch (e) { len = 0; } }
-      if (len > 1) {
-        n.setAttribute("stroke-dasharray", len.toFixed(1) + " " + (len + 2).toFixed(1));
-        tl.fromTo(n, { attr: { "stroke-dashoffset": len + 1 } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: E("ink.glide", "power2.inOut"), immediateRender: false }, t);
-        tl.set(n, { attr: { "stroke-dasharray": "none" } }, t + dur + 0.02);          // back to a plain stroke once drawn
-      }
-      var f = n.getAttribute("fill");
-      if (f && f !== "none") {
-        var fo = parseFloat(n.getAttribute("fill-opacity") || "1");
-        tl.fromTo(n, { attr: { "fill-opacity": 0 } }, { attr: { "fill-opacity": fo }, duration: dur * 0.6, ease: "power2.out", immediateRender: false }, t + dur * 0.35);
-      }
-    });
-  }
-  // digital camera: very slow, linear push-in on a scene; rate-limited so short scenes do not zoom fast.
-  // force3D:false keeps text/SVG crisp and avoids a GPU layer per scene (keeps render memory flat).
-  function camera(tl, el, t0, t1, o) {
-    o = o || {}; var d = Math.max(t1 - t0, 0.1), z = o.max || Math.min(1.05, 1 + 0.006 * d);
-    tl.fromTo(el, { scale: 1, transformOrigin: o.origin || "50% 46%" }, { scale: z, duration: d, ease: "none", force3D: false, immediateRender: false }, t0);
   }
   function hide(tl, el, t, d) { tl.to(el, { opacity: 0, duration: d || 0.35, ease: E("ink.glide", "power2.out") }, t); }
 
@@ -203,5 +187,5 @@
     });
     return out;
   }
-  root.InkGrid = { css: css, chip: chip, pop: pop, slide: slide, inertia: inertia, draw: draw, camera: camera, hide: hide, audit: audit, techGrid: techGrid, captions: captions, keyKind: keyKind, ease: E };
+  root.InkGrid = { css: css, chip: chip, pop: pop, slide: slide, inertia: inertia, hide: hide, audit: audit, techGrid: techGrid, captions: captions, keyKind: keyKind, ease: E };
 })(window);

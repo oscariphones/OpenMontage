@@ -6,7 +6,7 @@ Hace de forma desatendida todo lo mecanico, a partir de un proyecto que ya tiene
     projects/<proyecto>/film2d/spec.js  plano de escenas (lo disena Claude: ver REGLAS_VIDEO.md)
 
 Etapas (cada una se salta si su resultado ya existe; --force las repite):
-  1 plantilla  copia motor/voz/audit desde projects/fondos-indexados si el proyecto no los tiene (y sube el motor a la v2.0 si es viejo)
+  1 plantilla  copia motor/voz/audit desde projects/fondos-indexados si el proyecto no los tiene (y sube motor, plantilla, build y auditoria a Layout 2.0 si son viejos)
   2 voz        scripts/voice.py: clon Chatterbox de referencia_voz.wav.wav (voz oficial, sin rubberband) -> assets/audio/narration_raw.wav + timeline.json
   3 build      compone las partes HyperFrames (f1..fN)
   4 auditoria  recorre la linea de tiempo y exige 0 solapes / 0 elementos fuera de su celda
@@ -140,13 +140,14 @@ def main():
                                  "import subprocess, sys", "from pathlib import Path", "P = Path(__file__).resolve().parent",
                                  f'sys.exit(subprocess.call([sys.executable, str(P.parents[1] / "scripts/voice.py"), P.name, str(P / "{guiones[0].name}")]))', ""]), encoding="utf-8")
 
-    # Motor 2.1 "premium finance" (fondo tech-grid, subtitulos cineticos, easing procedural GSAP; 2.1 = motion graphics sutiles): los proyectos con motor viejo se actualizan
-    # desde la plantilla (engine.js + template.tpl); ink-grid.js / ink-pose.js los copia film2d/build.py desde ink-theater/ en cada build.
+    # Motor 2.2 "Layout 2.0" (fondo tech-grid, subtitulos cineticos, texto inercial, glow; ilustraciones 2D de assets/ilustraciones/, ventanas
+    # flotantes y camara UI que salta entre ventanas): los proyectos con motor viejo se actualizan desde la plantilla por marca de version.
+    # ink-grid.js / ink-pose.js los copia film2d/build.py desde ink-theater/ en cada build.
     if P != PLANTILLA:
-        for f, marca in (("engine.js", "Film engine V2.1"), ("template.tpl", "ENGINE_V2")):
-            dst = P / "film2d" / f
+        for f, marca in (("film2d/engine.js", "Film engine V2.2"), ("film2d/template.tpl", "LAYOUT_2"), ("film2d/build.py", "ILUS_V1"), ("hyperframes/audit_dyn.cjs", "AUDIT_V2")):
+            dst = P / f
             if marca not in dst.read_text(encoding="utf-8"):
-                print(f"  motor 2.0: actualizo film2d/{f}"); shutil.copy(PLANTILLA / "film2d" / f, dst)
+                print(f"  layout 2.0: actualizo {f}"); shutil.copy(PLANTILLA / f, dst)
 
     if a.prueba_audio:
         print(f"[prueba de audio] primeros {a.prueba_audio:.0f} s")

@@ -1,5 +1,6 @@
 // Dynamic layout audit: seeks the GSAP timeline every STEP seconds and checks the REAL visible geometry.
 // Reports overlaps between visible items (union of their drawn shapes / chip box) and items leaving their cell.
+// AUDIT_V2 (Layout 2.0): also measures 2D illustrations (<img>) and fails if spec.js asks for an illustration that is not in the library.
 // Usage: node audit_dyn.cjs <dir> [step=0.4]
 const path = require("path");
 const puppeteer = require("C:/Users/oslem/AppData/Local/npm-cache/_npx/702923228c2ce1e6/node_modules/puppeteer-core");
@@ -15,7 +16,7 @@ const EXE = "C:/Users/oslem/.cache/hyperframes/chrome/chrome-headless-shell/win6
     const tl = window.__timelines.main, dur = tl.duration(), out = { dur, samples: 0, issues: [] };
     const vis = (e) => { for (let n = e; n && n.nodeType === 1; n = n.parentElement) { const cs = getComputedStyle(n); if (cs.display === "none" || cs.visibility === "hidden" || parseFloat(cs.opacity) < 0.35) return false; } return true; };
     const unionOf = (wrap) => {
-      const leaves = [...wrap.querySelectorAll("svg:not(.ig-ov) path, svg:not(.ig-ov) circle, svg:not(.ig-ov) rect, svg:not(.ig-ov) ellipse, svg:not(.ig-ov) text")].filter((l) => { const sw = parseFloat(getComputedStyle(l).strokeWidth) || 0; return vis(l); });
+      const leaves = [...wrap.querySelectorAll("svg:not(.ig-ov) path, svg:not(.ig-ov) circle, svg:not(.ig-ov) rect, svg:not(.ig-ov) ellipse, svg:not(.ig-ov) text, img")].filter((l) => { const sw = parseFloat(getComputedStyle(l).strokeWidth) || 0; return vis(l); });
       if (!leaves.length) return null; let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
       leaves.forEach((l) => { const r = l.getBoundingClientRect(); if (r.width * r.height === 0 && r.width + r.height === 0) return; x0 = Math.min(x0, r.left); y0 = Math.min(y0, r.top); x1 = Math.max(x1, r.right); y1 = Math.max(y1, r.bottom); });
       return x1 > x0 ? { x0, y0, x1, y1 } : null;
@@ -41,6 +42,7 @@ const EXE = "C:/Users/oslem/.cache/hyperframes/chrome/chrome-headless-shell/win6
         boxes.forEach((o) => { const cell = o.e.closest(".ig-cell"); if (!cell) return; const cr = cell.getBoundingClientRect(); if (o.b.x0 < cr.left - 6 || o.b.x1 > cr.right + 6 || o.b.y0 < cr.top - 6 || o.b.y1 > cr.bottom + 6) out.issues.push({ t: +t.toFixed(2), scene: sc.dataset.id, a: o.name, b: "OUT_OF_CELL" }); });
       });
     }
+    (window.__filmMissing || []).forEach((m) => out.issues.push({ t: 0, scene: "ILUSTRACION", a: m, b: "FALTA en assets/ilustraciones" }));
     return out;
   }, step);
   const byScene = {}; res.issues.forEach((i) => { (byScene[i.scene] = byScene[i.scene] || []).push(i); });
