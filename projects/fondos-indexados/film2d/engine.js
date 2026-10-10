@@ -1,4 +1,5 @@
-/* Film engine V2 (premium finance: tech-grid backdrop, kinetic captions, procedural eases). Turns the declarative SCENES spec into strict CSS-grid scenes + one GSAP timeline.
+/* Film engine V2.1 (premium finance: tech-grid backdrop, kinetic captions, procedural eases; V2.1 = subtle motion graphics:
+ *   slow camera push-in per scene, inertial text, glow on green/orange, icons that draw themselves). Turns the declarative SCENES spec into strict CSS-grid scenes + one GSAP timeline.
  * Scene = grid of cells (character | graphic cell(s)); items are laid out in flow (flex rows), auto-fitted to
  * their cell, and revealed with GSAP (pop / slide / fade). Subtitles live in their own grid row. */
 (function (root) {
@@ -53,10 +54,10 @@
       fitBox(svg, it.pad); sizeSvg(svg, scale);
       if (it.x != null && it.x !== "strike" && it.x !== "stamp") overlay(wrap, "cross", it.x === true ? it.t : it.x);
       if (it.ck != null) overlay(wrap, "check", it.ck);
-      if (it.lbl) { var col = document.createElement("div"); col.className = "ig-stack item-group"; col.style.alignItems = "center"; host.removeChild(wrap); col.appendChild(wrap); var nt = document.createElement("span"); nt.className = "ig-note item " + (it.lk || ""); nt.textContent = it.lbl; col.appendChild(nt); host.appendChild(col); reveal(nt, { t: it.t, fx: "fade" }); reveal(wrap, it); return col; }
-      host.appendChild(wrap); reveal(wrap, it); return wrap;
+      if (it.lbl) { var col = document.createElement("div"); col.className = "ig-stack item-group"; col.style.alignItems = "center"; host.removeChild(wrap); col.appendChild(wrap); var nt = document.createElement("span"); nt.className = "ig-note item " + (it.lk || ""); nt.textContent = it.lbl; col.appendChild(nt); host.appendChild(col); reveal(nt, { t: it.t, fx: "inertia" }); reveal(wrap, it, it.p ? "draw" : "pop"); return col; }
+      host.appendChild(wrap); reveal(wrap, it, it.p ? "draw" : "pop"); return wrap;
     }
-    host.appendChild(wrap); reveal(wrap, it); return wrap;
+    host.appendChild(wrap); reveal(wrap, it, "inertia"); return wrap;      // chips, big text, notes
   }
   function overlay(wrap, kind, t) {
     var o = K.el("svg", { viewBox: "0 0 100 100", preserveAspectRatio: "none" }); o.className.baseVal = "ig-ov";
@@ -65,9 +66,12 @@
     o.style.opacity = 0; wrap.appendChild(o);
     tl.fromTo(o, { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.55, ease: G.ease("ink.springHard", "back.out(2)"), transformOrigin: "50% 50%", immediateRender: false }, T(t));
   }
-  function reveal(node, it) {
-    var t = T(it.t == null ? E.cur.a : it.t), fx = it.fx || "pop";
-    if (fx === "pop") G.pop(tl, node, t, { y: 14 });
+  // default effect by item kind (spec.js can still force any fx): text -> "inertia", line icon -> "draw", widget -> "pop"
+  function reveal(node, it, def) {
+    var t = T(it.t == null ? E.cur.a : it.t), fx = it.fx || def || "pop";
+    if (fx === "inertia") G.inertia(tl, node, t);
+    else if (fx === "draw") G.draw(tl, node, t);
+    else if (fx === "pop") G.pop(tl, node, t, { y: 14 });
     else if (fx === "drop") G.pop(tl, node, t, { y: -50 });
     else if (fx === "rise") G.pop(tl, node, t, { y: 50 });
     else if (fx === "stamp") tl.fromTo(node, { opacity: 0, scale: 1.7, rotation: -8, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, rotation: it.rot == null ? -3 : it.rot, duration: 0.55, ease: G.ease("ink.springHard", "back.out(2)"), immediateRender: false }, t);
@@ -138,6 +142,7 @@
     var audit = G.audit(el); audit.scene = sc.id || sc.a; E.audit.push(audit);
     tl.set(el, { display: "grid", autoAlpha: 0 }, Math.max(0, t0 - 0.05));
     tl.to(el, { autoAlpha: 1, duration: 0.4, ease: G.ease("ink.snap", "power2.out") }, Math.max(0, t0 - 0.05));
+    if (sc.cam !== false) G.camera(tl, el, Math.max(0, t0 - 0.05), t1, { max: typeof sc.cam === "number" ? sc.cam : null });   // sc.cam: false = still shot, 1.03 = custom zoom
     if (!last) { tl.to(el, { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, Math.max(0, t1 - 0.3)); tl.set(el, { display: "none" }, t1 + 0.03); }
     el.style.display = "none";
   };

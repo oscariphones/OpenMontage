@@ -140,10 +140,10 @@ def main():
                                  "import subprocess, sys", "from pathlib import Path", "P = Path(__file__).resolve().parent",
                                  f'sys.exit(subprocess.call([sys.executable, str(P.parents[1] / "scripts/voice.py"), P.name, str(P / "{guiones[0].name}")]))', ""]), encoding="utf-8")
 
-    # Motor 2.0 "premium finance" (fondo tech-grid, subtitulos cineticos, easing procedural GSAP): los proyectos con motor viejo se actualizan
+    # Motor 2.1 "premium finance" (fondo tech-grid, subtitulos cineticos, easing procedural GSAP; 2.1 = motion graphics sutiles): los proyectos con motor viejo se actualizan
     # desde la plantilla (engine.js + template.tpl); ink-grid.js / ink-pose.js los copia film2d/build.py desde ink-theater/ en cada build.
     if P != PLANTILLA:
-        for f, marca in (("engine.js", "Film engine V2"), ("template.tpl", "ENGINE_V2")):
+        for f, marca in (("engine.js", "Film engine V2.1"), ("template.tpl", "ENGINE_V2")):
             dst = P / "film2d" / f
             if marca not in dst.read_text(encoding="utf-8"):
                 print(f"  motor 2.0: actualizo film2d/{f}"); shutil.copy(PLANTILLA / "film2d" / f, dst)

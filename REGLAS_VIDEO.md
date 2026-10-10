@@ -31,6 +31,7 @@ Flujo exacto del video `fondos-indexados`. Cuando el usuario pida un video nuevo
 - Muñeco 2D de poses fijas + cuadrícula CSS (celda del personaje / celda de gráficos / subtítulos anclados abajo). **Sin coordenadas**: solo `sc(a, b, "cg", poses, filas)`.
 - Una escena por idea (≈1 por 1-3 frases), tiempos reales `S(k)` de las frases. Elementos: `p` props, `w` widgets, `c` chips, `big` texto grande, `sy` símbolos.
 - Chips cortos, 1-3 por fila, máximo ~4 filas. Sin mocap, sin movimiento continuo extraño.
+- **Motion graphics sutiles (motor V2.1, automáticos):** cada escena hace un zoom digital lento y lineal (100 % → hasta 105 %, máx. 0.6 %/s; `cam: false` en la escena la deja fija, `cam: 1.03` fija otro zoom). Textos (`big`, chips, notas) y páginas de subtítulos entran deslizándose desde abajo con fade e inercia (`fx: "inertia"`); los iconos (`p`: casa, reloj, tarjeta…) se dibujan trazo a trazo (`fx: "draw"`); los widgets mantienen el `pop`. Lo verde y naranja lleva glow (text-shadow/box-shadow, sin `filter` CSS para no subir el costo de render). Cualquier `fx` explícito en `spec.js` manda sobre el efecto por defecto.
 
 ## 4. Verificación (obligatoria antes de renderizar)
 - `node audit_dyn.cjs fN 0.4` debe dar **0 issues** (sin solapes ni elementos fuera de celda).
