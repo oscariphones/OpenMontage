@@ -64,6 +64,7 @@
     ".ig-win-bar i{flex:0 0 12px;height:12px;border-radius:50%;background:#3a4452}.ig-win-bar i:nth-child(1){background:rgba(255,90,95,.75)}",
     ".ig-win-bar i:nth-child(2){background:rgba(255,138,31,.75)}.ig-win-bar i:nth-child(3){background:rgba(61,220,151,.75)}.ig-win-bar span{margin-left:12px}",
     ".ig-win>.ig-row+.ig-row{margin-top:24px}",   /* margin, not gap: a collapsed row must take no space while the window grows */
+    "svg.flat{filter:none}",   /* flat widgets (FLAT_V1) keep clean edges: no hand-drawn ink boil */
     ".ig-ill img{display:block;width:100%;height:100%;object-fit:contain}",
     ".ig-debug .ig-cell{outline:2px dashed #3a4a63}.ig-debug .ig-caps{outline:2px dashed #63503a}"
   ].join("\n");

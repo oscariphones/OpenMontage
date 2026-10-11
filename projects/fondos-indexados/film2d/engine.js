@@ -183,18 +183,20 @@
   // ---------- responsive window: rows that arrive later start collapsed; the window grows (height + width) just before each row ----------
   var GROW = { lead: 0.42, dur: 0.38, gap: 24 };
   function grow(w, tWin) {
-    var pad = w.el.offsetWidth - Math.max.apply(null, w.rows.map(function (r) { return r.el.offsetWidth; })), minW = 300;
-    var rows = w.rows.map(function (r, i) { return { el: r.el, h: r.el.offsetHeight, w: r.el.offsetWidth, t: Math.max(T(r.t) - GROW.lead, tWin), gap: i ? GROW.gap : 0 }; });
+    // fractional sizes + 2 px slack: an integer-rounded width can be 0.x px short and wrap a row of two illustrations
+    var bw = function (e) { return e.getBoundingClientRect().width; }, bh = function (e) { return e.getBoundingClientRect().height; };
+    var fullW = Math.ceil(bw(w.el)) + 2, pad = fullW - Math.max.apply(null, w.rows.map(function (r) { return bw(r.el); })), minW = 300;
+    var rows = w.rows.map(function (r, i) { return { el: r.el, h: Math.ceil(bh(r.el)), w: bw(r.el), t: Math.max(T(r.t) - GROW.lead, tWin), gap: i ? GROW.gap : 0 }; });
     rows.sort(function (a, b) { return a.t - b.t; });
     var now = rows.filter(function (r) { return r.t <= tWin + 0.05; }), wide = function (list) { return Math.max(minW, Math.max.apply(null, list.map(function (r) { return r.w; }).concat([0])) + pad); };
-    var curW = wide(now), fullW = w.el.offsetWidth;
+    var curW = Math.min(fullW, wide(now));
     if (now.length === rows.length) return;                      // everything is there from the start: nothing to grow
     w.el.style.width = curW.toFixed(1) + "px"; w.el.style.overflow = "hidden";
     rows.forEach(function (r) {
       if (r.t <= tWin + 0.05) return;
       gsap.set(r.el, { height: 0, marginTop: 0, overflow: "hidden" });
       tl.fromTo(r.el, { height: 0, marginTop: 0 }, { height: r.h, marginTop: r.gap, duration: GROW.dur, ease: "power3.inOut", immediateRender: false }, r.t);
-      tl.set(r.el, { overflow: "visible" }, r.t + GROW.dur + 0.01);   // glows / pop overshoot are not clipped once the row is open
+      tl.set(r.el, { overflow: "visible", height: "auto" }, r.t + GROW.dur + 0.01);   // open row: natural height, glows / pop overshoot not clipped
       now.push(r); var nw = Math.min(fullW, wide(now));
       if (nw > curW + 1) { tl.fromTo(w.el, { width: curW }, { width: nw, duration: GROW.dur, ease: "power3.inOut", immediateRender: false }, r.t); curW = nw; }
     });

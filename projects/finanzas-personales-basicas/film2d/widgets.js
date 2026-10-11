@@ -1,6 +1,8 @@
 /* Widgets: each draws a self-contained graphic into its own <svg> (auto-fitted to its bbox by the engine)
  * and may add its own GSAP animation through X = { tl, T(oldTime)->local, C }.
- * Nothing here knows about screen coordinates: the CSS grid places the finished svg. */
+ * Nothing here knows about screen coordinates: the CSS grid places the finished svg.
+ * FLAT_V1: jar, bars, calstack and sym check are drawn flat (fills, gradients, soft shadows; svg.flat = no ink boil) to match the
+ * 2D illustration library and the floating windows of Layout 2.0. Their animations are unchanged. */
 (function (root) {
   "use strict";
   var K = root.KIT, C = K.C, P = root.PROPS, W = {};
@@ -12,12 +14,42 @@
   function hide(X, node, t, d) { X.tl.to(node, { opacity: 0, duration: d || 0.35, ease: "power2.out" }, X.T(t)); }
   function hidden(n) { n.setAttribute("opacity", 0); return n; }
 
+  // ---------- flat style kit (FLAT_V1): brand palette, unique gradient ids, soft drop shadow ----------
+  var FL = { white: "#f4f6f9", light: "#dfe4ea", mid: "#c9d1db", grey: "#9aa4b2", dark: "#7d8797", deep: "#5b6574",
+             green: "#3ddc97", greenHi: "#5ce8aa", greenLo: "#22b277", orange: "#ff8a1f", orangeHi: "#ffab57", orangeLo: "#e06d0a", cold: "#7fc8ff", coldLo: "#4b9fdc" };
+  var UID = 0;
+  function flat(svg) { svg.classList.add("flat"); return svg; }
+  function grad(svg, top, bot, horiz) {
+    var defs = svg.querySelector("defs") || el("defs", {}, svg), id = "fl" + (++UID) + "_" + Math.random().toString(36).slice(2, 6);
+    var g = el("linearGradient", { id: id, x1: 0, y1: 0, x2: horiz ? 1 : 0, y2: horiz ? 0 : 1 }, defs);
+    el("stop", { offset: 0, "stop-color": top }, g); el("stop", { offset: 1, "stop-color": bot }, g); return "url(#" + id + ")";
+  }
+  function shade(c) { return { "#3ddc97": [FL.greenHi, FL.greenLo], "#ff8a1f": [FL.orangeHi, FL.orangeLo], "#7fc8ff": ["#a8dbff", FL.coldLo], "#7d8797": [FL.grey, FL.deep] }[c] || [FL.mid, FL.dark]; }
+
   // ---------- money ----------
   W.jar = function (svg, it, X) {
-    var w = it.jw || 200, h = it.jh || 300, g = P.jar(svg, w / 2 + 20, h + 10, 1, w, h), liq = g._liq, v0 = it.v0 || 0;
-    liq.setAttribute("y", -h * v0); liq.setAttribute("height", h * v0);
-    (it.lv || []).forEach(function (c) { X.tl.to(liq, { attr: { y: -h * c[1], height: h * c[1] }, duration: c[2] || 0.8, ease: "power2.inOut" }, X.T(c[0])); });
-    (it.marks || []).forEach(function (m) { L(svg, [[20 - 14, 10 + h - h * m], [20 + 24, 10 + h - h * m]], { c: C.grey, w: 4 }); });
+    flat(svg);
+    var w = it.jw || 200, h = it.jh || 300, x0 = 20, yT = 44, yB = h + 10, rx = 34, inner = yB - yT - 16, v0 = it.v0 || 0;
+    var id = "jc" + (++UID) + "_" + Math.random().toString(36).slice(2, 6), defs = el("defs", {}, svg);
+    var cp = el("clipPath", { id: id }, defs); el("rect", { x: x0 + 7, y: yT + 8, width: w - 14, height: yB - yT - 15, rx: rx - 7 }, cp);
+    el("ellipse", { cx: x0 + w / 2, cy: yB + 12, rx: w * 0.55, ry: 10, fill: "#000", opacity: 0.32 }, svg);
+    el("rect", { x: x0, y: yT, width: w, height: yB - yT, rx: rx, fill: "#dfe8f2", opacity: 0.13 }, svg);
+    // liquid ends exactly at the jar bottom (its full box counts for the engine's auto-fit even though it is clipped)
+    var liq = el("g", { "clip-path": "url(#" + id + ")" }, svg), lv = function (v) { return yB - 8 - inner * v; }, lh = function (v) { return yB - lv(v); };
+    var body = el("rect", { x: x0, y: lv(v0), width: w, height: lh(v0), fill: grad(svg, FL.greenHi, FL.greenLo) }, liq);
+    var top = el("rect", { x: x0, y: lv(v0) - 2, width: w, height: 12, fill: "#8ff2c4", opacity: 0.8 }, liq);
+    for (var i = 0; i < 5; i++) el("circle", { cx: x0 + 40 + i * 32, cy: yB - 30 - (i % 2) * 22, r: 7 + (i % 3) * 2, fill: "#fff", opacity: 0.18 }, liq);
+    (it.lv || []).forEach(function (c) {
+      X.tl.to(body, { attr: { y: lv(c[1]), height: lh(c[1]) }, duration: c[2] || 0.8, ease: "power2.inOut" }, X.T(c[0]));
+      X.tl.to(top, { attr: { y: lv(c[1]) - 2 }, duration: c[2] || 0.8, ease: "power2.inOut" }, X.T(c[0]));
+    });
+    el("rect", { x: x0, y: yT, width: w, height: yB - yT, rx: rx, fill: "none", stroke: "#eaf2fb", "stroke-width": 6, opacity: 0.6 }, svg);
+    el("rect", { x: x0 + 22, y: yT + 34, width: 16, height: (yB - yT) * 0.6, rx: 8, fill: "#fff", opacity: 0.32 }, svg);
+    el("rect", { x: x0 + 26, y: yT - 18, width: w - 52, height: 24, rx: 8, fill: FL.mid }, svg);
+    el("rect", { x: x0 + 14, y: yT - 44, width: w - 28, height: 32, rx: 12, fill: grad(svg, FL.orangeHi, FL.orangeLo) }, svg);
+    el("rect", { x: x0 + 14, y: yT - 44, width: w - 28, height: 10, rx: 5, fill: "#fff", opacity: 0.22 }, svg);
+    el("rect", { x: x0 + w / 2 - 22, y: yT - 58, width: 44, height: 18, rx: 7, fill: FL.orangeLo }, svg);
+    (it.marks || []).forEach(function (m) { el("rect", { x: x0 + w - 44, y: lv(m) - 3, width: 30, height: 6, rx: 3, fill: "#fff", opacity: 0.55 }, svg); });
   };
   W.leakjar = function (svg, it, X) {   // jar with a red hole, a magnifier and finite drips
     var w = 200, h = 300, g = P.jar(svg, w / 2 + 30, h + 10, 1, w, h), liq = g._liq;
@@ -51,11 +83,21 @@
       X.tl.to(liq, { attr: { y: -(h + 20) * (0.1 + (j + 1) * 0.13), height: (h + 20) * (0.1 + (j + 1) * 0.13) }, duration: 0.5 }, t0 + 1.4);
     }
   };
-  W.bars = function (svg, it, X) {       // simple bar chart: it.h = heights, it.cols = colors
-    var hs = it.hs || [90, 210], base = 300, i;
-    L(svg, [[0, base], [it.hs.length * 150, base]], { c: C.grey, w: 4 });
-    hs.forEach(function (h, k) { var b = el("rect", { x: 20 + k * 150, y: base - h, width: 100, height: h, rx: 6, fill: (it.cols || [])[k] || C.faint, stroke: C.ink, "stroke-width": 4, opacity: 0 }, svg); X.tl.fromTo(b, { opacity: 0, scaleY: 0.1, transformOrigin: "50% 100%" }, { opacity: 1, scaleY: 1, duration: 0.6, ease: "back.out(1.4)", transformOrigin: "50% 100%", immediateRender: false }, X.T(it.t + k * 0.3)); });
-    if (it.inc) { var k2 = hs.length - 1, ih = it.inc, b2 = el("rect", { x: 20 + k2 * 150, y: base - hs[k2], width: 100, height: ih, rx: 6, fill: C.orange, stroke: C.ink, "stroke-width": 4, opacity: 0 }, svg); pop(X, b2, it.incT || it.t + 1.2); }
+  W.bars = function (svg, it, X) {       // bar chart: it.hs = heights, it.cols = colors (flat style, bars grow one by one)
+    flat(svg);
+    var hs = it.hs || [90, 210], base = 300, n = hs.length, span = n * 150;
+    for (var g = 1; g <= 3; g++) el("rect", { x: 0, y: base - g * 70, width: span, height: 3, rx: 1.5, fill: FL.grey, opacity: 0.18 }, svg);
+    el("ellipse", { cx: span / 2, cy: base + 18, rx: span * 0.52, ry: 9, fill: "#000", opacity: 0.3 }, svg);
+    hs.forEach(function (h, k) {
+      var c = (it.cols || [])[k] || FL.grey, sh = shade(c), x = 20 + k * 150;
+      var b = el("g", { opacity: 0 }, svg);
+      el("rect", { x: x, y: base - h, width: 100, height: h, rx: 12, fill: grad(svg, sh[0], sh[1]) }, b);
+      el("rect", { x: x + 62, y: base - h, width: 38, height: h, rx: 12, fill: "#000", opacity: 0.12 }, b);
+      el("rect", { x: x + 12, y: base - h + 10, width: 14, height: Math.max(0, h - 26), rx: 7, fill: "#fff", opacity: 0.25 }, b);
+      X.tl.fromTo(b, { opacity: 0, scaleY: 0.1, transformOrigin: "50% 100%" }, { opacity: 1, scaleY: 1, duration: 0.6, ease: "back.out(1.4)", transformOrigin: "50% 100%", immediateRender: false }, X.T(it.t + k * 0.3));
+    });
+    el("rect", { x: -6, y: base - 2, width: span + 12, height: 10, rx: 5, fill: FL.dark }, svg);
+    if (it.inc) { var k2 = n - 1, ih = it.inc, b2 = el("rect", { x: 20 + k2 * 150, y: base - hs[k2], width: 100, height: ih, rx: 12, fill: grad(svg, FL.orangeHi, FL.orangeLo), opacity: 0 }, svg); pop(X, b2, it.incT || it.t + 1.2); }
   };
   W.coin = function (svg, it, X) { O(svg, 30, 30, 28, { fill: C.orange, c: C.orange, w: 3 }); TX(svg, 30, 44, "$", 40, C.paper); };
   W.bag = function (svg, it, X) { R(svg, 0, 40, 220, 150, {}); L(svg, [[70, 40], [70, 8], [150, 8], [150, 40]], { w: 7 }); };
@@ -109,7 +151,17 @@
   W.hill = function (svg, it, X) { var h = L(svg, [[0, 20], [300, 160], [640, 300]], { w: 5 }); var big = O(svg, 560, 200, 80, {}), sm = O(svg, 40, -8, 26, {}); big.setAttribute("opacity", 0); sm.setAttribute("opacity", 0); fade(X, big, it.t); fade(X, sm, it.t + 0.4); X.tl.to(big, { rotation: 360, svgOrigin: "560 200", duration: 5, ease: "none" }, X.T(it.t + 0.6)); var tr = L(svg, [[520, 190], [590, 170]], { w: 4 }); tr.setAttribute("opacity", 0); fade(X, tr, it.t + 0.8); };
   W.snowball = function (svg, it, X) { L(svg, [[0, 200], [440, 200]], { c: C.grey, w: 4 }); var b = O(svg, 40, 170, 26, {}); b.setAttribute("opacity", 0); fade(X, b, it.t); X.tl.to(b, { attr: { r: 90, cx: 340, cy: 110 }, duration: Math.max(2, X.T((it.end || it.out) || it.t + 5) - X.T(it.t)), ease: "power1.in" }, X.T(it.t + 0.4)); };
   W.moon = function (svg, it, X) { var g = P.moon(svg, 80, 150, 1.6); for (var i = 0; i < 6; i++) { var s = O(svg, 180 + i * 34, 20 + (i % 3) * 44, 5, { fill: C.ink, c: C.ink, w: 1 }); s.setAttribute("opacity", 0); fade(X, s, it.t + 0.2 + i * 0.2, 0.3); } };
-  W.calstack = function (svg, it, X) { for (var i = 0; i < (it.n || 10); i++) { var c = P.calendar(svg, 50 + (i % 5) * 96, 100 + Math.floor(i / 5) * 120, 0.7); c.setAttribute("opacity", 0); X.tl.fromTo(c, { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out", immediateRender: false }, X.T(it.t + i * 0.45)); } };
+  function flatCal(svg, x, y, i) {        // flat calendar page, top-left at (x, y), 84 x 96
+    var g = el("g", { transform: "translate(" + x + " " + y + ")" }, svg);
+    el("rect", { x: 3, y: 7, width: 84, height: 92, rx: 12, fill: "#000", opacity: 0.25 }, g);
+    el("rect", { x: 0, y: 0, width: 84, height: 92, rx: 12, fill: FL.white }, g);
+    el("rect", { x: 0, y: 0, width: 84, height: 28, rx: 12, fill: grad(svg, FL.orangeHi, FL.orange) }, g);
+    el("rect", { x: 0, y: 16, width: 84, height: 12, fill: FL.orange }, g);
+    el("rect", { x: 18, y: -9, width: 9, height: 20, rx: 4.5, fill: FL.dark }, g); el("rect", { x: 57, y: -9, width: 9, height: 20, rx: 4.5, fill: FL.dark }, g);
+    for (var r = 0; r < 3; r++) for (var c = 0; c < 4; c++) el("rect", { x: 10 + c * 18, y: 38 + r * 17, width: 11, height: 10, rx: 3, fill: (r * 4 + c) === (i * 3 + 2) % 12 ? FL.green : FL.mid }, g);
+    return g;
+  }
+  W.calstack = function (svg, it, X) { flat(svg); for (var i = 0; i < (it.n || 10); i++) { var c = flatCal(svg, 8 + (i % 5) * 100, 20 + Math.floor(i / 5) * 118, i); c.setAttribute("opacity", 0); X.tl.fromTo(c, { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out", immediateRender: false }, X.T(it.t + i * 0.45)); } };
   W.poster = function (svg, it, X) { R(svg, 0, 0, 280, 190, {}); PL(svg, [[140, 40], [156, 84], [204, 88], [166, 118], [180, 164], [140, 138], [100, 164], [114, 118], [76, 88], [124, 84]], { c: C.orange, w: 4 }); };
   W.eye = function (svg, it, X) { PL(svg, [[0, 60], [80, 14], [160, 60], [80, 106]], { w: 5 }); O(svg, 80, 60, 18, { fill: C.ink }); };
   W.chain = function (svg, it, X) { var ls = [0, 1, 2].map(function (i) { return O(svg, 54 + i * 100, 60, 54, { w: 7 }); }); var cr = L(svg, [[104, 20], [124, 60], [104, 100]], { c: C.red, w: 6 }); cr.setAttribute("opacity", 0); fade(X, cr, it.t + 1.4, 0.2); X.tl.to(ls[0], { x: -34, duration: 0.5, ease: "power2.out" }, X.T(it.t + 2.4)); X.tl.to(ls[1], { y: -22, duration: 0.5 }, X.T(it.t + 2.4)); X.tl.to(ls[2], { x: 34, duration: 0.5 }, X.T(it.t + 2.4)); };
@@ -151,7 +203,14 @@
     else if (n === "neq") { L(svg, [[0, 14], [70, 14]], { c: col, w: 9 }); L(svg, [[0, 46], [70, 46]], { c: col, w: 9 }); L(svg, [[50, -4], [20, 64]], { c: col, w: 9 }); }
     else if (n === "plus") { L(svg, [[0, 30], [60, 30]], { c: col, w: 9 }); L(svg, [[30, 0], [30, 60]], { c: col, w: 9 }); }
     else if (n === "cross") { L(svg, [[0, 0], [70, 70]], { c: C.red, w: 10 }); L(svg, [[70, 0], [0, 70]], { c: C.red, w: 10 }); }
-    else if (n === "check") { L(svg, [[0, 40], [28, 70], [80, 0]], { c: C.green, w: 11 }); }
+    else if (n === "check") {       // flat badge (FLAT_V1)
+      flat(svg);
+      el("ellipse", { cx: 46, cy: 98, rx: 34, ry: 6, fill: "#000", opacity: 0.3 }, svg);
+      el("circle", { cx: 46, cy: 50, r: 44, fill: FL.greenLo }, svg);
+      el("circle", { cx: 46, cy: 46, r: 44, fill: grad(svg, FL.greenHi, FL.greenLo) }, svg);
+      el("path", { d: "M24 48 L40 64 L70 30", fill: "none", stroke: "#fff", "stroke-width": 11, "stroke-linecap": "round", "stroke-linejoin": "round" }, svg);
+      el("path", { d: "M18 32 A32 32 0 0 1 40 12", fill: "none", stroke: "#fff", "stroke-width": 6, "stroke-linecap": "round", opacity: 0.4 }, svg);
+    }
     else if (n === "q") { TX(svg, 30, 70, "?", 100, col); }
     else if (n === "dots") { TX(svg, 50, 70, "...", 100, col); }
     else if (n === "snow") { for (var i = 0; i < 4; i++) { var a = i * Math.PI / 4; L(svg, [[40 + Math.cos(a) * 26, 40 + Math.sin(a) * 26], [40 - Math.cos(a) * 26, 40 - Math.sin(a) * 26]], { c: C.cold, w: 5 }); } }
