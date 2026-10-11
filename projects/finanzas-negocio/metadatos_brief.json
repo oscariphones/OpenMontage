@@ -1,0 +1,30 @@
+{
+  "tema": "finanzas básicas para dueños de negocio",
+  "titulos": [
+    "Tu Negocio Vende… Pero Nunca Ves la Ganancia (Por Esto)",
+    "Vendes Mucho y Sigues Sin Dinero: Finanzas de Negocio",
+    "Por Qué Negocios CON Ganancias Quiebran (Nadie Te Lo Dice)"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Vendes todo el mes, trabajas sin parar… y aun así no sabes si tu negocio gana dinero. Con un solo ejemplo (un negocio que vende 500 mil dólares al año) te explico las cuatro capas de las finanzas de un negocio, sin tecnicismos.\n\nEn este video:\n1. Ingresos, utilidad bruta, utilidad de operación y utilidad neta\n2. Por qué la utilidad NO es efectivo (ventas a crédito y capital de trabajo)\n3. Flujo de caja, flujo libre y cuántos meses de vida le quedan a tu negocio\n4. Punto de equilibrio y balance: lo que tu negocio tiene, lo que debe y lo que vale\n\nEmpieza esta semana: calcula tu utilidad, tu flujo libre y tus meses de vida. Cuéntame en los comentarios qué número no conocías y comparte este video con alguien que tenga un negocio.",
+  "hashtags": ["#Emprendimiento", "#FinanzasEmpresariales", "#FlujoDeCaja", "#Negocios", "#EducacionFinanciera"],
+  "etiquetas": [
+    "finanzas para emprendedores", "finanzas de negocio", "flujo de caja", "utilidad bruta", "utilidad neta",
+    "punto de equilibrio", "capital de trabajo", "flujo de caja libre", "balance general", "estado de resultados",
+    "pequeña empresa", "cómo administrar un negocio", "emprendimiento", "educación financiera"
+  ],
+  "capitulos": {
+    "GANCHO": "¿Tu negocio gana dinero?",
+    "VENTAS Y UTILIDAD": "Ingresos vs. utilidad",
+    "UTILIDAD NO ES EFECTIVO": "La utilidad no es efectivo",
+    "FLUJO DE CAJA": "Flujo de caja y meses de vida",
+    "EQUILIBRIO Y BALANCE": "Punto de equilibrio y balance",
+    "CIERRE": "Tu tarea de esta semana"
+  },
+  "miniatura": {
+    "expresion": "confundido y alarmado: ojos muy abiertos, una ceja levantada y la otra fruncida, boca torcida en una mueca de incredulidad",
+    "postura": "sostiene con ambas manos un recibo de caja larguísimo que cae hasta salir de cuadro, mirándolo de reojo, hombros tensos",
+    "objeto": "una caja registradora vieja con el cajón abierto y completamente vacío, con una telaraña pequeña en una esquina",
+    "texto": ["VENDES MUCHO", "Y SIGUES", "SIN DINERO"]
+  }
+}
