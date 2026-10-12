@@ -172,11 +172,11 @@ def plan(b, palabras, dur):
     frase = 8 * b["beat_s"]; ciclo = ["zoom", "shake", "glitch"]
     def golpe_cercano(t):
         c = [k for k in b["kicks"] if abs(k - t) < b["beat_s"] / 2]; return min(c, key=lambda k: abs(k - t)) if c else round(t, 3)
-    pal = []
-    for i, w in enumerate(palabras):
-        t = golpe_cercano(t0 + i * frase)
-        if t < dur - 1.0: pal.append({"t": t, "palabra": w})
-    for i, p in enumerate(pal): p["fin"] = pal[i + 1]["t"] - .05 if i + 1 < len(pal) else dur
+    ultima = max(0, int((dur - 3.5 - t0) // frase))                                   # ultima frase que deja >= 3.5 s al CTA
+    idx = np.round(np.linspace(0, ultima, len(palabras))).astype(int) if len(palabras) > 1 else [0]
+    pal = [{"t": golpe_cercano(t0 + i * frase), "palabra": w} for i, w in zip(idx, palabras)]
+    for i, p in enumerate(pal):                                                         # cada palabra dura una frase; la ultima, hasta el final
+        p["fin"] = min(pal[i + 1]["t"] - .05, p["t"] + frase - .05) if i + 1 < len(pal) else dur
     fx = []
     for j, t in enumerate(b["fuertes"]):
         if t < t0 - .05: fx.append({"t": t, "tipo": ciclo[j % 3], "k": .5})            # antes del drop: efectos suaves
@@ -197,7 +197,7 @@ def texto_img(palabra, ancho_max, alto, cta, precio=None, web=None):
     while sum(medir(f)) > ancho_max * (.78 if cta else 1) and fs > 20:
         fs = int(fs * .92); f = ImageFont.truetype(FUENTE, fs) if FUENTE else f
     anchos = medir(f); asc, desc = f.getmetrics(); pad = int(fs * .32) if cta else 0
-    extra = 0; fs2 = int(fs * .3); f2 = ImageFont.truetype(FUENTE, fs2) if FUENTE else f
+    extra = 0; fs2 = int(fs * .52); f2 = ImageFont.truetype(FUENTE, fs2) if FUENTE else f
     lineas = [x for x in (precio, web) if x] if cta else []
     if lineas: extra = int(len(lineas) * fs2 * 1.25 + fs * .25)
     Wd = int(max(sum(anchos) + 2 * pad, max([f2.getbbox(l)[2] for l in lineas] or [0])) + 40); Hd = asc + desc + 2 * pad + int(fs * .22) + extra + 40
@@ -241,8 +241,8 @@ def etapa_render(a, W, salida_mudo):
     prod = cv2.imread(str(W / "producto.png"), cv2.IMREAD_UNCHANGED)
     prod = cv2.cvtColor(prod, cv2.COLOR_BGRA2RGBA).astype(np.float32)
     ph, pw = prod.shape[:2]
-    base = min(WW * (.82 if vert else .5) / pw, HH * (.52 if vert else .72) / ph)
-    pcx, pcy = WW / 2, HH * (.42 if vert else .5)
+    base = min(WW * (.92 if vert else .5) / pw, HH * (.6 if vert else .72) / ph)
+    pcx, pcy = WW / 2, HH * (.41 if vert else .5)
     # sombra suave bajo el producto
     som = np.zeros((HH, WW), np.float32)
     cv2.ellipse(som, (int(pcx), int(pcy + ph * base / 2)), (int(pw * base * .42), int(ph * base * .04) + 8), 0, 0, 360, 1, -1)
@@ -275,7 +275,7 @@ def etapa_render(a, W, salida_mudo):
         ox, oy = int((BW - WW) * (.15 + .7 * p)), int((BH - HH) * (.6 - .2 * p))
         img = fondo[oy:oy + HH, ox:ox + WW].copy()
         esc, dx, dy, gl, fl = efecto(t)
-        s = base * (1 + .14 * p) * (1 + esc); rot = 1.2 * np.sin(t * .6)
+        s = base * (1 + .10 * p) * (1 + esc); rot = 1.2 * np.sin(t * .6)
         M = cv2.getRotationMatrix2D((pw / 2, ph / 2), rot, s)
         M[0, 2] += pcx - pw / 2 + dx * .6; M[1, 2] += pcy - ph / 2 + dy * .6
         cap = cv2.warpAffine(prod, M, (WW, HH), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(0, 0, 0, 0))
