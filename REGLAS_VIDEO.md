@@ -18,6 +18,7 @@ Flujo exacto del video `fondos-indexados`. Cuando el usuario pida un video nuevo
 
 ## 1. Guion → `projects/<proyecto>/guion_<tema>.txt`
 - Cabecera `FUENTE:` y `FORMATO:`; luego secciones `## NOMBRE` y **una frase por línea** (frases cortas, gancho al inicio, cierre con llamada a la acción). ~3-4 min.
+- **REGLA DE RETENCIÓN (GANCHO 15S):** El guion DEBE arrancar con un gancho ultra-agresivo en los primeros 15 segundos. Cero saludos, cero introducciones, y está estrictamente prohibido usar frases como 'en este video te voy a explicar...'. Empieza directamente clavando el cuchillo en el dolor del espectador o con una afirmación polémica. La primera ventana de título o escena animada DEBE aparecer SÓLO DESPUÉS de que termine este gancho inicial de 15 segundos.
 
 ## 2. Voz (automático) — VOZ OFICIAL Y OBLIGATORIA
 - **Desde 2026-10-09, la única voz permitida en TODOS los proyectos es la clonada con Chatterbox Multilingual (español), generada por `scripts/voice.py` a partir del archivo de referencia `referencia_voz.wav.wav` (raíz del repo; ojo: lleva doble extensión).** Decisión del usuario; no cambiarla sin que lo pida.
