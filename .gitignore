@@ -105,3 +105,6 @@ venv/
 
 # Local Wan / diffusers GPU environment
 .venv-wan/
+
+# Motor cinematografico ZonaChef: cache de trabajo regenerable
+zonachef/trabajo/
