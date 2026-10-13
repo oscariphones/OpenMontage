@@ -8,6 +8,7 @@ Hace de forma desatendida todo lo mecanico, a partir de un proyecto que ya tiene
 Etapas (cada una se salta si su resultado ya existe; --force las repite):
   1 plantilla  copia motor/voz/audit desde projects/fondos-indexados si el proyecto no los tiene (y sube motor, plantilla, build y auditoria a Layout 2.0 si son viejos)
   2 voz        scripts/voice.py: clon Chatterbox de referencia_voz.wav.wav (voz oficial, sin rubberband) -> assets/audio/narration_raw.wav + timeline.json
+  2b efectos   scripts/sfx_sync.py: swish en cada cambio de pose, click en cada vineta, pop en ilustraciones -> assets/audio/sfx.wav
   3 build      compone las partes HyperFrames (f1..fN)
   4 auditoria  recorre la linea de tiempo y exige 0 solapes / 0 elementos fuera de su celda
   5 render     UNA parte a la vez, 1 hilo, pausa entre partes y espera de RAM libre
@@ -98,7 +99,13 @@ def mezclar_audio(AU, mus, total, mix, codec, narracion=None):
     gain = (loudness(voz)[0] - MUSICA_DB_BAJO_VOZ) - loudness(mus)[0]   # sobre la pista completa: igual en prueba y en video final
     print(f"  voz {loudness(voz)[0]:.1f} LUFS, musica {gain:+.1f} dB -> {MUSICA_DB_BAJO_VOZ} dB bajo la voz")
     mezcla = tmp / "mezcla.wav"
-    ff(["-i", str(voz), "-i", str(musica), "-filter_complex", f"[0:a]apad=whole_dur={total:.2f}[v];[1:a]volume={gain:.2f}dB,afade=t=in:d=3,afade=t=out:st={total - 5:.2f}:d=5[m];[v][m]amix=inputs=2:duration=first:normalize=0,atrim=0:{total:.2f}", str(mezcla)])
+    # Fabrica 2.0: efectos (swish/click/pop de scripts/sfx_sync.py) se suman a nivel fijo ANTES de normalizar, asi quedan bajo la voz
+    sfx = AU / "sfx.wav"; con_sfx = sfx.exists() and not narracion
+    ent = ["-i", str(voz), "-i", str(musica)] + (["-i", str(sfx)] if con_sfx else [])
+    sx = f";[2:a]atrim=0:{total:.2f},apad=whole_dur={total:.2f}[s]" if con_sfx else ""
+    ff([*ent, "-filter_complex", f"[0:a]apad=whole_dur={total:.2f}[v];[1:a]volume={gain:.2f}dB,afade=t=in:d=3,afade=t=out:st={total - 5:.2f}:d=5[m]{sx};"
+        f"[v][m]{'[s]' if con_sfx else ''}amix=inputs={3 if con_sfx else 2}:duration=first:normalize=0,atrim=0:{total:.2f}", str(mezcla)])
+    print(f"  efectos de sonido: {'si' if con_sfx else 'no'}")
     # 4) -14 LUFS: ganancia medida + limitador de picos (techo -3.2 dB para que el AAC no pase de -2 dBTP)
     li0 = loudness(mezcla)[0]
     ok = False
@@ -131,7 +138,7 @@ def main():
 
     print("[1] plantilla")
     if P != PLANTILLA:
-        for f in ["hyperframes/audit_dyn.cjs", "hyperframes/chk_items.cjs", "hyperframes/render_film2d.sh"] + [f"film2d/{x}" for x in ["engine.js", "kitshim.js", "widgets.js", "template.tpl", "gsap.min.js", "props.js", "build.py"]]:
+        for f in ["hyperframes/audit_dyn.cjs", "hyperframes/chk_items.cjs", "hyperframes/cam_check.cjs", "hyperframes/render_film2d.sh"] + [f"film2d/{x}" for x in ["engine.js", "kitshim.js", "widgets.js", "template.tpl", "gsap.min.js", "props.js", "build.py"]]:
             if not (P / f).exists():
                 (P / f).parent.mkdir(parents=True, exist_ok=True); shutil.copy(PLANTILLA / f, P / f)
     vw = P / "voice.py"          # voz oficial: envoltorio de scripts/voice.py (clon Chatterbox de referencia_voz.wav.wav); nunca otro sintetizador
@@ -144,7 +151,7 @@ def main():
     # flotantes y camara UI que salta entre ventanas): los proyectos con motor viejo se actualizan desde la plantilla por marca de version.
     # ink-grid.js / ink-pose.js los copia film2d/build.py desde ink-theater/ en cada build.
     if P != PLANTILLA:
-        for f, marca in (("film2d/engine.js", "Film engine V2.2"), ("film2d/template.tpl", "LAYOUT_2"), ("film2d/build.py", "ILUS_V1"), ("hyperframes/audit_dyn.cjs", "AUDIT_V2"), ("film2d/widgets.js", "FLAT_V1")):
+        for f, marca in (("film2d/engine.js", "FABRICA_2"), ("film2d/template.tpl", "LAYOUT_2"), ("film2d/build.py", "ILUS_V1"), ("hyperframes/audit_dyn.cjs", "AUDIT_V2"), ("film2d/widgets.js", "FLAT_V1")):
             dst = P / f
             if marca not in dst.read_text(encoding="utf-8"):
                 print(f"  layout 2.0: actualizo {f}"); shutil.copy(PLANTILLA / f, dst)
@@ -160,6 +167,9 @@ def main():
         run([sys.executable, "voice.py"], cwd=P, env={**__import__("os").environ, "PYTHONIOENCODING": "utf-8"})
     tl = json.load(open(AU / "timeline.json", encoding="utf-8")); print(f"  locucion {tl['duration']:.1f} s")
 
+    print("[2b] efectos de sonido (Fabrica 2.0: swish en poses, click en vinetas)")
+    run([sys.executable, str(REPO / "scripts/sfx_sync.py"), a.proyecto], env={**__import__("os").environ, "PYTHONIOENCODING": "utf-8"})
+
     print("[3] build")
     run([sys.executable, "film2d/build.py"], cwd=P, env={**__import__("os").environ, "PYTHONIOENCODING": "utf-8"})
     partes = sorted(d.name for d in HF.iterdir() if d.is_dir() and d.name[:1] == "f" and d.name[1:].isdigit())
@@ -173,6 +183,10 @@ def main():
         ck = subprocess.run(["node", "chk_items.cjs", d], cwd=HF, capture_output=True, text=True)
         print("  " + ck.stdout.strip().replace(chr(10), chr(10) + "  "))
         if ck.returncode: sys.exit(f"Hay elementos fuera de su escena en {d} (los tiempos de la voz cambiaron): ajusta spec.js.")
+        # Fabrica 2.0: camara dinamica (zoom al Stickman, sin planos fijos > 5 s, ninguna ventana fuera de cuadro)
+        cc = subprocess.run(["node", "cam_check.cjs", d, "0.2"], cwd=HF, capture_output=True, text=True)
+        print("  " + cc.stdout.strip().replace(chr(10), chr(10) + "  "))
+        if cc.returncode: sys.exit(f"Camara con problemas en {d} (ventana fuera de cuadro o plano fijo largo): revisa spec.js / motor.")
 
     if not a.sin_render:
         print("[5] render por partes (1 hilo, una a la vez)")
@@ -191,7 +205,8 @@ def main():
     print("[6] musica y mezcla (voz con presencia, -14 LUFS, true peak <= -2 dB)")
     mus = asegurar_musica(P, a.musica); mix = AU / "final_mix.m4a"
     total = tl["duration"]
-    if a.force or not mix.exists():
+    sfx = AU / "sfx.wav"
+    if a.force or not mix.exists() or (sfx.exists() and sfx.stat().st_mtime > mix.stat().st_mtime):
         mezclar_audio(AU, mus, total, mix, ["-c:a", "aac", "-b:a", "192k"])
     li, tp = loudness(mix)
     print(f"  mezcla final: {li:.1f} LUFS, true peak {tp:+.1f} dBTP")

@@ -8,6 +8,8 @@
 > 4. Solo entonces ejecutar `python fabrica_video.py <proyecto>` para ensamblar (voz, auditoría, render, música, unión).
 > No pedir al usuario que escriba el guion ni las escenas, y no esperar confirmación paso a paso.
 
+> **Fábrica 2.0 (2026-10-12):** la skill `.claude/skills/finanzas-video-factory/` añade fondo 2.5D (paneo lento + desenfoque ligero sin `filter`), cámara dinámica (zoom al Stickman en cada cambio de pose, paneo suave a las ventanas, sin planos fijos de más de ~5 s; **sustituye "sin zoom lento" del punto 3**) y efectos de sonido por código (`scripts/sfx_sync.py`, etapa 2b: swish en poses, click en viñetas). Donde choque con este archivo, manda la skill.
+
 Flujo exacto del video `fondos-indexados`. Cuando el usuario pida un video nuevo a partir de una transcripción (o de "El Cazador"), se ejecuta de principio a fin sin pedir confirmación paso a paso.
 
 ## 0. Fuente

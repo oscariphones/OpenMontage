@@ -12,6 +12,8 @@
  *   InkGrid.hide(tl, el, t)             -> fade out
  *   InkGrid.audit(sceneEl)              -> {items, overlaps:[...], clipped:[...]}  (must be empty)
  *
+ * FABRICA_2: backdrop lines are soft symmetric gradients (fake defocus, no CSS filter) so the grid reads as a blurred far plane
+ *   behind the sharp foreground (character, windows, captions); slow 2-layer parallax drift unchanged.
  * v2.0 "premium finance":
  *   InkGrid.techGrid(host, tl, dur, {beats})   -> dark tech-grid backdrop with endless procedural drift (deterministic)
  *   InkGrid.captions(tl, words, capsEl)        -> kinetic subtitles: pages glide up with inertia, keywords pop elastically and glow green/orange
@@ -48,9 +50,9 @@
     ".ig-key{display:inline-block;margin:0 .16em;transform-origin:50% 80%;will-change:transform}",
     ".ig-tech{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse at 50% 38%,#131c27 0%,#0b0f14 62%,#070a0e 100%)}",
     ".ig-tech .tg{position:absolute;inset:0}",
-    ".tg-far{background-image:linear-gradient(rgba(125,135,151,.075) 1px,transparent 1px),linear-gradient(90deg,rgba(125,135,151,.075) 1px,transparent 1px);background-size:48px 48px}",
-    ".tg-near{background-image:linear-gradient(rgba(61,220,151,.14) 2px,transparent 2px),linear-gradient(90deg,rgba(61,220,151,.14) 2px,transparent 2px);background-size:192px 192px}",
-    ".tg-pulse{opacity:0;background-image:linear-gradient(rgba(61,220,151,.55) 2px,transparent 2px),linear-gradient(90deg,rgba(61,220,151,.55) 2px,transparent 2px);background-size:192px 192px}",
+    ".tg-far{background-image:linear-gradient(180deg,rgba(125,135,151,.05) 0,rgba(125,135,151,0) 3px,rgba(125,135,151,0) calc(100% - 3px),rgba(125,135,151,.05) 100%),linear-gradient(90deg,rgba(125,135,151,.05) 0,rgba(125,135,151,0) 3px,rgba(125,135,151,0) calc(100% - 3px),rgba(125,135,151,.05) 100%);background-size:48px 48px}",
+    ".tg-near{background-image:linear-gradient(180deg,rgba(61,220,151,.10) 0,rgba(61,220,151,0) 4px,rgba(61,220,151,0) calc(100% - 4px),rgba(61,220,151,.10) 100%),linear-gradient(90deg,rgba(61,220,151,.10) 0,rgba(61,220,151,0) 4px,rgba(61,220,151,0) calc(100% - 4px),rgba(61,220,151,.10) 100%);background-size:192px 192px}",
+    ".tg-pulse{opacity:0;background-image:linear-gradient(180deg,rgba(61,220,151,.40) 0,rgba(61,220,151,0) 4px,rgba(61,220,151,0) calc(100% - 4px),rgba(61,220,151,.40) 100%),linear-gradient(90deg,rgba(61,220,151,.40) 0,rgba(61,220,151,0) 4px,rgba(61,220,151,0) calc(100% - 4px),rgba(61,220,151,.40) 100%);background-size:192px 192px}",
     ".tg-orb{position:absolute;width:1000px;height:1000px;border-radius:50%}",
     ".tg-orb.g{left:-200px;top:-260px;background:radial-gradient(circle,rgba(61,220,151,.16) 0%,rgba(61,220,151,0) 66%)}",
     ".tg-orb.o{right:-260px;bottom:-320px;background:radial-gradient(circle,rgba(255,138,31,.13) 0%,rgba(255,138,31,0) 66%)}",

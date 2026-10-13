@@ -1,4 +1,5 @@
-/* Film engine V2.2 "Layout 2.0" (premium finance: tech-grid backdrop, kinetic captions, procedural eases, inertial text, glow on green/orange;
+/* Film engine V2.2 "Layout 2.0" + FABRICA_2 (camera punch-in on the Stickman at each pose change, softer window pans, slow push-in drift
+ *   on holds longer than CAM.holdMax so there are no long static shots; the soft defocused backdrop lives in ink-grid.js). (premium finance: tech-grid backdrop, kinetic captions, procedural eases, inertial text, glow on green/orange;
  *   2.0 = full 2D illustrations from the asset library (window.ILUS, built by film2d/build.py), floating windows that group each graphic cell,
  *   and a UI camera that jumps between windows with aggressive ease-in-out pans/zooms). Turns the declarative SCENES spec into strict CSS-grid scenes + one GSAP timeline.
  * Scene = grid of cells (character | graphic cell(s)); items are laid out in flow (flex rows), auto-fitted to
@@ -6,7 +7,7 @@
 (function (root) {
   "use strict";
   var K = root.KIT, C = K.C, P = root.PROPS, W = root.WIDGETS, G = root.InkGrid;
-  var E = { audit: [], missing: [], shots: [] }, U = 760 / 560;      // px per drawing unit for a life-size prop (scene row height / pose box height)
+  var E = { audit: [], missing: [], shots: [], spots: [] }, U = 760 / 560;      // px per drawing unit for a life-size prop (scene row height / pose box height)
   var tl, an, na, PA, PB, scenesEl;
 
   function mapRaw(a, t) { if (t <= a[0][0]) return a[0][1] - (a[0][0] - t); for (var i = 1; i < a.length; i++) if (t <= a[i][0]) { var p = a[i - 1], q = a[i]; return p[1] + (q[1] - p[1]) * (t - p[0]) / ((q[0] - p[0]) || 1); } var l = a[a.length - 1]; return l[1] + (t - l[0]); }
@@ -111,7 +112,7 @@
     E.cur = sc;
     var el = document.createElement("div"), lay = sc.L || "cg"; el.className = "ig-scene L-" + lay; el.dataset.id = sc.id || (sc.a + ""); scenesEl.appendChild(el);
     var cells = [], hasChar = lay.indexOf("c") >= 0, order = lay.split("");
-    var gIdx = 0, charCell = null, gfxCells = [];
+    var gIdx = 0, charCell = null, gfxCells = [], side = hasChar ? (lay.charAt(0) === "c" ? 1 : -1) : 0;   // side: where the camera drifts (toward the Stickman)
     order.forEach(function (ch) {
       var cell = document.createElement("div");
       if (ch === "c") { cell.className = "ig-cell end char"; charCell = cell; }
@@ -170,10 +171,17 @@
     var audit = G.audit(el); audit.scene = sc.id || sc.a; E.audit.push(audit);   // measured on the final (fully grown) layout
     wins.forEach(function (w) {
       var t = T(w.t); tl.fromTo(w.el, { opacity: 0, y: 46, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out", immediateRender: false }, Math.max(0, t - 0.05));
-      E.shots.push({ t: T(w.shotT), r: rel(w.el) });      // camera frames the FINAL window size, so it never has to re-aim while it grows
+      w.r = rel(w.el); E.shots.push({ t: T(w.shotT), r: w.r, dx: side });   // camera frames the FINAL window size, so it never has to re-aim while it grows
       grow(w, t);
     });
-    if (!wins.length) E.shots.push({ t: T(sc.a), r: null });   // no window: camera goes back to the wide shot
+    var charR = fig ? figBox(svg) : null, nItems = flat(gspec[0]).length + flat(gspec[1]).length;
+    // no window: wide shot, or straight onto the Stickman when the scene is only the character
+    if (!wins.length) E.shots.push(charR && !nItems ? { t: T(sc.a), r: charR, kind: "char" } : { t: T(sc.a), r: null });
+    // FABRICA_2: the camera planner (E.camera) punches in on this Stickman inside static stretches: at a pose change when possible,
+    // otherwise in a gap between bullets on any hold longer than CAM.holdMax. It never covers a bullet landing (text must be readable).
+    if (charR) E.spots.push({ a: T(sc.a), b: T(sc.b), r: charR, dx: side, wins: wins.map(function (w) { return w.r; }),
+      poses: (sc.poses || []).map(function (q) { return T(q[0]); }),
+      items: flat(gspec[0]).concat(flat(gspec[1])).map(function (it) { return T(it.t == null ? sc.a : it.t); }).sort(function (x, y) { return x - y; }) });
     // scene show/hide on the timeline (display toggled so only the active scene costs layout/paint)
     tl.set(el, { display: "grid", autoAlpha: 0 }, Math.max(0, t0 - 0.05));
     tl.to(el, { autoAlpha: 1, duration: 0.4, ease: G.ease("ink.snap", "power2.out") }, Math.max(0, t0 - 0.05));
@@ -205,29 +213,126 @@
   function flat(rows) { var o = []; rows.forEach(function (r) { r.forEach(function (it) { if (it.row || it.col) o = o.concat(flat([it.row || it.col])); else o.push(it); }); }); return o; }
   function rel(el) { var a = el.getBoundingClientRect(), b = scenesEl.getBoundingClientRect(); return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height, W: b.width, H: b.height, top: b.top }; }
 
-  // ---------- UI camera: jumps between floating windows (pan + zoom, aggressive ease-in-out), holds in between ----------
-  var CAM = { zMax: 1.14, fill: 0.84, pull: 0.62, panX: 170, dur: 0.85, ease: "expo.inOut" };
-  function shot(r) {
+  // ---------- UI camera: pans/zooms between floating windows, punches in on the Stickman at pose changes, drifts on long holds ----------
+  // FABRICA_2: softer window moves (power2, 0.95 s), char punch-in (x1.10 over the hold framing, 0.55 s, lands with the pose bounce),
+  // and a slow push-in drift (x1.025 + 8 px toward the Stickman, bottom edge pinned over the subtitles) on any hold longer than holdMax.
+  var CAM = { zMax: 1.14, fill: 0.84, pull: 0.62, panX: 170, dur: 0.95, ease: "power2.inOut",
+              zChar: 1.08, charPull: 0.7, charDur: 0.55, charLead: 0.15, charEase: "power3.inOut", charGap: 0.6, charHold: 1.3,
+              charPunch: [1.10, 1.08, 1.06], charCenter: 0.3, loosePunch: [1.06, 1.04], looseX: 0.25, looseCrop: 0.05,
+              holdMax: 5, drift: 1.025, driftX: 8 };
+  function figBox(svg) {   // drawn area of the pose box (viewBox 360x560, xMidYMax meet) inside its svg
+    var r = rel(svg), k = Math.min(r.w / 360, r.h / 560), w = 360 * k, h = 560 * k;
+    return { x: r.x + (r.w - w) / 2, y: r.y + r.h - h, w: w, h: h, W: r.W, H: r.H, top: r.top };
+  }
+  function shot(r, kind) {
     if (!r) return { x: 0, y: 0, s: 1 };
-    var z = Math.max(1, Math.min(CAM.zMax, Math.min(r.W * CAM.fill / r.w, r.H * CAM.fill / r.h)));
-    var cx = r.x + r.w / 2, cy = r.y + r.h / 2, x = (r.W / 2 - cx) * z * CAM.pull, y = (r.H / 2 - cy) * z * CAM.pull;
+    var ch = kind === "char", z = ch ? CAM.zChar : Math.max(1, Math.min(CAM.zMax, Math.min(r.W * CAM.fill / r.w, r.H * CAM.fill / r.h)));
+    var pull = ch ? CAM.charPull : CAM.pull, cx = r.x + r.w / 2, cy = r.y + r.h * (ch ? 0.38 : 0.5);   // char: aim at head + arms (where the pose reads)
+    var x = (r.W / 2 - cx) * z * pull, y = (r.H / 2 - cy) * z * pull;
     x = Math.max(-CAM.panX, Math.min(CAM.panX, x));
-    // the window must stay fully in frame (20 px margin) and the stage must not slide down over the subtitles
+    // the window (or the Stickman's head) must stay in frame (20 px margin) and the stage must not slide down over the subtitles;
+    // on a char punch-in the feet may leave the frame, a window may not
     var top = r.H / 2 + (r.y - r.H / 2) * z, bot = r.H / 2 + (r.y + r.h - r.H / 2) * z;
-    y = Math.min(y, 0, 12 - (r.H / 2) * (z - 1)); y = Math.max(y, 20 - r.top - top); if (bot + y > r.H + 10) y = r.H + 10 - bot;
+    y = Math.min(y, 0, 12 - (r.H / 2) * (z - 1)); y = Math.max(y, 20 - r.top - top); if (!ch && bot + y > r.H + 10) y = r.H + 10 - bot;
     return { x: Math.round(x), y: Math.round(y), s: +z.toFixed(4) };
   }
+  // punch-in RELATIVE to the hold framing fr: scale x1.10 (or less), the Stickman slides 30 % toward the centre, the bottom edge stays put
+  // (never over the subtitles), and every window of the scene + the Stickman's head stay fully in frame. null if it cannot be done.
+  function charShot(fr, sp) {
+    var r = sp.r, W = r.W, H = r.H, fx = r.x + r.w / 2, hy = r.y + r.h * 0.06, L0 = (1920 - W) / 2;   // stage is centred: frame = [-L0, W + L0]
+    var sx = function (px, s, x) { return W / 2 + (px - W / 2) * s + x; }, sy = function (py, s, y) { return r.top + H / 2 + (py - H / 2) * s + y; };
+    for (var i = 0; i < CAM.charPunch.length; i++) {
+      var s2 = +(fr.s * CAM.charPunch[i]).toFixed(4), y2 = Math.round(fr.y - (H / 2) * (s2 - fr.s));
+      var head = sx(fx, fr.s, fr.x), x2 = head + (W / 2 - head) * CAM.charCenter - W / 2 - (fx - W / 2) * s2, lo = -1e9, hi = 1e9, ok = true;
+      sp.wins.forEach(function (w) {
+        hi = Math.min(hi, W + L0 - 12 - sx(w.x + w.w, s2, 0)); lo = Math.max(lo, 12 - L0 - sx(w.x, s2, 0));
+        if (sy(w.y, s2, y2) < 8) ok = false;
+      });
+      if (!ok || lo > hi) continue;
+      x2 = Math.round(Math.max(lo, Math.min(hi, x2)));
+      var hx = sx(fx, s2, x2);
+      if (hx < 120 - L0 || hx > W + L0 - 120 || sy(hy, s2, y2) < 8) continue;
+      return { x: x2, y: y2, s: s2 };
+    }
+    // reaction shot fallback (window framed tight, Stickman at the edge): head to 25 % of the width; a window may leave the frame
+    // by up to 5 % of its width (its inner padding: text is never cut) for this ~1 s shot; no bullet lands meanwhile
+    for (i = 0; i < CAM.loosePunch.length; i++) {
+      // vertical: lift only as much as the windows' title bars and the head need; the stage may slip a little behind the subtitles
+      // (they are drawn on top) for this short shot
+      s2 = +(fr.s * CAM.loosePunch[i]).toFixed(4); lo = -1e9; hi = 1e9; ok = true;
+      y2 = Math.max(8 - sy(hy, s2, 0), Math.min(fr.y, 12 - (H / 2) * (s2 - 1) + 60));
+      sp.wins.forEach(function (w) { y2 = Math.max(y2, 8 - sy(w.y, s2, 0)); }); y2 = Math.ceil(y2);
+      x2 = 1920 * CAM.looseX - L0 - W / 2 - (fx - W / 2) * s2;
+      sp.wins.forEach(function (w) {
+        var c = CAM.looseCrop * w.w * s2;
+        hi = Math.min(hi, W + L0 - 12 - sx(w.x + w.w, s2, 0) + c); lo = Math.max(lo, 12 - L0 - sx(w.x, s2, 0) - c);
+        if (sy(w.y, s2, y2) < 8) ok = false;
+      });
+      if (!ok || lo > hi) continue;
+      x2 = Math.round(Math.max(lo, Math.min(hi, x2))); hx = sx(fx, s2, x2);
+      if (hx < 120 - L0 || hx > W + L0 - 120 || sy(hy, s2, y2) < 8) continue;
+      return { x: x2, y: y2, s: s2, loose: true };
+    }
+    return null;
+  }
+  // candidate punch-in in [s0, s1]: a pose change if one fits, else (long holds only) a quiet moment between bullets
+  function pickSpot(s0, s1, gaps, fr) {
+    var best = null;
+    E.spots.forEach(function (sp) {
+      if (sp.b <= s0 || sp.a >= s1) return;
+      var cands = sp.poses.map(function (t) { return { t: t, pose: 1 }; });
+      if (gaps) [sp.a].concat(sp.items).forEach(function (t) { cands.push({ t: t + 0.5, pose: 0 }); });
+      cands.forEach(function (c) {
+        var tp = c.t; if (tp < s0 + 0.3 || tp < sp.a + 0.2) return;
+        var nx = sp.items.filter(function (x) { return x > tp - 0.2; })[0];
+        if (nx != null && nx - tp < CAM.charGap + 1.15) return;                          // zoom in + read the pose + return before the bullet
+        var tr = Math.min(tp + CAM.charHold, nx == null ? 1e9 : nx - 0.55, sp.b - 0.6, s1 - 0.55);
+        if (tr - tp < 0.9) return;
+        var score = c.pose ? tp - s0 : 100 + Math.abs(tp - (s0 + 3));                   // poses first (earliest), else ~3 s into the hold
+        if (best && score >= best.score) return;
+        var to = charShot(fr, sp); if (to) best = { tp: tp, tr: tr, to: to, score: score };
+      });
+    });
+    return best;
+  }
   E.camera = function () {
-    var shots = E.shots.slice().sort(function (a, b) { return a.t - b.t; }), prev = { x: 0, y: 0, s: 1 };
+    var shots = E.shots.slice().sort(function (a, b) { return a.t - b.t; }), prev = { x: 0, y: 0, s: 1 }, base = [], moves = [];
+    var H = scenesEl.getBoundingClientRect().height;
     gsap.set(scenesEl, { transformOrigin: "50% 50%", force3D: false });
     shots.forEach(function (sh, i) {
-      var to = shot(sh.r), nxt = shots[i + 1] ? shots[i + 1].t : 1e9;
+      var to = shot(sh.r, sh.kind), nxt = shots[i + 1] ? shots[i + 1].t : 1e9, ch = sh.kind === "char";
       if (Math.abs(to.x - prev.x) < 4 && Math.abs(to.y - prev.y) < 4 && Math.abs(to.s - prev.s) < 0.006) return;   // same framing: hold
-      var d = Math.min(CAM.dur, Math.max(0.3, nxt - sh.t - 0.1)), t0 = Math.max(0, sh.t - d / 2);   // move is centred on the cut
-      if (i === 0 && sh.t < 0.2) { tl.set(scenesEl, { x: to.x, y: to.y, scale: to.s }, 0); prev = to; return; }
-      tl.fromTo(scenesEl, { x: prev.x, y: prev.y, scale: prev.s }, { x: to.x, y: to.y, scale: to.s, duration: d, ease: CAM.ease, force3D: false, immediateRender: false }, t0);
+      var d = Math.min(ch ? CAM.charDur : CAM.dur, Math.max(0.3, nxt - sh.t - 0.1));
+      var t0 = Math.max(0, sh.t - (ch ? Math.min(CAM.charLead, d / 2) : d / 2));   // window move centred on the cut; char move lands just after
+      if (i === 0 && sh.t < 0.2) { base.push({ t0: 0, d: 0, to: to, dx: sh.dx || 0, kind: "set" }); prev = to; return; }
+      base.push({ t0: t0, d: d, to: to, ease: ch ? CAM.charEase : CAM.ease, dx: sh.dx || 0, kind: sh.kind || "win" });
       prev = to;
     });
+    if (!base.length || base[0].t0 > 0) base.unshift({ t0: 0, d: 0, to: { x: 0, y: 0, s: 1 }, dx: 0, kind: "set" });
+    var drift = function (fr, dx, t0, t1) {
+      var s2 = +(fr.s * CAM.drift).toFixed(4);
+      moves.push({ t0: t0, d: t1 - t0, to: { x: fr.x + dx * CAM.driftX, y: Math.round(fr.y - (H / 2) * (s2 - fr.s)), s: s2 }, ease: "sine.inOut", kind: "drift" });
+    };
+    base.forEach(function (m, i) {
+      moves.push(m);
+      var s0 = m.t0 + m.d, s1 = base[i + 1] ? base[i + 1].t0 : E.dur, fr = m.to;
+      for (var guard = 0; guard < 20; guard++) {
+        var c = pickSpot(s0, s1, s1 - s0 > CAM.holdMax, fr); if (!c) break;
+        var t0 = c.tp - CAM.charLead, rd = CAM.dur;
+        if (t0 - s0 > CAM.holdMax) drift(fr, m.dx, s0, t0);
+        moves.push({ t0: t0, d: CAM.charDur, to: c.to, ease: CAM.charEase, kind: "char" });
+        moves.push({ t0: c.tr - rd / 2, d: rd, to: fr, ease: CAM.ease, kind: "back" });   // back to the exact framing of the hold
+        s0 = c.tr + rd / 2;
+      }
+      if (s1 - s0 > CAM.holdMax) drift(fr, m.dx, s0, s1);
+    });
+    var cur = null;
+    moves.forEach(function (m) {
+      if (!m.d) tl.set(scenesEl, { x: m.to.x, y: m.to.y, scale: m.to.s }, m.t0);
+      else tl.fromTo(scenesEl, { x: cur.x, y: cur.y, scale: cur.s }, { x: m.to.x, y: m.to.y, scale: m.to.s, duration: m.d, ease: m.ease, force3D: false, immediateRender: false }, m.t0);
+      cur = m.to;
+    });
+    E.moves = moves;
   };
   E.build = function (SCENES) { SCENES.forEach(E.scene); E.camera(); root.__filmMissing = E.missing; };
 
