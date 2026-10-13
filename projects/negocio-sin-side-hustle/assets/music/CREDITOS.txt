@@ -1,0 +1,12 @@
+{
+ "provider": "pixabay_music",
+ "track_title": "Lo-Fi Chill",
+ "artist": "ZephiraMusic",
+ "duration_seconds": 178,
+ "query": "lo-fi chill instrumental",
+ "output": "C:\\Users\\oslem\\Desktop\\OpenMontage\\projects\\negocio-sin-side-hustle\\assets\\music\\lofi.mp3",
+ "format": "mp3",
+ "license": "Pixabay Content License (free, no attribution required)",
+ "results_found": 20,
+ "results_after_filter": 15
+}

@@ -20,6 +20,7 @@ import { PieChart } from "./components/charts/PieChart";
 import { KPIGrid } from "./components/charts/KPIGrid";
 import { ProgressBar } from "./components/ProgressBar";
 import { CaptionOverlay, WordCaption } from "./components/CaptionOverlay";
+import { KineticText, KineticStyle } from "./components/KineticText";
 import { SectionTitle } from "./components/SectionTitle";
 import { StatReveal } from "./components/StatReveal";
 import { HeroTitle } from "./components/HeroTitle";
@@ -229,6 +230,11 @@ interface Cut {
   progressColor?: string;
   progressAnimation?: string;
   progressSegments?: any[];
+  // Kinetic text props (type: "kinetic_text")
+  kineticStyle?: KineticStyle;
+  emphasis?: string;
+  leftColor?: string;
+  rightColor?: string;
   // Hero title props (when used as scene, not overlay)
   heroSubtitle?: string;
   // Styling overrides
@@ -596,6 +602,19 @@ const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut, theme 
       <TextCard text={cut.text} fontSize={cut.fontSize} color={textColor} backgroundColor={bgColor} />
     );
   }
+  if (cut.type === "kinetic_text" && cut.text) {
+    return maybeWrapWithBg(
+      <KineticText
+        text={cut.text}
+        kineticStyle={cut.kineticStyle}
+        emphasis={cut.emphasis}
+        color={textColor}
+        accentColor={accent}
+        fontSize={cut.fontSize}
+        fontFamily={theme.headingFont}
+      />
+    );
+  }
   if (cut.type === "stat_card" && cut.stat) {
     return maybeWrapWithBg(
       <StatCard stat={cut.stat} subtitle={cut.subtitle} accentColor={accent} backgroundColor={bgColor} />
@@ -615,6 +634,7 @@ const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut, theme 
       <ComparisonCard
         leftLabel={cut.leftLabel} rightLabel={cut.rightLabel}
         leftValue={cut.leftValue} rightValue={cut.rightValue}
+        leftColor={cut.leftColor} rightColor={cut.rightColor}
         title={cut.title} backgroundColor={bgColor} textColor={textColor}
         cardBackgroundColor={cut.cardBackgroundColor || theme.surfaceColor}
       />
@@ -719,7 +739,9 @@ const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut, theme 
           progress={cut.progress} label={cut.progressLabel}
           color={cut.progressColor || accent}
           animationStyle={(cut.progressAnimation as any) || "fill"}
-          segments={cut.progressSegments} backgroundColor={cut.backgroundColor || theme.surfaceColor}
+          segments={cut.progressSegments} backgroundColor={isLightColor(theme.backgroundColor) ? (cut.backgroundColor || theme.surfaceColor) : "transparent"}
+          textColor={textColor}
+          trackColor={isLightColor(theme.backgroundColor) ? undefined : "rgba(255,255,255,0.14)"}
         />
       </AbsoluteFill>
     );
@@ -881,6 +903,7 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
           color={theme.textColor}
           highlightColor={theme.captionHighlightColor}
           backgroundColor={theme.captionBackgroundColor}
+          topPercent={(props.captionTopPercent as number | undefined)}
         />
       )}
 

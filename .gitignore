@@ -43,6 +43,7 @@ music_library/
 .env.local
 *.env
 .youtube-token.json
+credenciales/
 # Google service-account / Vertex AI keys — never commit
 gcp-*.json
 *-service-account.json
@@ -104,3 +105,13 @@ venv/
 
 # Local Wan / diffusers GPU environment
 .venv-wan/
+
+# Motor cinematografico ZonaChef: cache de trabajo regenerable
+zonachef/trabajo/
+
+# Salidas locales y temporales de la fabrica de videos
+transcripciones_completadas/
+/renders/
+/guion_finanzas.txt
+/referencia_voz.wav.wav
+/package-lock.json

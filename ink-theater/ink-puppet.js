@@ -100,5 +100,62 @@
     return t;
   }
 
-  root.InkPuppet = { create: create, choreograph: choreograph, STAND: STAND };
+
+  // ---------------------------------------------------------------------------
+  // choreographSmooth — the polished version of choreograph().
+  //  * sub-frame interpolation between mocap frames (no stepping at the clip fps)
+  //  * seamless loops: the first K frames of every cycle are cross-blended with the clip's tail
+  //  * pose blending between consecutive clips (default 0.28 s, smootherstep) instead of a hard cut
+  //    (also blends the vertical root offset, so sitting -> standing no longer pops)
+  // Everything is a pure function of time, so it is seek-safe. `opts.prev` = {clip,dur,loop} of the
+  // segment that played just before (so a separate call can still blend from it).
+  // ---------------------------------------------------------------------------
+  var JOINTS = ["hips", "chest", "neck", "head", "shR", "elR", "haR", "shL", "elL", "haL", "hipR", "knR", "ftR", "hipL", "knL", "ftL"];
+  function lerpPose(a, b, t) {
+    var o = {};
+    for (var i = 0; i < JOINTS.length; i++) { var k = JOINTS[i]; o[k] = [a[k][0] + (b[k][0] - a[k][0]) * t, a[k][1] + (b[k][1] - a[k][1]) * t]; }
+    o.rootY = (a.rootY || 0) + ((b.rootY || 0) - (a.rootY || 0)) * t;
+    return o;
+  }
+  function frameAt(frames, x) {
+    var n = frames.length, i0 = Math.max(0, Math.min(n - 1, Math.floor(x))), i1 = Math.min(n - 1, i0 + 1), f = Math.max(0, Math.min(1, x - i0));
+    return lerpPose(frames[i0], frames[i1], f);
+  }
+  function smoother(p) { p = p < 0 ? 0 : p > 1 ? 1 : p; return p * p * p * (p * (p * 6 - 15) + 10); }
+  function clipPose(clip, lt, loop) {
+    var n = clip.frames.length, x = lt * clip.fps;
+    if (loop === false) return frameAt(clip.frames, Math.min(x, n - 1));
+    var K = Math.min(10, Math.floor(n / 4)), Pd = n - K, pos = x % Pd;
+    var head = frameAt(clip.frames, pos);
+    if (pos < K) return lerpPose(frameAt(clip.frames, Pd + pos), head, smoother(pos / K));
+    return head;
+  }
+  function stateAt(pup, clip, lt, loop) { var po = clipPose(clip, lt, loop); return { pose: po, y: pup.ground - clip.groundY + (po.rootY || 0) }; }
+
+  function choreographSmooth(tl, pup, segments, opts) {
+    opts = opts || {};
+    var t = opts.start != null ? opts.start : 0, blend = opts.blend != null ? opts.blend : 0.28;
+    var CLIPS = root.INK_CLIPS || {}, prev = opts.prev || null;
+    segments.forEach(function (seg) {
+      var clip = CLIPS[seg.clip];
+      if (!clip) { console.warn('[InkPuppet] unknown clip "' + seg.clip + '"'); t += seg.dur; return; }
+      var from = prev && CLIPS[prev.clip] ? stateAt(pup, CLIPS[prev.clip], prev.dur, prev.loop) : null;
+      var proxy = { u: 0 }, dur = seg.dur, loop = seg.loop;
+      tl.to(proxy, {
+        u: 1, duration: dur, ease: "none",
+        onUpdate: function () {
+          var lt = proxy.u * dur, cur = stateAt(pup, clip, lt, loop), pose = cur.pose, y = cur.y;
+          if (from && lt < blend) { var w = smoother(lt / blend); pose = lerpPose(from.pose, cur.pose, w); y = from.y + (cur.y - from.y) * w; }
+          pup.setPose(pose);
+          pup.outer.setAttribute("transform", "translate(" + pup.cx + "," + y + ")");
+        }
+      }, t);
+      prev = { clip: seg.clip, dur: dur, loop: loop };
+      t += dur;
+    });
+    return t;
+  }
+
+  root.InkPuppet = { create: create, choreograph: choreograph, choreographSmooth: choreographSmooth, STAND: STAND,
+    _internals: { clipPose: clipPose, stateAt: stateAt, lerpPose: lerpPose, smoother: smoother, JOINTS: JOINTS } };
 })(window);

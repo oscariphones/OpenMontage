@@ -1,0 +1,30 @@
+{
+  "tema": "8 hábitos de finanzas personales básicas",
+  "titulos": [
+    "Ganas Dinero Cada Mes… y Sigues Sin Nada (8 Hábitos)",
+    "8 Hábitos Para NO Ser Pobre (Nadie Te Los Enseñó)",
+    "Por Qué Ganas Bien Pero Nunca Te Alcanza: 8 Hábitos"
+  ],
+  "titulo_elegido": 1,
+  "descripcion": "Ganas dinero cada mes, pero ¿sabes a dónde se va? En la escuela casi nadie nos enseña a manejar el dinero, así que hoy vamos a lo básico: 8 hábitos de finanzas personales para dejar de improvisar y tomar el control.\n\nEn este video:\n1. Define metas claras y realistas\n2. Haz un presupuesto (lo que entra y lo que sale)\n3. Arma tu fondo de emergencia de 3 a 6 meses\n4. Controla tus deudas: no gastes más de lo que ganas\n5. Invierte entendiendo el riesgo\n6. Usa la tarjeta de crédito con cuidado (paga el total, menos del 30 % del límite)\n7. Protege a tu familia: seguro y testamento\n8. Date un respiro sin culpa\n\nNo necesitas hacer los ocho hoy: empieza por uno. Cuéntame en los comentarios con cuál empiezas y comparte este video con alguien que lo necesite.",
+  "hashtags": ["#FinanzasPersonales", "#Ahorro", "#EducacionFinanciera", "#Presupuesto", "#Dinero"],
+  "etiquetas": [
+    "finanzas personales", "hábitos financieros", "cómo ahorrar dinero", "educación financiera", "presupuesto personal",
+    "fondo de emergencia", "salir de deudas", "tarjeta de crédito", "invertir para principiantes", "cómo no ser pobre",
+    "administrar dinero", "finanzas para principiantes", "hábitos de ricos", "dinero"
+  ],
+  "capitulos": {
+    "GANCHO": "¿A dónde se va tu dinero?",
+    "METAS Y PRESUPUESTO": "Hábitos 1 y 2: metas y presupuesto",
+    "COLCHÓN Y DEUDAS": "Hábitos 3 y 4: fondo de emergencia y deudas",
+    "INVERTIR Y TARJETAS": "Hábitos 5 y 6: invertir y tarjetas",
+    "FAMILIA Y DESCANSO": "Hábitos 7 y 8: familia y descanso",
+    "CIERRE": "¿Con cuál empiezas?"
+  },
+  "miniatura": {
+    "expresion": "agobiado y agotado: párpados caídos a media asta, cejas inclinadas hacia arriba en el centro, ojeras profundas, boca abierta en un suspiro de desesperación",
+    "postura": "ambas manos apretando los lados de la cabeza sobre la gorra, hombros encogidos, cabeza ligeramente inclinada",
+    "objeto": "un sobre de papel kraft con la palabra \"DEUDA\" escrita a mano, del que asoman billetes de dólar arrugados",
+    "texto": ["8 HÁBITOS", "PARA NO SER", "POBRE"]
+  }
+}

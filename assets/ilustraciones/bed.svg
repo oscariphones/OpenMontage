@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 290">
+  <defs>
+    <linearGradient id="blk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fe3a2"/><stop offset="1" stop-color="#25b97c"/></linearGradient>
+  </defs>
+  <ellipse cx="210" cy="272" rx="190" ry="11" fill="#000" opacity=".3"/>
+  <rect x="26" y="58" width="44" height="200" rx="14" fill="#7d8797"/>
+  <rect x="26" y="58" width="16" height="200" rx="8" fill="#fff" opacity=".12"/>
+  <rect x="352" y="132" width="40" height="126" rx="12" fill="#7d8797"/>
+  <rect x="48" y="226" width="16" height="36" rx="5" fill="#5b6574"/><rect x="358" y="226" width="16" height="36" rx="5" fill="#5b6574"/>
+  <rect x="40" y="196" width="340" height="34" rx="9" fill="#9aa4b2"/>
+  <rect x="58" y="152" width="304" height="50" rx="16" fill="#f4f6f9"/>
+  <rect x="74" y="116" width="96" height="48" rx="24" fill="#ffffff"/>
+  <rect x="74" y="140" width="96" height="24" rx="12" fill="#000" opacity=".06"/>
+  <path d="M154 136 H350 Q364 136 364 150 V212 Q364 226 350 226 H154 Q140 226 140 212 V150 Q140 136 154 136 Z" fill="url(#blk)"/>
+  <path d="M154 136 H196 V226 H154 Q140 226 140 212 V150 Q140 136 154 136 Z" fill="#fff" opacity=".18"/>
+  <rect x="140" y="198" width="224" height="28" rx="0" fill="#000" opacity=".08"/>
+  <text x="250" y="96" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="44" fill="#ff8a1f">Z</text>
+  <text x="292" y="62" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="34" fill="#ff8a1f" opacity=".8">z</text>
+  <text x="324" y="36" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="26" fill="#ff8a1f" opacity=".6">z</text>
+</svg>

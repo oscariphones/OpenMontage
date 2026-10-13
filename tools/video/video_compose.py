@@ -203,6 +203,15 @@ class VideoCompose(BaseTool):
                     "networks). The subprocess timeout is widened to match."
                 ),
             },
+            "remotion_concurrency": {
+                "type": "integer",
+                "minimum": 1,
+                "description": (
+                    "Number of parallel Remotion render threads, passed through as "
+                    "`--concurrency`. Lower it (1-2) on low-RAM machines to avoid "
+                    "memory exhaustion; each thread runs its own headless browser tab."
+                ),
+            },
         },
     }
 
@@ -1670,6 +1679,8 @@ class VideoCompose(BaseTool):
                 remotion_inputs["remotion_timeout_ms"] = inputs["remotion_timeout_ms"]
             if inputs.get("public_dir") is not None:
                 remotion_inputs["public_dir"] = inputs["public_dir"]
+            if inputs.get("remotion_concurrency") is not None:
+                remotion_inputs["remotion_concurrency"] = inputs["remotion_concurrency"]
             render_result = self._remotion_render(remotion_inputs)
 
             # Governance: NEVER silently fall back to FFmpeg when Remotion fails.
@@ -2076,6 +2087,9 @@ class VideoCompose(BaseTool):
             # restricted networks the default 30s browser setup times out with an
             # opaque failure. Pass it through and give the subprocess enough headroom
             # so run_command() does not kill Remotion before its own timeout fires.
+            if inputs.get("remotion_concurrency"):
+                cmd.append(f"--concurrency={int(inputs['remotion_concurrency'])}")
+
             remotion_timeout_ms = inputs.get("remotion_timeout_ms")
             scene_count = len(props.get("scenes") or props.get("cuts") or [])
             subprocess_timeout = max(600, scene_count * 15)

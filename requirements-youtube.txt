@@ -1,0 +1,4 @@
+# Agente de metadatos (agente_metadatos.py): subida privada a YouTube Data API v3
+google-api-python-client>=2.100
+google-auth-oauthlib>=1.2
+google-auth>=2.0

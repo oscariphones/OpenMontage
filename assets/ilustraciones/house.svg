@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 360">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f6f9"/><stop offset="1" stop-color="#dde3ea"/></linearGradient>
+    <linearGradient id="roof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffa24d"/><stop offset="1" stop-color="#f27b12"/></linearGradient>
+    <linearGradient id="door" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fe3a2"/><stop offset="1" stop-color="#25b97c"/></linearGradient>
+  </defs>
+  <ellipse cx="200" cy="342" rx="172" ry="14" fill="#000" opacity=".32"/>
+  <rect x="262" y="62" width="36" height="84" rx="4" fill="#9aa4b2"/>
+  <rect x="256" y="52" width="48" height="16" rx="5" fill="#7d8797"/>
+  <rect x="72" y="160" width="256" height="178" rx="10" fill="url(#wall)"/>
+  <path d="M200 160 H318 Q328 160 328 170 V328 Q328 338 318 338 H200 Z" fill="#000" opacity=".07"/>
+  <rect x="72" y="176" width="256" height="12" fill="#000" opacity=".08"/>
+  <path d="M44 174 L200 46 L356 174 Z" fill="url(#roof)"/>
+  <path d="M200 46 L356 174 L200 174 Z" fill="#000" opacity=".12"/>
+  <rect x="38" y="166" width="324" height="16" rx="8" fill="#d0640d"/>
+  <rect x="94" y="204" width="54" height="54" rx="7" fill="#cdd6e1"/>
+  <path d="M94 204 h54 l-54 54 Z" fill="#fff" opacity=".45"/>
+  <rect x="118" y="204" width="6" height="54" fill="#f4f6f9"/><rect x="94" y="228" width="54" height="6" fill="#f4f6f9"/>
+  <rect x="252" y="204" width="54" height="54" rx="7" fill="#cdd6e1"/>
+  <path d="M252 204 h54 l-54 54 Z" fill="#fff" opacity=".45"/>
+  <rect x="276" y="204" width="6" height="54" fill="#f4f6f9"/><rect x="252" y="228" width="54" height="6" fill="#f4f6f9"/>
+  <rect x="166" y="232" width="68" height="106" rx="9" fill="url(#door)"/>
+  <rect x="166" y="232" width="30" height="106" rx="9" fill="#fff" opacity=".13"/>
+  <circle cx="221" cy="290" r="5.5" fill="#1d8a5c"/>
+  <rect x="152" y="330" width="96" height="10" rx="5" fill="#9aa4b2"/>
+  <circle cx="58" cy="322" r="22" fill="#25b97c"/><circle cx="84" cy="316" r="26" fill="#3ddc97"/><circle cx="74" cy="306" r="9" fill="#fff" opacity=".2"/>
+  <circle cx="342" cy="320" r="24" fill="#25b97c"/><circle cx="318" cy="326" r="18" fill="#3ddc97"/>
+</svg>
