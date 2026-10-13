@@ -1,4 +1,4 @@
-/* Film engine V2.2 "Layout 2.0" + FABRICA_2 (camera punch-in on the Stickman at each pose change, softer window pans, slow push-in drift
+/* Film engine V2.2 "Layout 2.0" + FABRICA_2 FABRICA_2.1 (camera punch-in on the Stickman at each pose change, softer window pans, slow push-in drift
  *   on holds longer than CAM.holdMax so there are no long static shots; the soft defocused backdrop lives in ink-grid.js). (premium finance: tech-grid backdrop, kinetic captions, procedural eases, inertial text, glow on green/orange;
  *   2.0 = full 2D illustrations from the asset library (window.ILUS, built by film2d/build.py), floating windows that group each graphic cell,
  *   and a UI camera that jumps between windows with aggressive ease-in-out pans/zooms). Turns the declarative SCENES spec into strict CSS-grid scenes + one GSAP timeline.
@@ -219,6 +219,7 @@
   var CAM = { zMax: 1.14, fill: 0.84, pull: 0.62, panX: 170, dur: 0.95, ease: "power2.inOut",
               zChar: 1.08, charPull: 0.7, charDur: 0.55, charLead: 0.15, charEase: "power3.inOut", charGap: 0.6, charHold: 1.3,
               charPunch: [1.10, 1.08, 1.06], charCenter: 0.3, loosePunch: [1.06, 1.04], looseX: 0.25, looseCrop: 0.05,
+              varyPunch: 0.03, varyCenter: 0.1, varyDur: 0.04,   // organic variation per punch-in (deterministic: seeded by its time)
               holdMax: 5, drift: 1.025, driftX: 8 };
   function figBox(svg) {   // drawn area of the pose box (viewBox 360x560, xMidYMax meet) inside its svg
     var r = rel(svg), k = Math.min(r.w / 360, r.h / 560), w = 360 * k, h = 560 * k;
@@ -238,12 +239,15 @@
   }
   // punch-in RELATIVE to the hold framing fr: scale x1.10 (or less), the Stickman slides 30 % toward the centre, the bottom edge stays put
   // (never over the subtitles), and every window of the scene + the Stickman's head stay fully in frame. null if it cannot be done.
-  function charShot(fr, sp) {
+  // deterministic pseudo-random in [0, 1) from a time + channel: same camera in audit, snapshots and render (never Math.random)
+  function vary(t, k) { var x = Math.sin((t + 1) * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); }
+  function charShot(fr, sp, tp) {
+    var dp = (vary(tp, 1) - 0.5) * 2 * CAM.varyPunch, cc = CAM.charCenter + (vary(tp, 2) - 0.5) * 2 * CAM.varyCenter;
     var r = sp.r, W = r.W, H = r.H, fx = r.x + r.w / 2, hy = r.y + r.h * 0.06, L0 = (1920 - W) / 2;   // stage is centred: frame = [-L0, W + L0]
     var sx = function (px, s, x) { return W / 2 + (px - W / 2) * s + x; }, sy = function (py, s, y) { return r.top + H / 2 + (py - H / 2) * s + y; };
     for (var i = 0; i < CAM.charPunch.length; i++) {
-      var s2 = +(fr.s * CAM.charPunch[i]).toFixed(4), y2 = Math.round(fr.y - (H / 2) * (s2 - fr.s));
-      var head = sx(fx, fr.s, fr.x), x2 = head + (W / 2 - head) * CAM.charCenter - W / 2 - (fx - W / 2) * s2, lo = -1e9, hi = 1e9, ok = true;
+      var s2 = +(fr.s * (CAM.charPunch[i] + dp)).toFixed(4), y2 = Math.round(fr.y - (H / 2) * (s2 - fr.s));
+      var head = sx(fx, fr.s, fr.x), x2 = head + (W / 2 - head) * cc - W / 2 - (fx - W / 2) * s2, lo = -1e9, hi = 1e9, ok = true;
       sp.wins.forEach(function (w) {
         hi = Math.min(hi, W + L0 - 12 - sx(w.x + w.w, s2, 0)); lo = Math.max(lo, 12 - L0 - sx(w.x, s2, 0));
         if (sy(w.y, s2, y2) < 8) ok = false;
@@ -259,10 +263,10 @@
     for (i = 0; i < CAM.loosePunch.length; i++) {
       // vertical: lift only as much as the windows' title bars and the head need; the stage may slip a little behind the subtitles
       // (they are drawn on top) for this short shot
-      s2 = +(fr.s * CAM.loosePunch[i]).toFixed(4); lo = -1e9; hi = 1e9; ok = true;
+      s2 = +(fr.s * (CAM.loosePunch[i] + dp / 2)).toFixed(4); lo = -1e9; hi = 1e9; ok = true;
       y2 = Math.max(8 - sy(hy, s2, 0), Math.min(fr.y, 12 - (H / 2) * (s2 - 1) + 60));
       sp.wins.forEach(function (w) { y2 = Math.max(y2, 8 - sy(w.y, s2, 0)); }); y2 = Math.ceil(y2);
-      x2 = 1920 * CAM.looseX - L0 - W / 2 - (fx - W / 2) * s2;
+      x2 = 1920 * (CAM.looseX + (cc - CAM.charCenter) / 2) - L0 - W / 2 - (fx - W / 2) * s2;
       sp.wins.forEach(function (w) {
         var c = CAM.looseCrop * w.w * s2;
         hi = Math.min(hi, W + L0 - 12 - sx(w.x + w.w, s2, 0) + c); lo = Math.max(lo, 12 - L0 - sx(w.x, s2, 0) - c);
@@ -290,7 +294,7 @@
         if (tr - tp < 0.9) return;
         var score = c.pose ? tp - s0 : 100 + Math.abs(tp - (s0 + 3));                   // poses first (earliest), else ~3 s into the hold
         if (best && score >= best.score) return;
-        var to = charShot(fr, sp); if (to) best = { tp: tp, tr: tr, to: to, score: score };
+        var to = charShot(fr, sp, tp); if (to) best = { tp: tp, tr: tr, to: to, score: score };
       });
     });
     return best;
@@ -320,7 +324,7 @@
         var c = pickSpot(s0, s1, s1 - s0 > CAM.holdMax, fr); if (!c) break;
         var t0 = c.tp - CAM.charLead, rd = CAM.dur;
         if (t0 - s0 > CAM.holdMax) drift(fr, m.dx, s0, t0);
-        moves.push({ t0: t0, d: CAM.charDur, to: c.to, ease: CAM.charEase, kind: "char" });
+        moves.push({ t0: t0, d: +(CAM.charDur * (1 + (vary(c.tp, 3) - 0.5) * 2 * CAM.varyDur)).toFixed(3), to: c.to, ease: CAM.charEase, kind: "char" });
         moves.push({ t0: c.tr - rd / 2, d: rd, to: fr, ease: CAM.ease, kind: "back" });   // back to the exact framing of the hold
         s0 = c.tr + rd / 2;
       }

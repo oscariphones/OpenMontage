@@ -37,7 +37,7 @@ Sigue la estructura de un brief existente (por ejemplo `projects/riqueza-generac
 Lee `references/spec-guia.md`: tiene la sintaxis, las poses, los widgets y una escena de ejemplo. `spec.js` usa índices de frase `S(k)`, no segundos, así que puedes escribirlo antes de tener la voz. Diseña con las reglas de Fábrica 2.0 (abajo) en mente: casi todo el dinamismo sale de cómo escribes `spec.js`.
 
 ### 4. Motor Fábrica 2.0
-El fondo 2.5D y la cámara dinámica ya los hace el motor (marca `FABRICA_2`), y `fabrica_video.py` lo copia a cada proyecto. No hace falta tocarlo. Solo lee `references/motor-fabrica-2.md` si `cam_check.cjs` falla o si vas a ajustar la cámara.
+El fondo 2.5D y la cámara dinámica ya los hace el motor (marca `FABRICA_2.1`), y `fabrica_video.py` lo copia a cada proyecto. No hace falta tocarlo. Solo lee `references/motor-fabrica-2.md` si `cam_check.cjs` falla o si vas a ajustar la cámara.
 
 ### 5. Ensamblar
 ```
@@ -47,6 +47,8 @@ Lánzalo en segundo plano y guarda el log en `projects/<proyecto>/fabrica.log`. 
 - Si la auditoría falla: corrige `spec.js` (solapes, filas de más, elementos fuera de su escena) y vuelve a correr. Las etapas hechas se saltan solas.
 - Si cambian el guion o la voz: borra `assets/audio/sentences/` y corre con `--force`.
 - Para probar solo el audio: `--prueba-audio 30`. Para revisar sin render: `--sin-render`.
+- Si la voz falla al cargar el modelo con `The paging file is too small` (error 1455), es falta de memoria en ese momento, no un error del guion. Comprueba que no quede nada pesado tuyo corriendo (capturas, auditorías) y reintenta una vez. Si vuelve a fallar, pide al usuario que cierre programas como Chrome.
+- Si Pixabay responde `HTTP Error 403` al bajar la música, copia `assets/music/lofi.mp3` y `CREDITOS.txt` de otro proyecto reciente (misma búsqueda por defecto, licencia libre) y vuelve a correr la fábrica; las etapas hechas se saltan solas. Menciónalo en el reporte.
 
 ### 6. Verificación y reporte
 Antes de dar el video por bueno:

@@ -151,7 +151,7 @@ def main():
     # flotantes y camara UI que salta entre ventanas): los proyectos con motor viejo se actualizan desde la plantilla por marca de version.
     # ink-grid.js / ink-pose.js los copia film2d/build.py desde ink-theater/ en cada build.
     if P != PLANTILLA:
-        for f, marca in (("film2d/engine.js", "FABRICA_2"), ("film2d/template.tpl", "LAYOUT_2"), ("film2d/build.py", "ILUS_V1"), ("hyperframes/audit_dyn.cjs", "AUDIT_V2"), ("film2d/widgets.js", "FLAT_V1")):
+        for f, marca in (("film2d/engine.js", "FABRICA_2.1"), ("film2d/template.tpl", "LAYOUT_2"), ("film2d/build.py", "ILUS_V1"), ("hyperframes/audit_dyn.cjs", "AUDIT_V2"), ("film2d/widgets.js", "FLAT_V1"), ("hyperframes/cam_check.cjs", "CAM_CHECK_V2")):
             dst = P / f
             if marca not in dst.read_text(encoding="utf-8"):
                 print(f"  layout 2.0: actualizo {f}"); shutil.copy(PLANTILLA / f, dst)

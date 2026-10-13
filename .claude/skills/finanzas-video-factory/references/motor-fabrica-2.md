@@ -1,6 +1,6 @@
 # Motor Fábrica 2.0: cómo funciona (implementado el 2026-10-12)
 
-La plantilla `projects/fondos-indexados/film2d/engine.js` lleva la marca `FABRICA_2`. `fabrica_video.py` copia el motor a cualquier proyecto que no la tenga. Lee esto solo si vas a tocar el motor o si `cam_check.cjs` falla y necesitas entender por qué.
+La plantilla `projects/fondos-indexados/film2d/engine.js` lleva la marca `FABRICA_2.1` (2.0 + variación de zooms). `fabrica_video.py` copia el motor a cualquier proyecto que no la tenga. Lee esto solo si vas a tocar el motor o si `cam_check.cjs` falla y necesitas entender por qué.
 
 ## Fondo 2.5D: `ink-theater/ink-grid.js`
 `film2d/build.py` copia este archivo en cada build.
@@ -20,9 +20,10 @@ La plantilla `projects/fondos-indexados/film2d/engine.js` lleva la marca `FABRIC
    - **Normal:** ×1.10 (o ×1.08 / ×1.06); el Stickman se desliza un 30 % hacia el centro; el borde inferior queda fijo; ventanas y cabeza enteras en cuadro.
    - **Reacción** (cuando la ventana ya llena el cuadro a 1.14 y el Stickman está en el borde): ×1.06 / ×1.04; la cabeza va al 25 % del ancho; la ventana puede salirse **solo lo que mide su relleno interno (5 %)**, así que el texto nunca se corta.
    - Si nada encaja, no hay zoom en ese momento.
-4. **Deriva:** lo que siga estático más de 5 s recibe un empuje lento ×1.025 con 8 px hacia el Stickman y el borde inferior fijo.
+4. **Variación orgánica** (`FABRICA_2.1`): cada acercamiento varía ligeramente su escala (±0.03 sobre el factor), cuánto se centra el Stickman (±10 %) y su duración (±4 %). La variación es pseudoaleatoria pero **determinista** (`vary(t, canal)`, sembrada por el instante del zoom), así que auditoría, capturas y render ven la misma cámara; nunca uses `Math.random`. La duración no puede pasar de ~0.575 s: más larga, se solaparía con el regreso.
+5. **Deriva:** lo que siga estático más de 5 s recibe un empuje lento ×1.025 con 8 px hacia el Stickman y el borde inferior fijo.
 
-Estos parámetros viven en `CAM` (`charPunch`, `charCenter`, `loosePunch`, `looseX`, `looseCrop`, `charGap`, `charHold`, `holdMax`, `drift`, `driftX`). Ajústalos ahí, no con parches en `spec.js`.
+Estos parámetros viven en `CAM` (`charPunch`, `charCenter`, `loosePunch`, `looseX`, `looseCrop`, `varyPunch`, `varyCenter`, `varyDur`, `charGap`, `charHold`, `holdMax`, `drift`, `driftX`). Ajústalos ahí, no con parches en `spec.js`.
 
 ## Verificación automática
 `fabrica_video.py` (etapa 4) corre `node cam_check.cjs fN 0.2` en cada parte, además de `audit_dyn.cjs` y `chk_items.cjs`. El chequeo recorre el video cada 0.2 s y **falla** si hay:

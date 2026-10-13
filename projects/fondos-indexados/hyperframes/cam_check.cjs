@@ -1,4 +1,4 @@
-// FABRICA_2 camera check: lists the camera moves (window pans, Stickman punch-ins, hold drifts) and seeks the timeline every STEP s
+// FABRICA_2 camera check (CAM_CHECK_V2): lists the camera moves (window pans, Stickman punch-ins, hold drifts) and seeks the timeline every STEP s
 // verifying that every visible floating window stays inside the frame and above the subtitles while the camera moves
 // (a window cropped during a Stickman punch-in is reported apart: it is intentional and short).
 // Usage: node cam_check.cjs <dir> [step=0.2] [--list]  -> exit code 1 if a window leaves the frame (outside a punch-in) or a static shot lasts > 5 s
@@ -13,7 +13,9 @@ const EXE = "C:/Users/oslem/.cache/hyperframes/chrome/chrome-headless-shell/win6
   await page.goto("file:///" + path.resolve(dir, "index.html").split(path.sep).join("/"), { waitUntil: "load", timeout: 60000 });
   await new Promise((r) => setTimeout(r, 1200));
   const res = await page.evaluate((step) => {
-    const tl = window.__timelines.main, dur = tl.duration(), moves = (window.FILM && window.FILM.moves) || [], bad = [];
+    // the rendered length is the composition's data-duration; the GSAP timeline can run ~1 s longer (exit tweens) and must not count
+    const comp = document.querySelector("[data-composition-id]"), cd = comp ? parseFloat(comp.dataset.duration) : NaN;
+    const tl = window.__timelines.main, dur = isFinite(cd) ? Math.min(cd, tl.duration()) : tl.duration(), moves = (window.FILM && window.FILM.moves) || [], bad = [];
     const caps = document.getElementById("caps"), vis = (e) => { for (let n = e; n && n.nodeType === 1; n = n.parentElement) { const cs = getComputedStyle(n); if (cs.display === "none" || cs.visibility === "hidden" || parseFloat(cs.opacity) < 0.35) return false; } return true; };
     for (let t = 0; t <= dur; t += step) {
       tl.seek(t, false);
