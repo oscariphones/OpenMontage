@@ -108,3 +108,9 @@ venv/
 
 # Motor cinematografico ZonaChef: cache de trabajo regenerable
 zonachef/trabajo/
+
+# Salidas locales y temporales de la fabrica de videos
+transcripciones_completadas/
+/renders/
+/guion_finanzas.txt
+/referencia_voz.wav.wav
