@@ -1,5 +1,5 @@
 """Locucion con clonacion de voz: Chatterbox Multilingual (es) clonando referencia_voz.wav.wav (raiz del repo).
-Uso: python scripts/voice.py <proyecto> [guion.txt]   (genera projects/<proyecto>/assets/audio/{narration_raw.wav,narration.wav,timeline.json})
+Uso: python scripts/voice.py <proyecto> [guion.txt]   (genera projects/<proyecto>/ o proyectos_zonachef/<proyecto>/assets/audio/{narration_raw.wav,narration.wav,timeline.json})
 Sin rubberband ni cambios de tono/tiempo: solo remuestreo soxr a 44.1 kHz. La cadena de voz y la normalizacion a -14 LUFS / TP <= -2 dB
 viven en fabrica_video.py (VOZ_CHAIN, mezclar_audio) y se aplican despues sobre narration_raw.wav."""
 import json, re, shutil, subprocess, sys, wave
@@ -15,6 +15,8 @@ def main():
     import torch, soundfile
     from chatterbox.mtl_tts import ChatterboxMultilingualTTS
     proj = REPO / "projects" / sys.argv[1]
+    if not proj.exists() and (REPO / "proyectos_zonachef" / sys.argv[1]).exists():   # canal ZonaChef: proyectos en su propia raiz
+        proj = REPO / "proyectos_zonachef" / sys.argv[1]
     guion = Path(sys.argv[2]) if len(sys.argv) > 2 else sorted(proj.glob("guion_*.txt"))[0]
     A = proj / "assets/audio"; (A / "sentences").mkdir(parents=True, exist_ok=True)
     ref = A / "referencia_24k.wav"                                  # referencia mono (el modelo la usa a 24 kHz)

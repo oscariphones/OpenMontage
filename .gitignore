@@ -115,3 +115,6 @@ transcripciones_completadas/
 /guion_finanzas.txt
 /referencia_voz.wav.wav
 /package-lock.json
+
+# Canal ZonaChef: igual que projects/, solo se versionan las fuentes (git add -f)
+proyectos_zonachef/

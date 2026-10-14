@@ -18,6 +18,12 @@ Etapas (cada una se salta si su resultado ya existe; --force las repite):
                metadatos_brief.json (lo redacta Claude) y subida PRIVADA a YouTube si hay credenciales (--sin-subir la evita)
 
 Uso:  python fabrica_video.py <proyecto> [--musica "lo-fi chill instrumental"] [--force] [--sin-render] [--sin-subir]
+
+Canal ZonaChef (--canal zonachef, ver REGLAS_ZONACHEF.md y fabrica_zonachef()): ruta aparte que no toca la de finanzas.
+  proyectos_zonachef/<proyecto>/ (guion_*.txt + film/template.html, los redacta Claude desde transcripciones_zonachef/ y zonachef.com.mx)
+  -> voz -> film/build.py -> render vertical 1080x1920 (maximo 60 s) -> mezcla -> renders/zonachef/<proyecto>.mp4. NUNCA sube a YouTube.
+Uso:  python fabrica_video.py <proyecto> --canal zonachef [--musica "corporate upbeat background"] [--force] [--sin-render]
+      python fabrica_video.py --canal zonachef --pendientes        (lista las transcripciones de ZonaChef por procesar)
 """
 import argparse, ctypes, json, re, shutil, subprocess, sys, time
 from pathlib import Path
@@ -27,6 +33,13 @@ PLANTILLA = REPO / "projects/fondos-indexados"
 PAUSA_ENTRE_PARTES = 20      # s
 RAM_MIN_MB = 1000            # espera hasta tener al menos esta RAM libre antes de cada parte
 MUSICA_DB_BAJO_VOZ = 18      # la musica va 18 LUFS por debajo de la voz
+# Canal ZonaChef (REGLAS_ZONACHEF.md): raiz, transcripciones y plantilla propias; Short/Reel vertical de 60 s como maximo; sin subida.
+ZC_PROYECTOS = REPO / "proyectos_zonachef"
+ZC_TRANSCRIPCIONES = REPO / "transcripciones_zonachef"
+ZC_PLANTILLA = ZC_PROYECTOS / "zonachef-krups-cafetera"      # film/build.py generico (film/template.html es propio de cada producto)
+ZC_SALIDA = REPO / "renders/zonachef"
+ZC_ANCHO, ZC_ALTO, ZC_MAX_SEG = 1080, 1920, 60.0
+ZC_PALABRAS_POR_SEG, ZC_PAUSA_FRASE = 2.3, 0.3           # medido con la voz clonada (Krups: 100 palabras en 9 frases = 44-47 s)
 LUFS_OBJ, TP_OBJ = -14.0, -2.0   # estandar YouTube y techo de true peak
 # Voz OFICIAL: clon Chatterbox (es) de referencia_voz.wav.wav via scripts/voice.py, SIN rubberband. Esta cadena procesa narration_raw.wav.
 # Cadena de voz. Historico (2026-10-08, disenada con una voz TTS que salia a 0 dBFS y con modelo de 22 kHz, solo ~1 % de la energia por
@@ -123,14 +136,108 @@ def mezclar_audio(AU, mus, total, mix, codec, narracion=None):
     return loudness(mix)
 
 
+def zc_pendientes():
+    """Transcripciones de ZonaChef por procesar, la mas antigua primero (el link va en la primera linea)."""
+    return sorted(ZC_TRANSCRIPCIONES.glob("*.txt"), key=lambda f: f.stat().st_mtime)
+
+
+def zc_frases(guion):
+    sents, sec = [], None
+    for line in guion.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line.startswith("## "): sec = line; continue
+        if line and not line.startswith(("FUENTE", "FORMATO")) and sec: sents.append(line)
+    return sents
+
+
+def resolucion(path):
+    o = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height", "-of", "csv=p=0", str(path)],
+                       capture_output=True, text=True).stdout.strip()
+    return tuple(int(x) for x in o.split(",")[:2])
+
+
+def fabrica_zonachef(a):
+    """Canal ZonaChef: Short vertical 1080x1920 de 60 s como maximo, render local a renders/zonachef/. Nunca publica (REGLAS_ZONACHEF.md, regla 5)."""
+    pend = zc_pendientes()
+    if a.pendientes or not a.proyecto:
+        print(f"Transcripciones ZonaChef pendientes en {ZC_TRANSCRIPCIONES.name}/: {len(pend)}")
+        for f in pend: print(f"  {f.name}")
+        return
+    P = ZC_PROYECTOS / a.proyecto; HF = P / "hyperframes"; R = P / "renders"; AU = P / "assets/audio"
+    guiones = sorted(P.glob("guion_*.txt"))
+    if not guiones or not (P / "film/template.html").exists():
+        fuente = f" Siguiente transcripcion: {ZC_TRANSCRIPCIONES.name}/{pend[0].name}." if pend else ""
+        sys.exit(f"Falta guion_*.txt o film/template.html en {P}. Claude los redacta (REGLAS_ZONACHEF.md: specs reales de zonachef.com.mx, "
+                 f"estilo SaaS claro, vertical {ZC_ANCHO}x{ZC_ALTO}, maximo {ZC_MAX_SEG:.0f} s).{fuente}")
+
+    print("[1] plantilla y guion (maximo 60 s)")
+    if P != ZC_PLANTILLA and not (P / "film/build.py").exists():
+        shutil.copy(ZC_PLANTILLA / "film/build.py", P / "film/build.py")
+    frases = zc_frases(guiones[0]); palabras = sum(len(f.split()) for f in frases)
+    est = palabras / ZC_PALABRAS_POR_SEG + len(frases) * ZC_PAUSA_FRASE
+    print(f"  {len(frases)} frases, {palabras} palabras -> ~{est:.0f} s estimados")
+    if est > ZC_MAX_SEG:                          # se corta ANTES de gastar la voz en CPU
+        sys.exit(f"Guion demasiado largo (~{est:.0f} s > {ZC_MAX_SEG:.0f} s): recortalo a ~{int((ZC_MAX_SEG - len(frases) * ZC_PAUSA_FRASE) * ZC_PALABRAS_POR_SEG)} palabras.")
+
+    print("[2] voz")
+    if a.force or not (AU / "timeline.json").exists():
+        run([sys.executable, str(REPO / "scripts/voice.py"), a.proyecto, str(guiones[0])], env={**__import__("os").environ, "PYTHONIOENCODING": "utf-8"})
+    tl = json.load(open(AU / "timeline.json", encoding="utf-8")); total = tl["duration"]
+    print(f"  locucion {total:.1f} s")
+    if total > ZC_MAX_SEG:
+        sys.exit(f"La locucion dura {total:.1f} s (> {ZC_MAX_SEG:.0f} s): acorta el guion, borra assets/audio/sentences/ y corre con --force.")
+
+    print(f"[3] build vertical {ZC_ANCHO}x{ZC_ALTO}")
+    run([sys.executable, "film/build.py"], cwd=P, env={**__import__("os").environ, "PYTHONIOENCODING": "utf-8"})
+    idx = (HF / "index.html").read_text(encoding="utf-8")
+    if f'data-width="{ZC_ANCHO}"' not in idx or f'data-height="{ZC_ALTO}"' not in idx:
+        sys.exit(f"hyperframes/index.html no es vertical {ZC_ANCHO}x{ZC_ALTO} (data-width/data-height): revisa film/template.html.")
+
+    mudo = R / "video_mudo.mp4"
+    if not a.sin_render:
+        print("[4] render (1 hilo)")
+        R.mkdir(parents=True, exist_ok=True)
+        if a.force or not mudo.exists() or mudo.stat().st_size == 0:
+            while ram_libre_mb() < RAM_MIN_MB:
+                print(f"  RAM libre {ram_libre_mb()} MB < {RAM_MIN_MB}: espero 30 s", flush=True); time.sleep(30)
+            run(f'npx hyperframes render . --output "{mudo}" --workers 1 --fps 30', cwd=HF)
+        if resolucion(mudo) != (ZC_ANCHO, ZC_ALTO):
+            sys.exit(f"El render salio {resolucion(mudo)} y no {ZC_ANCHO}x{ZC_ALTO}.")
+
+    print("[5] musica y mezcla (-14 LUFS, true peak <= -2 dB)")
+    mix = AU / "final_mix.m4a"
+    if a.force or not mix.exists():
+        mezclar_audio(AU, asegurar_musica(P, a.musica), total, mix, ["-c:a", "aac", "-b:a", "192k"])
+    li, tp = loudness(mix)
+    print(f"  mezcla final: {li:.1f} LUFS, true peak {tp:+.1f} dBTP")
+    if abs(li - LUFS_OBJ) > 1.0 or tp > TP_OBJ: sys.exit(f"Mezcla fuera de objetivo ({LUFS_OBJ} LUFS, TP<=-2 dB): {li:.1f} LUFS / {tp:+.1f} dBTP")
+    if a.sin_render: return
+
+    print("[6] union -> renders/zonachef/ (sin subida: REGLAS_ZONACHEF.md)")
+    out = ZC_SALIDA / f"{a.proyecto}.mp4"; out.parent.mkdir(parents=True, exist_ok=True)
+    run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(mudo), "-i", str(mix), "-map", "0:v:0", "-map", "1:a:0",
+         "-c:v", "copy", "-c:a", "copy", "-shortest", "-movflags", "+faststart", str(out)])
+    dv = dur(out); w, h = resolucion(out)
+    print(f"  {out}  {dv:.1f} s (locucion {total:.1f} s)  {w}x{h}  {out.stat().st_size / 2**20:.0f} MB")
+    if abs(dv - total) > 1.5: sys.exit("La duracion final no coincide con la locucion.")
+    print("LISTO (no se publica nada)")
+
+
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("proyecto"); ap.add_argument("--musica", default="lo-fi chill instrumental")
+    ap = argparse.ArgumentParser(); ap.add_argument("proyecto", nargs="?"); ap.add_argument("--musica")
+    ap.add_argument("--canal", choices=["finanzas", "zonachef"], default="finanzas", help="finanzas (por defecto, flujo de siempre) o zonachef (Short vertical, sin subida)")
+    ap.add_argument("--pendientes", action="store_true", help="con --canal zonachef: lista las transcripciones de transcripciones_zonachef/")
     ap.add_argument("--force", action="store_true"); ap.add_argument("--sin-render", action="store_true")
     ap.add_argument("--sin-subir", action="store_true", help="genera metadata.json pero no sube el video a YouTube")
     ap.add_argument("--prueba-nombre", default="prueba_audio.mp3")
     ap.add_argument("--narracion", help="narration_raw alternativa (solo para pruebas de audio)")
     ap.add_argument("--prueba-audio", type=float, metavar="SEG", help="solo mezcla los primeros SEG segundos de voz+musica en prueba_audio.mp3 y sale (sin build ni render)")
     a = ap.parse_args()
+    if a.canal == "zonachef":
+        a.musica = a.musica or "corporate upbeat background"
+        return fabrica_zonachef(a)
+    if not a.proyecto: ap.error("falta el nombre del proyecto")
+    a.musica = a.musica or "lo-fi chill instrumental"
     P = REPO / "projects" / a.proyecto; HF = P / "hyperframes"; R = P / "renders"; AU = P / "assets/audio"
     guiones = sorted(P.glob("guion_*.txt"))
     if not guiones or not (P / "film2d/spec.js").exists():

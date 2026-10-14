@@ -14,8 +14,13 @@ Para no levantar sospechas
   * Recuerda los videos ya examinados (transcripciones_pendientes/.vistos.json) para no repetir peticiones.
   * Si YouTube responde con bloqueo / limite de peticiones, el script se detiene en el acto.
 
+Canales (--canal): cada uno con su carpeta, su memoria .vistos.json y sus consultas, para no mezclar IDs.
+  finanzas (por defecto)  -> transcripciones_pendientes/  (exactamente el comportamiento original)
+  zonachef                -> transcripciones_zonachef/    (cocina profesional / negocio gastronomico, en ingles)
+
 Uso:  python cazador.py                       (elige una consulta al azar)
       python cazador.py --consulta "compound interest explained"
+      python cazador.py --canal zonachef [--consulta "..."]
 Salida: 0 = ganador encontrado y guardado | 2 = ningun outlier en esta ejecucion | 3 = YouTube bloqueo la peticion
 """
 import argparse
@@ -46,7 +51,7 @@ MAX_BUSQUEDAS = 3        # busquedas por ejecucion
 RESULTADOS_POR_BUSQUEDA = 12
 PAUSA_MIN, PAUSA_MAX = 2.0, 5.0
 
-CONSULTAS = [  # todas en ingles
+CONSULTAS_FINANZAS = [  # todas en ingles
     "compound interest explained",
     "personal finance for beginners",
     "how to start investing with little money",
@@ -58,7 +63,24 @@ CONSULTAS = [  # todas en ingles
     "budgeting and saving money tips",
     "business cash flow explained",
 ]
+CONSULTAS_ZONACHEF = [  # todas en ingles: cocina profesional y negocio de restaurantes/cafeterias (B2B)
+    "commercial kitchen equipment tips",
+    "restaurant profit margins explained",
+    "how to start a coffee shop business",
+    "commercial espresso machine for cafe",
+    "restaurant kitchen efficiency tips",
+    "food cost control restaurant",
+    "food truck business costs",
+    "bakery business equipment",
+]
 IDIOMAS = ["en", "en-US", "en-GB"]
+
+# --canal: carpeta de salida + memoria .vistos.json propia + consultas. "finanzas" conserva las rutas originales.
+CANALES = {
+    "finanzas": (RAIZ / "transcripciones_pendientes", CONSULTAS_FINANZAS),
+    "zonachef": (RAIZ / "transcripciones_zonachef", CONSULTAS_ZONACHEF),
+}
+CONSULTAS = CONSULTAS_FINANZAS
 
 
 def pausa(motivo):
@@ -130,14 +152,18 @@ def guardar(info, texto, idioma, generada):
 def main():
     ap = argparse.ArgumentParser(description="El Cazador: encuentra un video outlier y guarda su transcripcion.")
     ap.add_argument("--consulta", help="busqueda en ingles (por defecto una al azar)")
+    ap.add_argument("--canal", choices=sorted(CANALES), default="finanzas", help="finanzas (por defecto) o zonachef: carpeta y memoria separadas")
     args = ap.parse_args()
+    global CARPETA, VISTOS, CONSULTAS
+    CARPETA, CONSULTAS = CANALES[args.canal]
+    VISTOS = CARPETA / ".vistos.json"
 
     vistos = cargar_vistos()
     examinados = 0
     busquedas = 0
     consultas = [args.consulta] if args.consulta else random.sample(CONSULTAS, k=len(CONSULTAS))
     base = {"quiet": True, "no_warnings": True, "skip_download": True, "socket_timeout": 20, "retries": 1}
-    print(f"El Cazador - max {MAX_VIDEOS} videos por ejecucion, pausas de {PAUSA_MIN:.0f}-{PAUSA_MAX:.0f}s")
+    print(f"El Cazador [{args.canal}] -> {CARPETA.name}/ - max {MAX_VIDEOS} videos por ejecucion, pausas de {PAUSA_MIN:.0f}-{PAUSA_MAX:.0f}s")
     try:
         with yt_dlp.YoutubeDL({**base, "extract_flat": True}) as plano, yt_dlp.YoutubeDL({**base, "check_formats": False}) as completo:
             for consulta in consultas:
