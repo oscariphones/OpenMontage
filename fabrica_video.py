@@ -197,7 +197,8 @@ def fabrica_zonachef(a):
     if not a.sin_render:
         print("[4] render (1 hilo)")
         R.mkdir(parents=True, exist_ok=True)
-        if a.force or not mudo.exists() or mudo.stat().st_size == 0:
+        fuentes = max((P / "film/template.html").stat().st_mtime, (AU / "timeline.json").stat().st_mtime)
+        if a.force or not mudo.exists() or mudo.stat().st_size == 0 or mudo.stat().st_mtime < fuentes:   # plantilla o voz nuevas: re-render
             while ram_libre_mb() < RAM_MIN_MB:
                 print(f"  RAM libre {ram_libre_mb()} MB < {RAM_MIN_MB}: espero 30 s", flush=True); time.sleep(30)
             run(f'npx hyperframes render . --output "{mudo}" --workers 1 --fps 30', cwd=HF)
@@ -206,7 +207,7 @@ def fabrica_zonachef(a):
 
     print("[5] musica y mezcla (-14 LUFS, true peak <= -2 dB)")
     mix = AU / "final_mix.m4a"
-    if a.force or not mix.exists():
+    if a.force or not mix.exists() or mix.stat().st_mtime < (AU / "timeline.json").stat().st_mtime:   # voz nueva: re-mezcla
         mezclar_audio(AU, asegurar_musica(P, a.musica), total, mix, ["-c:a", "aac", "-b:a", "192k"])
     li, tp = loudness(mix)
     print(f"  mezcla final: {li:.1f} LUFS, true peak {tp:+.1f} dBTP")
