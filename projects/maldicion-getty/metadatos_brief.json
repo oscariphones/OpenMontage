@@ -1,0 +1,33 @@
+{
+  "tema": "la maldición de los Getty: el hombre más rico de EE. UU. que no quiso pagar el rescate de su nieto",
+  "titulos": [
+    "El Hombre Más Rico de EE. UU. No Quiso Pagar el Rescate de Su Nieto",
+    "Tenía Miles de Millones… y Su Familia Se Destruyó",
+    "La Maldición Getty: Lo Que el Dinero No Pudo Comprar"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "En 1973 secuestraron en Roma al nieto de Jean Paul Getty, el hombre más rico de Estados Unidos. Los secuestradores pidieron 17 millones de dólares y el abuelo se negó a pagar… hasta que un periódico recibió la oreja del muchacho.\n\nEsta es la historia de una fortuna que sobrevivió y una familia que no: el primer millón a los 24 años, la mansión con teléfono público para los invitados, los hijos que buscaban su aprobación, el secuestro, el precio que pagó la siguiente generación y la redención de Paul Getty Jr.\n\nLa lección: el dinero es una herramienta que amplifica lo que ya eres. Saber multiplicarlo no sirve de mucho si no inviertes en las personas que lo van a heredar.\n\nCifras redondeadas de fuentes públicas. Cuéntame en los comentarios: ¿tú habrías pagado el rescate?",
+  "hashtags": ["#FamiliaGetty", "#FinanzasPersonales", "#EducacionFinanciera", "#Herencia", "#HistoriasDeDinero"],
+  "etiquetas": [
+    "familia Getty", "Jean Paul Getty", "secuestro Getty", "maldición Getty", "familias millonarias",
+    "historias de millonarios", "herencia familiar", "riqueza generacional", "Getty Oil", "dinastías",
+    "dinero y familia", "educación financiera"
+  ],
+  "capitulos": {
+    "GANCHO": "El rescate que no quiso pagar",
+    "EL IMPERIO": "Cómo se hizo el hombre más rico de EE. UU.",
+    "EL TACAÑO": "El teléfono público de la mansión",
+    "LOS HIJOS": "Los hijos que buscaban su aprobación",
+    "EL SECUESTRO": "El secuestro de 1973",
+    "EL PRECIO": "Lo que pagó la siguiente generación",
+    "LA LECCION": "La lección para tu dinero",
+    "LA REDENCION": "La redención de Paul Getty Jr.",
+    "CIERRE": "¿Tú habrías pagado?"
+  },
+  "miniatura": {
+    "expresion": "frío e indiferente: mirada de reojo, cejas bajas, boca apretada en una línea",
+    "postura": "de brazos cruzados, dándole medio cuerpo la espalda a un teléfono que suena",
+    "objeto": "un teléfono público antiguo dorado con el auricular descolgado",
+    "texto": ["NO PAGÓ", "EL RESCATE"]
+  }
+}

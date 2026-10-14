@@ -1,0 +1,31 @@
+{
+  "tema": "cómo gana dinero el banco con tu cuenta gratis y cómo evitar sus comisiones",
+  "titulos": [
+    "Tu Cuenta Es Gratis… y el Banco Gana Millones Contigo",
+    "Así Te Cobra el Banco Sin Que Te Des Cuenta",
+    "El Banco Te Paga $10 y Gana $300 con Tu Dinero"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Tu cuenta de banco es gratis y aun así los bancos ganan miles de millones. El truco: tu dinero no se queda en una bóveda. El banco te paga 1 % por tus ahorros y presta ese mismo dinero en tarjetas de crédito que pueden pasar del 30 %. Y luego están las comisiones que pagas sin darte cuenta.\n\nEn este video:\n- Qué pasa con tu dinero cuando lo depositas\n- El margen de interés: $10 para ti, $300 para el banco\n- 5 comisiones: sobregiros, cuotas de manejo, cajeros ajenos, compras en el extranjero y pagos atrasados\n- Lo que no ves: comisiones a las tiendas y banca de inversión\n- Cómo defenderte, paso a paso\n\nTasas y comisiones ilustrativas: cambian según el país y el banco. Cuéntame en los comentarios cuánto te cobró tu banco el mes pasado.",
+  "hashtags": ["#Bancos", "#FinanzasPersonales", "#EducacionFinanciera", "#Comisiones", "#Ahorro"],
+  "etiquetas": [
+    "cómo ganan dinero los bancos", "comisiones bancarias", "cuenta de banco gratis", "margen de interés", "sobregiro",
+    "cuota de manejo", "tarjeta de crédito", "comisión por compras en el extranjero", "bancos digitales", "cooperativas de ahorro",
+    "ahorro", "finanzas personales"
+  ],
+  "capitulos": {
+    "GANCHO": "Tu cuenta gratis no es gratis",
+    "LA BOVEDA": "Tu dinero no está en una bóveda",
+    "EL MARGEN": "$10 para ti, $300 para el banco",
+    "LAS COMISIONES": "Las 5 comisiones que pagas sin darte cuenta",
+    "LO QUE NO VES": "Lo que no ves",
+    "COMO DEFENDERTE": "Cómo defenderte",
+    "CIERRE": "¿Cuánto te cobró tu banco?"
+  },
+  "miniatura": {
+    "expresion": "indignado: cejas fruncidas, boca abierta como si acabara de descubrir una trampa",
+    "postura": "sostiene con una mano un estado de cuenta largo que cae hasta el suelo y con la otra lo señala",
+    "objeto": "una tarjeta bancaria con un anzuelo de pesca enganchado",
+    "texto": ["TU CUENTA", "NO ES GRATIS"]
+  }
+}
