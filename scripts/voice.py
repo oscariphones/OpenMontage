@@ -9,6 +9,23 @@ REPO = Path(__file__).resolve().parents[1]
 REF = REPO / "referencia_voz.wav.wav"
 GAP_S, GAP_SEC, LEAD, TAIL, SR = 0.28, 0.65, 0.35, 1.2, 44100
 GEN = dict(exaggeration=0.5, cfg_weight=0.5, temperature=0.8)
+UNI = "cero uno dos tres cuatro cinco seis siete ocho nueve diez once doce trece catorce quince dieciséis diecisiete dieciocho diecinueve veinte veintiuno veintidós veintitrés veinticuatro veinticinco veintiséis veintisiete veintiocho veintinueve".split()
+DEC = "_ _ _ treinta cuarenta cincuenta sesenta setenta ochenta noventa".split()
+CEN = "_ ciento doscientos trescientos cuatrocientos quinientos seiscientos setecientos ochocientos novecientos".split()
+
+
+def en_letras(n):
+    """Entero 0-999999 a palabras en español (Chatterbox lee mal las cifras: '1995' sale trabado)."""
+    if n < 30: return UNI[n]
+    if n < 100: return DEC[n // 10] + ("" if n % 10 == 0 else " y " + UNI[n % 10])
+    if n < 1000: return "cien" if n == 100 else CEN[n // 100] + ("" if n % 100 == 0 else " " + en_letras(n % 100))
+    mil = "mil" if n // 1000 == 1 else en_letras(n // 1000).replace("uno", "un").replace("veintiun", "veintiún") + " mil"
+    return mil + ("" if n % 1000 == 0 else " " + en_letras(n % 1000))
+
+
+def para_voz(texto):
+    """Solo la voz recibe las cifras en letras; timeline.json conserva el texto original para los subtitulos."""
+    return re.sub(r"\d+", lambda m: en_letras(int(m.group())) if int(m.group()) < 10**6 else m.group(), texto)
 
 
 def main():
@@ -30,13 +47,16 @@ def main():
         sents.append({"section": sec, "text": line})
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     model = None
+    # Re-toma de una frase trabada: la semilla es fija (1000 + k), asi que borrar su wav repetiria el mismo audio.
+    # assets/audio/semillas.json {"0": 2000} cambia la semilla solo de esa frase (indice desde 0); sin archivo, nada cambia.
+    sj = A / "semillas.json"; semillas = json.load(open(sj, encoding="utf-8")) if sj.exists() else {}
     pcm, t = bytearray(b"\x00\x00" * int(SR * LEAD)), LEAD
     for k, s in enumerate(sents):
         raw, fin = A / "sentences" / f"{k:03d}_raw.wav", A / "sentences" / f"{k:03d}.wav"
         if not fin.exists():
             if model is None: model = ChatterboxMultilingualTTS.from_pretrained(device=dev)
-            torch.manual_seed(1000 + k)
-            wav = model.generate(s["text"], language_id="es", audio_prompt_path=str(ref), **GEN)
+            torch.manual_seed(int(semillas.get(str(k), 1000 + k)))
+            wav = model.generate(para_voz(s["text"]), language_id="es", audio_prompt_path=str(ref), **GEN)
             soundfile.write(str(raw), wav.squeeze().cpu().numpy(), model.sr)
             subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(raw), "-ac", "1", "-af", "aresample=resampler=soxr:precision=28", "-ar", str(SR), "-c:a", "pcm_s16le", str(fin)], check=True)
             print(f"  frase {k + 1}/{len(sents)}", flush=True)
