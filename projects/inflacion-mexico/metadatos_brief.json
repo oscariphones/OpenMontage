@@ -1,0 +1,32 @@
+{
+  "tema": "la historia de la inflación en México: de 12.50 por dólar al 159 % de 1987, los tres ceros y lo que significa para tus ahorros",
+  "titulos": [
+    "Un Millón de Pesos en 1980… Hoy Vale Mil",
+    "Así Se Comió la Inflación el Dinero de los Mexicanos",
+    "159 % de Inflación: La Historia Que México No Debe Olvidar"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "En 1980, un millón de pesos era una pequeña fortuna. Hoy, ese mismo dinero vale mil pesos. No te lo robó nadie: se lo comió la inflación.\n\nEn este video recorremos la historia de la inflación en México:\n- 1954-1976: el dólar a 12.50 y el peso \"firme como una roca\"\n- 1976: la primera gran devaluación\n- 1982: \"defenderé el peso como un perro\" y casi 100 % de inflación\n- 1987: el récord de 159 %\n- 1993: el nuevo peso y los tres ceros\n- 1994-1995: el error de diciembre\n- Banxico autónomo, la meta de 3 % y el repunte de 2022\n\nY lo más importante: qué significa para tus ahorros hoy y por qué tu dinero tiene que crecer más rápido que los precios.\n\nCifras redondeadas de datos públicos de Banco de México e INEGI. Cuéntame en los comentarios qué recuerdas que costara mucho menos cuando eras niño.",
+  "hashtags": ["#Inflacion", "#Mexico", "#FinanzasPersonales", "#EducacionFinanciera", "#Ahorro"],
+  "etiquetas": [
+    "inflación en México", "historia de la inflación", "devaluación del peso", "nuevo peso 1993", "inflación 1987",
+    "error de diciembre", "Banco de México", "poder adquisitivo", "ahorro e inflación", "Cetes",
+    "economía mexicana", "finanzas personales"
+  ],
+  "capitulos": {
+    "GANCHO": "Un millón de pesos que hoy vale mil",
+    "LOS AÑOS TRANQUILOS": "1954-1976: el dólar a 12.50",
+    "LA DECADA PERDIDA": "1982-1987: la década perdida",
+    "LOS TRES CEROS": "1993: el nuevo peso",
+    "EL ERROR DE DICIEMBRE": "1994-1995: el error de diciembre",
+    "LA CALMA": "Banxico y la meta de 3 %",
+    "LO QUE SIGNIFICA PARA TI": "Qué significa para tus ahorros",
+    "CIERRE": "El dinero quieto pierde"
+  },
+  "miniatura": {
+    "expresion": "incrédulo: ojos muy abiertos, una ceja levantada y boca torcida",
+    "postura": "sostiene con ambas manos un billete antiguo enorme mirándolo de cerca, como si no pudiera creer lo poco que vale",
+    "objeto": "un fajo de billetes viejos de mil pesos con los tres ceros tachados en rojo",
+    "texto": ["1 MILLÓN", "AHORA VALE $1,000"]
+  }
+}
