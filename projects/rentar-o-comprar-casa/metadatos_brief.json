@@ -1,0 +1,32 @@
+{
+  "tema": "rentar o comprar casa: las cuentas completas a 10 y 30 años, y la pregunta que decide quién gana",
+  "titulos": [
+    "Rentar vs Comprar Casa: Hice Las Cuentas a 10 Años",
+    "Comprar Casa Te Hace Más Rico… Solo Si NO Haces Esto",
+    "Rentar o Comprar: La Pregunta Que Nadie Te Hace"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Tus papás te dicen que compres casa, e internet te dice que rentes e inviertas la diferencia. Los dos tienen razón a medias.\n\nHicimos las cuentas completas con dos personas que ganan lo mismo y tienen los mismos ahorros:\n- Los primeros años: por qué rentar va ganando\n- El giro: la renta sube cada año y la cuota de la hipoteca no\n- El apalancamiento: ganar plusvalía sobre una casa entera con solo el enganche\n- A los 10 años: patrimonio de la casa vs fondo indexado\n- La pregunta que decide todo: ¿qué haces con la diferencia?\n- Cuándo rentar sí gana\n\nEl ejemplo usa dólares y condiciones de Estados Unidos (hipoteca 6.5 % a 30 años, plusvalía 3 %, renta +3 % anual, fondo 8 % promedio histórico); en tu país las tasas cambian, pero la lógica es la misma. Cuéntame en los comentarios: ¿eres del equipo que renta o del que compra?",
+  "hashtags": ["#RentarOComprar", "#FinanzasPersonales", "#EducacionFinanciera", "#BienesRaices", "#Inversion"],
+  "etiquetas": [
+    "rentar o comprar casa", "rentar vs comprar", "conviene comprar casa", "hipoteca", "comprar casa o invertir",
+    "rentar e invertir la diferencia", "apalancamiento bienes raíces", "plusvalía", "fondos indexados",
+    "educación financiera", "finanzas personales", "crédito hipotecario"
+  ],
+  "capitulos": {
+    "GANCHO": "¿Rentar o comprar?",
+    "EL EXPERIMENTO": "Marcos compra, Javier renta",
+    "LOS PRIMEROS AÑOS": "Los primeros años",
+    "EL GIRO": "La renta sube, la hipoteca no",
+    "LOS DIEZ AÑOS": "El marcador a 10 años",
+    "LA DIFERENCIA": "La pregunta que decide todo",
+    "CUANDO RENTAR GANA": "Cuándo rentar sí gana",
+    "CIERRE": "¿De qué equipo eres?"
+  },
+  "miniatura": {
+    "expresion": "dudoso y calculador: una ceja levantada, boca de lado",
+    "postura": "de pie entre dos puertas, señalando una con cada mano, como eligiendo",
+    "objeto": "una casita con una llave colgando y un signo de dólar en la puerta",
+    "texto": ["¿RENTAR", "O COMPRAR?"]
+  }
+}
