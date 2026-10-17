@@ -1,0 +1,33 @@
+{
+  "tema": "el método de negociación de Harvard aplicado al dinero: sueldo, renta, deudas y compras grandes",
+  "titulos": [
+    "El Método de Harvard Para Obtener Siempre Lo Que Quieres",
+    "Deja de Aceptar el Primer Precio: Negocia Como en Harvard",
+    "Negocia Tu Sueldo, Tu Renta y Tus Deudas (Método Harvard)"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Cada vez que aceptas el primer precio, la primera oferta o el primer sueldo, alguien más se queda con tu dinero. Casi nunca es porque el otro sea más listo, sino porque llegaste a negociar sin un método.\n\nEn este video aplicamos al dinero el método del Proyecto de Negociación de Harvard (libro \"Getting to Yes\", de Roger Fisher y William Ury):\n- La historia de la naranja: por qué partir a la mitad es perder\n- Paso 1: intereses, no posiciones (tu aumento)\n- Paso 2: criterios objetivos (tu renta)\n- Paso 3: opciones donde los dos ganan (tus deudas con el banco)\n- Paso 4: suave con la persona, firme con el problema (la compra de un auto)\n- Tu mejor alternativa si no hay acuerdo: tu verdadero poder\n- Qué hacer si el otro juega sucio o te ataca\n\nCuéntame en los comentarios: ¿qué es lo próximo que vas a negociar?",
+  "hashtags": ["#Negociacion", "#FinanzasPersonales", "#EducacionFinanciera", "#AumentoDeSueldo", "#DesarrolloPersonal"],
+  "etiquetas": [
+    "técnicas de negociación", "cómo negociar", "método Harvard negociación", "getting to yes en español",
+    "cómo pedir un aumento", "negociar sueldo", "negociar la renta", "negociar deudas con el banco",
+    "mejor alternativa a un acuerdo negociado", "MAAN", "educación financiera", "finanzas personales"
+  ],
+  "capitulos": {
+    "GANCHO": "Deja de aceptar el primer precio",
+    "LA NARANJA": "La historia de la naranja",
+    "INTERESES": "Paso 1: intereses, no posiciones",
+    "CRITERIOS JUSTOS": "Paso 2: criterios objetivos",
+    "OPCIONES": "Paso 3: opciones donde los dos ganan",
+    "PERSONA Y PROBLEMA": "Paso 4: suave con la persona",
+    "TU MEJOR ALTERNATIVA": "Tu mejor alternativa: tu poder",
+    "LAS TRAMPAS": "Si juegan sucio",
+    "CIERRE": "¿Qué vas a negociar?"
+  },
+  "miniatura": {
+    "expresion": "seguro y astuto: media sonrisa, mirada fija, una ceja levantada",
+    "postura": "sentado en una mesa de negociación, inclinado hacia adelante, extendiendo la mano para cerrar un trato",
+    "objeto": "una naranja partida a la mitad sobre un fajo de billetes",
+    "texto": ["SIEMPRE OBTÉN", "LO QUE QUIERES"]
+  }
+}
