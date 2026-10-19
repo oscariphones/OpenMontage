@@ -1,0 +1,35 @@
+{
+  "tema": "con cuánto dinero se retira la gente de verdad: patrimonio real, pensión, el mito del millón y el mito del 80 %",
+  "titulos": [
+    "Con Esto Se Retira La Mayoría (No Es Un Millón)",
+    "El Mito Del Millón: Cuánto Necesitas De Verdad Para Retirarte",
+    "Tu Vecino Te Miente Sobre Su Retiro: Los Números Reales"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Tu vecino dice que se retiró con un millón de dólares. Lo más probable es que no sea cierto, y creerle puede costarte años de vida trabajando de más.\n\nRevisamos los números reales del retiro:\n- El miedo número uno de los jubilados\n- Cuánto tiene la gente en cuentas de retiro\n- El patrimonio real por edad, y cuánto necesitas para estar en el 25 % y el 10 % más alto\n- El factor que nadie menciona: el estado civil\n- Por qué un plan escrito vale 27 % más\n- Cómo funciona la pensión del Seguro Social según la edad\n- El mito del millón y el mito del 80 % del sueldo\n- Las tres reglas para llegar tranquilo\n\nLos datos son de Estados Unidos (Reserva Federal, Goldman Sachs, Seguro Social); en tu país las pensiones cambian, pero la lógica es la misma. Cuéntame en los comentarios: ¿con cuánto crees que podrías retirarte tranquilo?",
+  "hashtags": ["#Retiro", "#FinanzasPersonales", "#EducacionFinanciera", "#Jubilacion", "#Ahorro"],
+  "etiquetas": [
+    "cuánto dinero necesito para retirarme", "retiro", "jubilación", "ahorro para el retiro", "un millón para retirarse",
+    "regla del 80 por ciento", "seguro social", "pensión", "patrimonio neto por edad", "plan financiero",
+    "educación financiera", "finanzas personales"
+  ],
+  "capitulos": {
+    "GANCHO": "Tu vecino te miente",
+    "EL MIEDO": "El miedo de los jubilados",
+    "LO QUE AHORRA LA GENTE": "Lo que ahorra la gente",
+    "EL PATRIMONIO REAL": "El patrimonio real por edad",
+    "EL FACTOR QUE NADIE MENCIONA": "El factor que nadie menciona",
+    "EL PLAN ESCRITO": "El poder de un plan escrito",
+    "LA PENSIÓN": "La pensión según tu edad",
+    "EL MITO DEL MILLÓN": "El mito del millón",
+    "EL MITO DEL OCHENTA": "El mito del 80 %",
+    "LAS TRES REGLAS": "Las tres reglas",
+    "CIERRE": "¿Con cuánto te retirarías?"
+  },
+  "miniatura": {
+    "expresion": "sorprendido y escéptico: ojos muy abiertos, una ceja levantada",
+    "postura": "sentado en una mecedora, señalando con incredulidad hacia el texto",
+    "objeto": "un reloj de arena con monedas cayendo en lugar de arena",
+    "texto": ["NO NECESITAS", "UN MILLÓN"]
+  }
+}
