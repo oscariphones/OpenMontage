@@ -1,0 +1,34 @@
+{
+  "tema": "la trampa de comprar ahora y pagar después en México: meses sin intereses, Kueski Pay, Aplazo, CAT, Buró de Crédito y cómo usarlos sin endeudarte",
+  "titulos": [
+    "Meses Sin Intereses: La Trampa Que Nadie Te Explica",
+    "Pagar A Meses Te Está Dejando Pobre (Y Ni Lo Notas)",
+    "Kueski, Aplazo Y MSI: Quién Gana Cuando Pagas A Plazos"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Pagaste a meses unos tenis, unos audífonos o hasta el súper. Parece gratis, pero los pagos a plazos están diseñados para que gastes más de lo que tienes.\n\nEn este video:\n- Qué son los pagos a plazos: meses sin intereses, Kueski Pay, Aplazo, Mercado Pago\n- Por qué no es nada nuevo (las tiendas de abonos ya lo hacían)\n- La letra chica: comisiones, Buró de Crédito y el CAT\n- Cómo ganan dinero estas empresas aunque no te cobren intereses\n- Un celular de 20 mil pesos pagado de tres formas\n- Los cuatro trucos de psicología de la pantalla de pago\n- La bola de mensualidades\n- Las tres reglas para usarlos sin endeudarte\n\nEl ejemplo de la tarjeta es un cálculo ilustrativo (tasa de 45 % anual más IVA, abonos de $1,000 al mes); las estadísticas de usuarios son de Estados Unidos. Revisa siempre el CAT y las condiciones de cada crédito. Cuéntame en los comentarios: ¿cuántas mensualidades estás pagando ahorita?",
+  "hashtags": ["#MesesSinIntereses", "#FinanzasPersonales", "#EducacionFinanciera", "#Deudas", "#Mexico"],
+  "etiquetas": [
+    "meses sin intereses", "compra ahora paga después", "kueski pay", "aplazo", "mercado pago a meses",
+    "CAT tarjeta de crédito", "buró de crédito", "tarjetas departamentales", "pagos a plazos", "deudas",
+    "educación financiera", "finanzas personales méxico"
+  ],
+  "capitulos": {
+    "GANCHO": "Pagaste a meses hasta el súper",
+    "QUÉ ES ESTO": "Qué son los pagos a plazos",
+    "NO ES NUEVO": "Esto no tiene nada de nuevo",
+    "LA LETRA CHICA": "La letra chica y el CAT",
+    "QUIÉN GANA DE VERDAD": "Quién gana de verdad",
+    "EL CELULAR DE VEINTE MIL": "Un celular de $20,000, tres caminos",
+    "LOS CUATRO TRUCOS": "Los cuatro trucos de la pantalla de pago",
+    "LA BOLA DE MENSUALIDADES": "La bola de mensualidades",
+    "LAS TRES REGLAS": "Las tres reglas",
+    "CIERRE": "¿Cuántas mensualidades pagas?"
+  },
+  "miniatura": {
+    "expresion": "agobiado y sorprendido: ojos muy abiertos, sudor en la frente",
+    "postura": "cargando una torre tambaleante de cajas de compras, mirando el texto",
+    "objeto": "una tarjeta de crédito atada con una cadena a un candado",
+    "texto": ["MESES SIN", "INTERESES", "= TRAMPA"]
+  }
+}
