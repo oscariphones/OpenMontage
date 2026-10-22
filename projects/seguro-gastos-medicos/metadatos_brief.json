@@ -1,0 +1,36 @@
+{
+  "tema": "el seguro de gastos médicos mayores en México explicado para cualquier persona: prima, suma asegurada, deducible, coaseguro, tope de coaseguro, letra chica (periodos de espera, preexistencias, nivel hospitalario) y cómo elegir",
+  "titulos": [
+    "Tienes Seguro Y Aun Así Pagas $48,000: Así Funciona",
+    "Deducible Y Coaseguro Explicados Como Para Tu Abuelita",
+    "La Trampa Del Seguro De Gastos Médicos Que Nadie Lee"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Mucha gente paga un seguro de gastos médicos durante años y aun así termina pagando una fortuna en el hospital. No es mala suerte: es que nadie le explicó tres palabras.\n\nEn este video, en palabras normales:\n- Qué es un seguro (la bolsa de mil personas)\n- La prima: lo que pagas por tener el seguro\n- La suma asegurada: lo máximo que paga la aseguradora\n- El deducible: la primera parte de la cuenta, que pagas tú\n- El coaseguro y su tope\n- Ejemplo: una cuenta de hospital de $300,000, paso a paso\n- Las 3 trampas de la letra chica\n- Cómo elegir según tu situación\n\nLas cifras del ejemplo (deducible de $20,000, coaseguro de 10 %, tope de $40,000) son ilustrativas; cada póliza tiene las suyas. Revisa siempre las condiciones de tu póliza. Cuéntame en los comentarios: ¿tienes seguro de gastos médicos?",
+  "hashtags": ["#SeguroDeGastosMedicos", "#FinanzasPersonales", "#EducacionFinanciera", "#Seguros", "#Mexico"],
+  "etiquetas": [
+    "seguro de gastos médicos mayores", "qué es el deducible", "qué es el coaseguro", "tope de coaseguro",
+    "suma asegurada", "prima de seguro", "seguro médico méxico", "periodo de espera seguro",
+    "enfermedades preexistentes", "IMSS o seguro privado", "educación financiera", "finanzas personales méxico"
+  ],
+  "capitulos": {
+    "GANCHO": "Con seguro y aun así pagas una fortuna",
+    "DE QUÉ VA ESTO": "Las 3 palabras clave",
+    "SUSCRÍBETE": "Suscríbete",
+    "QUÉ ES UN SEGURO": "Qué es un seguro",
+    "LA PRIMA": "La prima",
+    "LA SUMA ASEGURADA": "La suma asegurada",
+    "EL DEDUCIBLE": "El deducible",
+    "EL COASEGURO": "El coaseguro y su tope",
+    "LA CUENTA DE TRESCIENTOS MIL": "Ejemplo: cuenta de $300,000",
+    "LA LETRA CHICA": "Las 3 trampas de la letra chica",
+    "CÓMO ELEGIR": "Cómo elegir tu seguro",
+    "CIERRE": "¿Tienes seguro?"
+  },
+  "miniatura": {
+    "expresion": "en shock: ojos muy abiertos, boca abierta, sudando",
+    "postura": "sosteniendo con las dos manos una cuenta de hospital larguísima que cae al piso",
+    "objeto": "una tarjeta de seguro médico con una cruz verde, partida a la mitad",
+    "texto": ["TIENES SEGURO", "Y AÚN ASÍ", "PAGAS"]
+  }
+}
