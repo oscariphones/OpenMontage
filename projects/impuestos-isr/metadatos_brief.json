@@ -1,0 +1,34 @@
+{
+  "tema": "cómo funciona el ISR en México para asalariados: tarifa progresiva por escalones, el mito del aumento, tasa real vs tasa del escalón, sueldo bruto y neto, deducciones personales y declaración anual con saldo a favor",
+  "titulos": [
+    "Te Suben El Sueldo Y Ganas Menos: El Mito Del ISR",
+    "Cuánto Te Quita El SAT De Verdad (Y Cómo Recuperarlo)",
+    "El ISR Explicado: Por Qué No Pagas Lo Que Crees"
+  ],
+  "titulo_elegido": 1,
+  "descripcion": "Cada quincena el SAT se lleva una parte de tu sueldo, y casi nadie sabe cuánto ni por qué. Hay quien hasta rechaza un aumento por miedo a \"pagar más impuestos\". Es un mito.\n\nEn este video:\n- Cómo funciona el ISR: una escalera de tasas, del ~2 % al 35 %\n- Por qué un aumento siempre te deja más dinero\n- Ejemplo: cuánto ISR se retiene en un sueldo de $20,000 al mes (≈ $2,600, cerca del 13 %)\n- Sueldo bruto vs sueldo neto: ISR, IMSS y tu recibo de nómina\n- Las deducciones personales que casi nadie aprovecha\n- La declaración anual de abril y el saldo a favor\n\nEl ejemplo usa la tarifa mensual del artículo 96 de la LISR vigente en 2025 y es aproximado (no incluye IMSS ni otras retenciones). Revisa tu caso en el portal del SAT o con un contador. Cuéntame en los comentarios: ¿alguna vez te ha salido saldo a favor?",
+  "hashtags": ["#ISR", "#SAT", "#FinanzasPersonales", "#EducacionFinanciera", "#Mexico"],
+  "etiquetas": [
+    "ISR", "impuesto sobre la renta", "SAT", "cómo se calcula el ISR", "tabla ISR", "declaración anual",
+    "saldo a favor", "deducciones personales", "sueldo bruto y neto", "recibo de nómina",
+    "educación financiera", "finanzas personales méxico"
+  ],
+  "capitulos": {
+    "GANCHO": "Lo que el SAT se lleva de tu sueldo",
+    "DE QUÉ VA ESTO": "El ISR, sin rodeos",
+    "SUSCRÍBETE": "Suscríbete",
+    "LOS ESCALONES": "La escalera de tasas",
+    "EL MITO DEL AUMENTO": "El mito del aumento",
+    "UN SUELDO DE VEINTE MIL": "Ejemplo: sueldo de $20,000",
+    "BRUTO CONTRA NETO": "Sueldo bruto vs neto",
+    "LAS DEDUCCIONES": "Las deducciones personales",
+    "LA DECLARACIÓN ANUAL": "Declaración anual y saldo a favor",
+    "CIERRE": "¿Te ha salido saldo a favor?"
+  },
+  "miniatura": {
+    "expresion": "indignado y sorprendido: cejas levantadas, boca abierta",
+    "postura": "sosteniendo un recibo de nómina largo que le cuelga hasta el piso, señalándolo",
+    "objeto": "una calculadora con un billete mordido",
+    "texto": ["¿CUÁNTO TE", "QUITA EL SAT?"]
+  }
+}
