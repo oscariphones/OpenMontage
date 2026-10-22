@@ -17,8 +17,8 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#F4F5F7}
 .row{display:flex;align-items:center;justify-content:space-between}
 /* cabecera */
 #hdr{left:60px;top:64px;right:60px;height:72px;display:flex;align-items:center;justify-content:space-between}
-#logo{display:flex;align-items:center;gap:16px;font-weight:800;font-size:38px;letter-spacing:.06em}
-#logo i{display:block;width:30px;height:30px;background:var(--red);border-radius:7px}
+#logo{display:flex;align-items:center}
+#logo img{display:block;height:92px;width:auto}
 #role{font-size:24px;font-weight:600;color:var(--sub);padding:10px 22px;border:1.5px solid var(--line);border-radius:40px;background:#fff}
 #role b{color:var(--red)}
 /* titulo de escena */
@@ -61,8 +61,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#F4F5F7}
 #a{left:100px;top:700px;background:#fff;border:1px solid var(--line);box-shadow:0 18px 50px rgba(17,18,20,.10);border-bottom-left-radius:8px}
 #a small{display:block;font-size:22px;font-weight:800;color:var(--red);letter-spacing:.12em;margin-bottom:8px}
 #lock{left:0;right:0;top:960px;display:flex;flex-direction:column;align-items:center;gap:24px;opacity:0}
-#lock .lg{display:flex;align-items:center;gap:24px;font-size:92px;font-weight:900;letter-spacing:.05em}
-#lock .lg i{display:block;width:72px;height:72px;background:var(--red);border-radius:16px}
+#lock .lg{display:block;height:300px;width:auto}
 #lock p{font-size:40px;font-weight:700;color:var(--ink)}
 #lock .url{font-size:34px;font-weight:800;color:#fff;background:var(--red);padding:16px 34px;border-radius:18px;box-shadow:0 14px 30px rgba(215,38,46,.30)}
 /* subtitulos */
@@ -77,7 +76,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#F4F5F7}
 <body>
 <div id="root" data-composition-id="main" data-start="0" data-duration="__DUR__" data-width="1080" data-height="1920">
  <section id="sc" class="clip" data-start="0" data-duration="__DUR__" data-track-index="1" style="position:absolute;inset:0">
-  <div id="hdr" class="abs"><div id="logo"><i></i>ZONA CHEF</div><div id="role">Consultor <b>Gastronómico</b></div></div>
+  <div id="hdr" class="abs"><div id="logo"><img src="assets/logo_zonachef.png" alt="Zona Chef"></div><div id="role">Consultor <b>Gastronómico</b></div></div>
   <div id="ttl" class="abs">
    <div class="tt" id="t0"><small>Diagnóstico de barra</small><span>¿Cuántas cuentas cierras<br>sin café?</span></div>
    <div class="tt" id="t1"><small>Rentabilidad</small><span>El café cierra la cuenta</span></div>
@@ -141,7 +140,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#F4F5F7}
   <!-- 7-9 Zona Chef como aliado -->
   <div class="bub abs" id="q">Vendo unas 30 tazas al día. ¿Qué equipo me conviene?</div>
   <div class="bub abs" id="a"><small>ZONA CHEF</small>Te ayudamos a elegir el equipo correcto para tu volumen.</div>
-  <div id="lock" class="abs"><div class="lg"><i></i>ZONA CHEF</div><p>Tu aliado para equipar tu negocio</p><div class="url">zonachef.com.mx</div></div>
+  <div id="lock" class="abs"><img class="lg" src="assets/logo_zonachef.png" alt="Zona Chef"><p>Tu aliado para equipar tu negocio</p><div class="url">zonachef.com.mx</div></div>
 
   <div id="cap" class="abs"></div>
   <div id="prog" class="abs"><u></u></div>
