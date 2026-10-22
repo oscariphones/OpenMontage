@@ -224,6 +224,17 @@ def fabrica_zonachef(a):
     print("LISTO (no se publica nada)")
 
 
+def revisar_suscribete(guion):
+    """Regla del usuario (2026-10-21): tras presentar el tema y antes de la explicacion, el video se interrumpe con un recordatorio
+    para suscribirse. En el guion es una seccion "## SUSCRIBETE" de 1-3 frases en la 2a o 3a posicion (nunca la ultima)."""
+    secs = [l[3:].strip() for l in guion.read_text(encoding="utf-8").splitlines() if l.startswith("## ")]
+    norm = [s.upper().replace("Í", "I") for s in secs]
+    i = next((k for k, s in enumerate(norm) if "SUSCRIB" in s), -1)
+    if i not in (1, 2) or i == len(secs) - 1:
+        sys.exit(f"El guion {guion.name} necesita una seccion '## SUSCRÍBETE' (recordatorio de suscripcion) justo despues de presentar el tema, "
+                 f"en la 2a o 3a seccion, antes de la explicacion. Secciones actuales: {secs}")
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("proyecto", nargs="?"); ap.add_argument("--musica")
     ap.add_argument("--canal", choices=["finanzas", "zonachef"], default="finanzas", help="finanzas (por defecto, flujo de siempre) o zonachef (Short vertical, sin subida)")
@@ -243,6 +254,7 @@ def main():
     guiones = sorted(P.glob("guion_*.txt"))
     if not guiones or not (P / "film2d/spec.js").exists():
         sys.exit(f"Falta guion_*.txt o film2d/spec.js en {P}. Pide a Claude que redacte el guion y disene spec.js (ver REGLAS_VIDEO.md).")
+    revisar_suscribete(guiones[0])
 
     print("[1] plantilla")
     if P != PLANTILLA:

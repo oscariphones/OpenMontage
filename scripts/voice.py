@@ -23,8 +23,14 @@ def en_letras(n):
     return mil + ("" if n % 1000 == 0 else " " + en_letras(n % 1000))
 
 
+# Siglas como se dicen en voz alta: Chatterbox las lee mal si van en mayusculas (impuestos-isr, 2026-10-21: "ISR" sonaba "Elisar", "RFC" sonaba "Turese").
+SIGLAS = {"LISR": "ley del i ese erre", "ISR": "i ese erre", "RFC": "erre efe ce", "IMSS": "ims", "ISSSTE": "isste",
+          "SAT": "sat", "CAT": "cat", "IVA": "iva", "UMA": "uma", "CURP": "curp", "AFORE": "afore", "INFONAVIT": "infonavit"}
+
+
 def para_voz(texto):
-    """Solo la voz recibe las cifras en letras; timeline.json conserva el texto original para los subtitulos."""
+    """Solo la voz recibe las cifras en letras y las siglas deletreadas; timeline.json conserva el texto original para los subtitulos."""
+    texto = re.sub(r"\b(" + "|".join(sorted(SIGLAS, key=len, reverse=True)) + r")\b", lambda m: SIGLAS[m.group()], texto)
     return re.sub(r"\d+", lambda m: en_letras(int(m.group())) if int(m.group()) < 10**6 else m.group(), texto)
 
 
