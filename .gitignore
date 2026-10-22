@@ -111,6 +111,7 @@ zonachef/trabajo/
 
 # Salidas locales y temporales de la fabrica de videos
 transcripciones_completadas/
+transcripciones_descartadas/
 /renders/
 /guion_finanzas.txt
 /referencia_voz.wav.wav

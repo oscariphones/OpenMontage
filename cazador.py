@@ -62,6 +62,16 @@ CONSULTAS_FINANZAS = [  # todas en ingles
     "how compound interest made me rich",
     "budgeting and saving money tips",
     "business cash flow explained",
+    # formatos que se han hecho virales en el canal (2026-10-22): por qué pasan las cosas, cómo funcionan, historia, esto vs esto
+    "why is gold so valuable",
+    "why the dollar is the world currency",
+    "how credit cards actually work",
+    "how the stock market actually works",
+    "the history of money explained",
+    "history of the biggest financial crashes",
+    "stocks vs real estate which is better",
+    "cash vs credit card which is better",
+    "saving vs investing explained",
 ]
 CONSULTAS_ZONACHEF = [  # todas en ingles: cocina profesional y negocio de restaurantes/cafeterias (B2B)
     "commercial kitchen equipment tips",
