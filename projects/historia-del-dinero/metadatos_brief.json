@@ -1,0 +1,36 @@
+{
+  "tema": "la historia del dinero contada para cualquier persona: del trueque y el cacao mexica a las monedas, el peso de plata mexicano, el papel moneda, el fin del patrón oro, los bancos, el dólar, los nuevos pesos de 1993 y el bitcoin",
+  "titulos": [
+    "Tu Billete De $500 No Vale Nada (Y Aun Así Funciona)",
+    "La Moneda Mexicana Que Conquistó El Mundo: Historia Del Dinero",
+    "Del Cacao Al Bitcoin: La Historia Del Dinero En 4 Minutos"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Ese billete de 500 pesos en tu cartera es papel con dibujos, y aun así te dan comida, ropa o gasolina a cambio. ¿Por qué? La respuesta es una historia de miles de años, y México tiene un papel enorme en ella.\n\nEn este video:\n- Antes del dinero: deudas, conchas, sal y el cacao de los mexicas\n- Las primeras monedas de oro y plata (y la trampa de los reyes)\n- La Casa de Moneda de México (1535) y el peso de plata que usó medio mundo\n- Por qué el dólar se copió del peso mexicano\n- Cómo se descubrió la inflación\n- El papel moneda, el patrón oro y su fin en 1971\n- Cómo los bancos crean dinero y qué es una corrida bancaria\n- Por qué el dólar manda\n- Los nuevos pesos de 1993: cuando le quitaron tres ceros al peso\n- El futuro: transferencias y bitcoin\n\nContenido educativo, no asesoría financiera. Cuéntame en los comentarios: ¿qué parte de la historia no conocías?",
+  "hashtags": ["#HistoriaDelDinero", "#FinanzasPersonales", "#EducacionFinanciera", "#Historia", "#Mexico"],
+  "etiquetas": [
+    "historia del dinero", "origen del dinero", "cacao como moneda", "peso de plata", "real de a ocho",
+    "casa de moneda de méxico", "por qué vale el dinero", "patrón oro", "inflación explicada",
+    "nuevos pesos 1993", "bitcoin", "educación financiera"
+  ],
+  "capitulos": {
+    "GANCHO": "Tu billete no vale nada",
+    "DE QUÉ VA ESTO": "La historia del dinero",
+    "SUSCRÍBETE": "Suscríbete",
+    "ANTES DEL DINERO": "Antes del dinero: conchas y cacao",
+    "LAS MONEDAS": "Las primeras monedas",
+    "LA PLATA DE MÉXICO": "La plata de México conquista el mundo",
+    "EL PAPEL": "El papel moneda y el oro",
+    "LOS BANCOS": "Cómo funcionan los bancos",
+    "EL REY DÓLAR": "Por qué manda el dólar",
+    "LOS CEROS DEL PESO": "Cuando el peso perdió tres ceros",
+    "EL FUTURO": "Del efectivo al bitcoin",
+    "CIERRE": "El dinero es una promesa"
+  },
+  "miniatura": {
+    "expresion": "asombrado y escéptico: una ceja levantada, media sonrisa",
+    "postura": "sosteniendo un billete frente a la cara y mirándolo contra la luz",
+    "objeto": "una antigua moneda de plata mexicana junto a unos granos de cacao",
+    "texto": ["TU BILLETE", "NO VALE", "NADA"]
+  }
+}
