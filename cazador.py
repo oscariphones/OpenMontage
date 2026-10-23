@@ -4,7 +4,7 @@
 Regla estricta
   * Busca videos EN INGLES sobre finanzas, negocios o interes compuesto.
   * Por cada video compara sus VISTAS con los SUSCRIPTORES del canal.
-    Si Vistas > Suscriptores  ->  es un video viral "outlier" y es el GANADOR.
+    Si Vistas > Suscriptores (y al menos MIN_VISTAS vistas)  ->  es un video viral "outlier" y es el GANADOR.
   * Con el ganador usa youtube-transcript-api para extraer la transcripcion original en ingles,
     la guarda en transcripciones_pendientes/<id>_<titulo>.txt (el link va en la PRIMERA linea) y se DETIENE.
 
@@ -49,6 +49,7 @@ VISTOS = CARPETA / ".vistos.json"
 MAX_VIDEOS = 10          # videos examinados por ejecucion (limite duro)
 MAX_BUSQUEDAS = 3        # busquedas por ejecucion
 RESULTADOS_POR_BUSQUEDA = 12
+MIN_VISTAS = 100_000     # sin esto, un canal de 1 suscriptor con 49 vistas contaba como outlier (2026-10-22)
 PAUSA_MIN, PAUSA_MAX = 2.0, 5.0
 
 CONSULTAS_FINANZAS = [  # todas en ingles
@@ -204,7 +205,7 @@ def main():
                     if vistas is None or not subs:
                         print(f"   [{examinados}/{MAX_VIDEOS}] {titulo!r}: sin dato de vistas/suscriptores; sigo")
                         continue
-                    outlier = vistas > subs
+                    outlier = vistas > subs and vistas >= MIN_VISTAS
                     print(f"   [{examinados}/{MAX_VIDEOS}] {titulo!r} | vistas {vistas:,} vs suscriptores {subs:,} -> {'OUTLIER' if outlier else 'no'}")
                     if not outlier:
                         continue
