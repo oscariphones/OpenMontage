@@ -1,0 +1,34 @@
+{
+  "tema": "la causa real de todas las crisis financieras: tulipanes de Holanda (1637), crac de 1929, crisis de las casas de 2008 y el error de diciembre de 1994 en México; el patrón de tres ingredientes y cómo protegerte",
+  "titulos": [
+    "Todas Las Crisis Financieras Tienen La Misma Causa",
+    "De Los Tulipanes Al Error De Diciembre: Por Qué Se Repiten Las Crisis",
+    "La Receta Secreta De Cada Crisis (Y Cómo Protegerte)"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Cada cierto tiempo millones de personas pierden sus ahorros en una crisis financiera, y casi nadie la ve venir. Lo increíble es que todas se parecen muchísimo.\n\nEn este video:\n- La fiebre de los tulipanes en Holanda (1637)\n- El crac de 1929 y el peligro de invertir con dinero prestado\n- La crisis de las casas de 2008\n- El error de diciembre de 1994 y el efecto tequila en México\n- El patrón de tres ingredientes que se repite en todas\n- Tres reglas para protegerte\n\nCifras redondeadas; el ejemplo de compra de acciones con préstamo es ilustrativo. Contenido educativo, no asesoría financiera. Cuéntame en los comentarios: ¿qué crisis te tocó vivir a ti o a tu familia?",
+  "hashtags": ["#CrisisFinanciera", "#FinanzasPersonales", "#EducacionFinanciera", "#Historia", "#Mexico"],
+  "etiquetas": [
+    "crisis financieras", "por qué hay crisis económicas", "crac de 1929", "crisis de 2008", "burbuja de los tulipanes",
+    "error de diciembre", "efecto tequila", "devaluación 1994", "burbuja financiera", "invertir con dinero prestado",
+    "educación financiera", "historia de la economía"
+  ],
+  "capitulos": {
+    "GANCHO": "Nadie ve venir las crisis",
+    "DE QUÉ VA ESTO": "La misma receta",
+    "SUSCRÍBETE": "Suscríbete",
+    "LOS TULIPANES": "La fiebre de los tulipanes (1637)",
+    "EL CRAC DE MIL NOVECIENTOS VEINTINUEVE": "El crac de 1929",
+    "LA CRISIS DE LAS CASAS": "La crisis de las casas (2008)",
+    "EL ERROR DE DICIEMBRE": "El error de diciembre (1994)",
+    "EL PATRÓN": "Los 3 ingredientes de toda crisis",
+    "CÓMO PROTEGERTE": "Cómo protegerte",
+    "CIERRE": "¿Qué crisis te tocó vivir?"
+  },
+  "miniatura": {
+    "expresion": "alarmado: ojos muy abiertos, manos en la cabeza",
+    "postura": "de pie frente a una gráfica que se desploma, retrocediendo",
+    "objeto": "un tulipán rojo marchito junto a una flecha roja hacia abajo",
+    "texto": ["TODAS LAS", "CRISIS SON", "IGUALES"]
+  }
+}
