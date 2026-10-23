@@ -1,0 +1,35 @@
+{
+  "tema": "por qué el oro vale tanto si no es tan raro: de dónde viene, por qué no se arruina, para qué se usa, por qué es carísimo de sacar, su lado oscuro y por qué sube en las crisis",
+  "titulos": [
+    "El Oro No Es Raro. Entonces, ¿Por Qué Vale Tanto?",
+    "Por Qué El Oro Vale Más Que Casi Todo (No Es Lo Que Crees)",
+    "La Verdad Del Oro: Hay En Todos Los Ríos Y Aun Así Es Carísimo"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Hay oro en casi todos los ríos y hasta en el fondo del mar, y aun así una barra del tamaño de un celular cuesta más que un coche nuevo. ¿Por qué?\n\nEn este video, con palabras normales:\n- De dónde viene el oro (spoiler: del espacio)\n- Por qué nunca se echa a perder\n- Para qué se usa todo el oro que se ha sacado en la historia\n- Por qué no es tan raro como crees\n- El verdadero problema: sacarlo cuesta carísimo\n- El lado oscuro de la minería de oro\n- Por qué el oro sube cuando el mundo entra en crisis\n\nCifras redondeadas: unas 210 mil toneladas extraídas en la historia, cerca de la mitad en joyería. Contenido educativo, no asesoría financiera. Cuéntame en los comentarios: ¿tú comprarías oro?",
+  "hashtags": ["#Oro", "#FinanzasPersonales", "#EducacionFinanciera", "#Inversion", "#Economia"],
+  "etiquetas": [
+    "por qué el oro vale tanto", "oro", "precio del oro", "invertir en oro", "de dónde viene el oro",
+    "minería de oro", "oro refugio en crisis", "cuánto oro hay en el mundo", "oro como inversión",
+    "economía explicada", "educación financiera", "finanzas personales"
+  ],
+  "capitulos": {
+    "GANCHO": "El oro no es raro",
+    "DE QUÉ VA ESTO": "Por qué vale tanto",
+    "SUSCRÍBETE": "Suscríbete",
+    "DE DÓNDE VIENE": "El oro vino del espacio",
+    "NO SE ARRUINA": "Razón 1: dura para siempre",
+    "PARA QUÉ SE USA": "Para qué se usa el oro",
+    "NO ES TAN RARO": "Hay oro en casi todos los ríos",
+    "EL PROBLEMA ES SACARLO": "Razón 2: sacarlo es carísimo",
+    "EL LADO OSCURO": "El lado oscuro del oro",
+    "EL REFUGIO": "Razón 3: el refugio en las crisis",
+    "CIERRE": "¿Tú comprarías oro?"
+  },
+  "miniatura": {
+    "expresion": "intrigado y desconfiado: ojos entrecerrados, media sonrisa",
+    "postura": "sosteniendo una pepita de oro entre los dedos y examinándola de cerca",
+    "objeto": "una barra de oro brillante con una lupa encima",
+    "texto": ["EL ORO", "NO ES RARO"]
+  }
+}
