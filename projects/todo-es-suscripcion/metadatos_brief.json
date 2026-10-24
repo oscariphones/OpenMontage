@@ -1,0 +1,37 @@
+{
+  "tema": "por qué ahora todo es suscripción y por qué no ser dueño de nada sale más caro: historia de las suscripciones, por qué les encantan a las empresas, el caso Adobe, la cuenta que nadie hace, lo difícil que es cancelar, el fin de la propiedad y cómo defenderte",
+  "titulos": [
+    "Por Qué Ahora Todo Es Suscripción (Y Te Sale Más Caro)",
+    "No Ser Dueño De Nada Te Está Dejando Pobre",
+    "La Trampa De Las Suscripciones Que Nadie Te Explica"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Una impresora cuesta 160 dólares, pero la marca prefiere rentártela por 8 al mes. En dos años pagas 192 y sigue sin ser tuya. ¿Por qué ahora todo es una suscripción?\n\nEn este video:\n- Las suscripciones no son nuevas (el periódico y la leche)\n- Cómo el internet y el celular lo convirtieron todo en mensualidad\n- Por qué a las empresas les encantan (y por qué casi nadie cancela)\n- El caso de Adobe\n- La cuenta que nadie hace: una computadora rentada que pagas cuatro veces\n- Por qué cancelar es un laberinto\n- El fin de ser dueño de tus cosas\n- 4 reglas para defenderte\n\nCifras del ejemplo redondeadas. Contenido educativo, no asesoría financiera. Cuéntame en los comentarios: ¿cuántas suscripciones pagas al mes?",
+  "hashtags": ["#Suscripciones", "#FinanzasPersonales", "#EducacionFinanciera", "#Ahorro", "#Dinero"],
+  "etiquetas": [
+    "suscripciones", "por qué todo es suscripción", "economía de suscripción", "gastos hormiga", "cancelar suscripciones",
+    "comprar o rentar", "ser dueño de tus cosas", "cómo ahorrar dinero", "adobe suscripción",
+    "pruebas gratis", "educación financiera", "finanzas personales"
+  ],
+  "capitulos": {
+    "GANCHO": "La impresora que nunca será tuya",
+    "DE QUÉ VA ESTO": "Por qué todo es suscripción",
+    "SUSCRÍBETE": "Suscríbete",
+    "NO ES NUEVO": "Las suscripciones no son nuevas",
+    "INTERNET Y EL CELULAR": "Internet y el celular",
+    "POR QUÉ LES ENCANTA": "Por qué les encantan a las empresas",
+    "EL CASO DE ADOBE": "El caso de Adobe",
+    "LA CUENTA QUE NADIE HACE": "La cuenta que nadie hace",
+    "CANCELAR ES UN LABERINTO": "Cancelar es un laberinto",
+    "YA NO ERES DUEÑO": "Ya no eres dueño de nada",
+    "LA RESISTENCIA": "El regreso a lo físico",
+    "CÓMO DEFENDERTE": "4 reglas para defenderte",
+    "CIERRE": "¿Cuántas suscripciones pagas?"
+  },
+  "miniatura": {
+    "expresion": "frustrado e incrédulo: boca abierta, cejas fruncidas",
+    "postura": "atado con cadenas de tarjetas y recibos mensuales, tratando de soltarse",
+    "objeto": "una impresora con un candado y una etiqueta de precio mensual",
+    "texto": ["NO ERES", "DUEÑO DE", "NADA"]
+  }
+}
