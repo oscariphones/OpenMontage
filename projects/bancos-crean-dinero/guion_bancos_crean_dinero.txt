@@ -1,0 +1,79 @@
+FUENTE (solo ideas, guion reescrito y ampliado; enfoque global): https://www.youtube.com/watch?v=O5DaC1Ujrrg
+FORMATO: ~4.5 min, español neutro, tono enérgico y lenguaje para cualquier persona. Contenido educativo, no es asesoría financiera. Datos: el encaje del 10 % en EE. UU. es histórico, la Reserva Federal lo bajó a 0 % en marzo de 2020; Banco de Inglaterra, "Money creation in the modern economy" (2014): los préstamos crean depósitos; Silicon Valley Bank, 9 de marzo de 2023: retiros de unos 42 mil millones de dólares en un día, cerrado el 10 de marzo; seguro FDIC: 250 mil dólares por depositante por banco.
+
+## GANCHO
+Cuando depositas dinero en el banco, seguro piensas que se queda guardado en una caja fuerte con tu nombre.
+Pero la verdad es que el banco casi no guarda tu dinero, porque lo presta casi todo.
+Y al hacerlo pasa algo que suena a magia: aparece dinero nuevo que antes no existía.
+
+## DE QUÉ VA ESTO
+Hoy vamos a entender cómo ganan dinero los bancos y cómo crean dinero de la nada.
+Y por qué esto te importa a ti, tengas una cuenta de ahorro o una tarjeta de crédito.
+
+## SUSCRÍBETE
+Antes de seguir, si te gusta entender cómo funciona el dinero de verdad, suscríbete.
+Cada semana te explico un secreto del dinero con palabras normales, en pocos minutos.
+Ahora sí, vamos a abrir la bóveda del banco.
+
+## EL NEGOCIO BÁSICO
+Empecemos por lo más sencillo, que es la forma en que un banco gana dinero.
+Tú depositas tu dinero y el banco te paga un interés pequeño, o a veces nada.
+Luego presta ese dinero a personas y empresas, pero les cobra un interés mucho más alto.
+La diferencia entre lo que cobra y lo que te paga es su ganancia principal.
+Y además cobra comisiones por manejo de cuenta, por retiros, por pagar tarde y muchas cosas más.
+
+## NO GUARDAN TU DINERO
+Pero entonces, si el banco presta tu dinero, ¿qué pasa cuando tú lo quieres sacar?
+Aquí entra un sistema que se llama reserva fraccionaria.
+Significa que el banco solo guarda en efectivo una parte pequeña de lo que la gente deposita, y presta el resto.
+Durante muchos años, en Estados Unidos esa parte era de alrededor del diez por ciento.
+Y desde dos mil veinte el requisito allá es cero, aunque los bancos igual guardan algo para no quedarse sin efectivo.
+
+## LA MULTIPLICACIÓN
+Y ahora viene la parte más interesante de todas.
+Imagina que depositas diez mil dólares, y el banco guarda mil y presta nueve mil.
+La persona que recibe ese préstamo lo gasta, y quien recibe ese dinero lo vuelve a depositar en un banco.
+Ese banco guarda novecientos, presta ocho mil cien, y la historia se repite una y otra vez.
+Tú sigues viendo tus diez mil en tu cuenta, pero en el sistema ya hay mucho más dinero que antes.
+Con una reserva del diez por ciento, tus diez mil pueden convertirse en hasta cien mil dólares en las cuentas de la gente.
+
+## EL VERDADERO SECRETO
+Y en realidad, el truco es todavía más directo.
+El Banco de Inglaterra lo explicó así: cuando un banco te presta, no saca billetes de una bóveda.
+Simplemente escribe un número nuevo en tu cuenta, y en ese momento nace dinero nuevo.
+Por eso, la mayor parte del dinero que existe no la imprime el gobierno, la crean los bancos al prestar.
+Y cuando pagas el préstamo, ese dinero vuelve a desaparecer.
+
+## DINERO DIGITAL
+Esto explica por qué casi todo el dinero del mundo es solo números en una pantalla.
+Los billetes y las monedas son apenas una parte pequeña de todo el dinero que existe.
+Todo lo demás está guardado en las cuentas de los bancos, como una promesa de que te lo darán cuando lo pidas.
+
+## SI TODOS VAN AL BANCO
+Y aquí está el gran riesgo de este sistema.
+Si muchas personas quieren sacar su dinero al mismo tiempo, el banco no tiene suficiente efectivo.
+A eso se le llama corrida bancaria, y puede tumbar a un banco en cuestión de días.
+En dos mil veintitrés, los clientes de Silicon Valley Bank intentaron sacar unos cuarenta y dos mil millones de dólares en un solo día.
+Al día siguiente, las autoridades cerraron el banco.
+
+## EL SEGURO
+Para evitar el pánico, muchos países tienen un seguro de depósitos.
+Si tu banco quiebra, ese seguro te devuelve tu dinero hasta cierto límite.
+En Estados Unidos, por ejemplo, cubre hasta doscientos cincuenta mil dólares por persona en cada banco.
+
+## LOS LÍMITES
+Entonces, ¿los bancos pueden crear todo el dinero que quieran?
+No, porque necesitan clientes que paguen sus préstamos, y deben tener suficiente dinero propio para aguantar pérdidas.
+Además, el banco central sube o baja las tasas de interés para frenar o acelerar los préstamos.
+
+## LA LECCIÓN
+La lección para ti es esta: el banco gana con tus ahorros, y también gana con tus deudas.
+Cuando tienes una deuda, tú eres el que le paga intereses altos al banco.
+Por eso conviene pagar primero tus deudas caras, y buscar cuentas que de verdad te paguen un buen interés.
+Y revisa que tu banco tenga seguro de depósitos, porque tu dinero ahí es, en el fondo, un préstamo que le haces al banco.
+
+## CIERRE
+Los bancos no solo guardan dinero, también lo crean cada vez que prestan.
+La próxima vez que veas el saldo de tu cuenta, recuerda que es una promesa, no billetes guardados con tu nombre.
+Este video es contenido educativo, no asesoría financiera, así que infórmate bien antes de tomar decisiones.
+Cuéntame en los comentarios qué otro tema del dinero quieres que te explique, y nos vemos en el próximo video.

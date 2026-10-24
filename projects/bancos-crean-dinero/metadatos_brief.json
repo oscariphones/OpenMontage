@@ -1,0 +1,37 @@
+{
+  "tema": "cómo ganan dinero los bancos y cómo crean dinero de la nada: el margen entre intereses, las comisiones, la reserva fraccionaria, la multiplicación del dinero, los préstamos que crean depósitos (Banco de Inglaterra), el dinero digital, las corridas bancarias (Silicon Valley Bank), el seguro de depósitos, los límites y la lección para tus ahorros y tus deudas",
+  "titulos": [
+    "Cómo Los Bancos Crean Dinero De La Nada",
+    "El Banco No Guarda Tu Dinero (Y Esto Es Lo Que Hace)",
+    "Cómo Ganan Dinero Los Bancos Con Tu Dinero"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Cuando depositas dinero en el banco, seguro piensas que se queda guardado en una caja fuerte con tu nombre. Pero el banco casi no guarda tu dinero: lo presta casi todo. Y al hacerlo aparece dinero nuevo que antes no existía.\n\nEn este video:\n- Cómo gana dinero un banco\n- La reserva fraccionaria explicada fácil\n- Cómo se multiplica el dinero\n- El verdadero secreto: prestar crea dinero\n- Por qué casi todo el dinero es digital\n- Qué es una corrida bancaria (el caso de Silicon Valley Bank)\n- El seguro de depósitos\n- Los límites de los bancos\n- La lección para tus ahorros y tus deudas\n\nDatos: Reserva Federal (encaje de 0 % desde 2020), Banco de Inglaterra (\"Money creation in the modern economy\", 2014), FDIC (seguro de hasta 250 mil dólares). Contenido educativo, no asesoría financiera. Cuéntame en los comentarios: ¿qué otro tema del dinero quieres que te explique?",
+  "hashtags": ["#Bancos", "#FinanzasPersonales", "#EducacionFinanciera", "#Dinero", "#Economia"],
+  "etiquetas": [
+    "cómo los bancos crean dinero", "cómo ganan dinero los bancos", "reserva fraccionaria", "creación de dinero",
+    "qué es una corrida bancaria", "silicon valley bank", "seguro de depósitos", "dinero digital",
+    "cómo funciona un banco", "economía explicada", "educación financiera", "finanzas personales"
+  ],
+  "capitulos": {
+    "GANCHO": "Tu dinero no está en una caja fuerte",
+    "DE QUÉ VA ESTO": "Cómo crean dinero los bancos",
+    "SUSCRÍBETE": "Suscríbete",
+    "EL NEGOCIO BÁSICO": "Cómo gana dinero un banco",
+    "NO GUARDAN TU DINERO": "La reserva fraccionaria",
+    "LA MULTIPLICACIÓN": "Cómo se multiplica el dinero",
+    "EL VERDADERO SECRETO": "Prestar crea dinero",
+    "DINERO DIGITAL": "Casi todo el dinero es digital",
+    "SI TODOS VAN AL BANCO": "La corrida bancaria",
+    "EL SEGURO": "El seguro de depósitos",
+    "LOS LÍMITES": "Los límites de los bancos",
+    "LA LECCIÓN": "La lección para tu dinero",
+    "CIERRE": "¿Qué tema sigue?"
+  },
+  "miniatura": {
+    "expresion": "asombrado: ojos muy abiertos y boca abierta",
+    "postura": "señalando un banco del que salen billetes impresos como de una impresora",
+    "objeto": "una bóveda de banco abierta y vacía, con billetes nuevos saliendo de una pantalla",
+    "texto": ["DINERO", "DE LA NADA"]
+  }
+}
