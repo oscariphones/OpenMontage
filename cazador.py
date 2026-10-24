@@ -161,6 +161,7 @@ def guardar(info, texto, idioma, generada):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # titulos con emoji tumbaban el print en la consola cp1252 de Windows
     ap = argparse.ArgumentParser(description="El Cazador: encuentra un video outlier y guarda su transcripcion.")
     ap.add_argument("--consulta", help="busqueda en ingles (por defecto una al azar)")
     ap.add_argument("--canal", choices=sorted(CANALES), default="finanzas", help="finanzas (por defecto) o zonachef: carpeta y memoria separadas")
