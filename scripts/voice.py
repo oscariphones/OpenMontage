@@ -25,7 +25,7 @@ def en_letras(n):
 
 # Siglas como se dicen en voz alta: Chatterbox las lee mal si van en mayusculas (impuestos-isr, 2026-10-21: "ISR" sonaba "Elisar", "RFC" sonaba "Turese").
 SIGLAS = {"LISR": "ley del i ese erre", "ISR": "i ese erre", "RFC": "erre efe ce", "IMSS": "ims", "ISSSTE": "isste",
-          "SAT": "sat", "CAT": "cat", "IVA": "iva", "UMA": "uma", "CURP": "curp", "AFORE": "afore", "INFONAVIT": "infonavit", "MX": "eme equis", "McDonald's": "mac dónalds"}
+          "SAT": "sat", "CAT": "cat", "IVA": "iva", "UMA": "uma", "CURP": "curp", "AFORE": "afore", "INFONAVIT": "infonavit", "MX": "eme equis", "McDonald's": "mac dónalds", "Whittaker": "uítaker"}
 
 
 def para_voz(texto):
