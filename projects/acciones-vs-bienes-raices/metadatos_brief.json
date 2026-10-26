@@ -1,0 +1,36 @@
+{
+  "tema": "acciones vs bienes raíces: dos personas con el mismo dinero, una compra una casa para rentar con crédito y la otra invierte en un fondo indexado; los gastos escondidos de rentar, el apalancamiento, las ventajas de la bolsa, los detalles de México (tasas hipotecarias, impuestos de la renta, FIBRAS, apps de casas de bolsa) y cuál conviene según tu situación",
+  "titulos": [
+    "Acciones Vs Bienes Raíces: ¿Cuál Te Hace Más Rico?",
+    "¿Comprar Una Casa Para Rentar O Invertir En La Bolsa?",
+    "Casa O Bolsa: Las Cuentas Que Nadie Te Hace"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Ana compra una casa para rentarla y Luis mete el mismo dinero en la bolsa. Los dos creen que tomaron la mejor decisión. Pero ella se olvidó de contar sus horas, y él se olvidó de contar la fuerza de un préstamo. ¿Quién gana?\n\nEn este video:\n- Los dos caminos: casa con crédito vs fondo indexado\n- Por qué la casa se siente mejor al principio\n- Los gastos escondidos de rentar\n- La gran ventaja de la casa: el apalancamiento\n- Las ventajas de la bolsa\n- Lo que cambia en México: tasas, impuestos y FIBRAS\n- Cuál conviene según tu situación\n\nAna y Luis son un ejemplo con números redondos. Los rendimientos pasados no garantizan rendimientos futuros. Contenido educativo, no asesoría financiera. Cuéntame en los comentarios: ¿tú prefieres la casa o la bolsa?",
+  "hashtags": ["#Inversion", "#BienesRaices", "#FinanzasPersonales", "#EducacionFinanciera", "#Bolsa"],
+  "etiquetas": [
+    "acciones vs bienes raíces", "casa o bolsa", "invertir en bienes raíces", "comprar casa para rentar",
+    "fondo indexado", "invertir en la bolsa", "fibras méxico", "crédito hipotecario méxico",
+    "apalancamiento", "cómo invertir", "educación financiera", "finanzas personales"
+  ],
+  "capitulos": {
+    "GANCHO": "Ana vs Luis",
+    "DE QUÉ VA ESTO": "Acciones vs bienes raíces",
+    "SUSCRÍBETE": "Suscríbete",
+    "LOS DOS CAMINOS": "Los dos caminos",
+    "EL PRIMER AÑO": "El primer año",
+    "LOS GASTOS ESCONDIDOS": "Los gastos escondidos de rentar",
+    "LA VENTAJA DE LA CASA": "La ventaja de la casa",
+    "LA VENTAJA DE LA BOLSA": "La ventaja de la bolsa",
+    "EN MÉXICO": "Lo que cambia en México",
+    "ENTONCES CUÁL": "¿Cuál es mejor?",
+    "LA LECCIÓN": "La lección",
+    "CIERRE": "¿Casa o bolsa?"
+  },
+  "miniatura": {
+    "expresion": "dudoso y pensativo, mirando a los dos lados",
+    "postura": "de pie en el centro, con una casa a un lado y una gráfica de la bolsa subiendo al otro",
+    "objeto": "una casa con letrero de se renta y una flecha verde de bolsa hacia arriba",
+    "texto": ["CASA", "VS BOLSA"]
+  }
+}
