@@ -1,0 +1,37 @@
+{
+  "tema": "por qué cada moneda vale distinto: los ceros no importan, el dinero dejó el oro y funciona por oferta y demanda; las cuatro razones (inflación, tasas de interés, confianza, lo que un país le vende al mundo y el petróleo en dólares); la historia del peso mexicano (los tres ceros de 1993, la crisis de 1994, Banxico, las remesas) y por qué una moneda fuerte no siempre es buena noticia",
+  "titulos": [
+    "¿Por Qué Cada Moneda Vale Distinto? (Y Qué Mueve Al Peso)",
+    "¿Quién Decide Cuánto Vale Tu Dinero?",
+    "Por Qué Un Dólar Vale 25 Mil En Vietnam (Y Casi 20 Pesos Aquí)"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "En Vietnam, un dólar te lo cambian por unos veinticinco mil billetes de su moneda, y en Japón por unos ciento cincuenta yenes, aunque Japón es un país rico. ¿Por qué cada moneda vale tan distinto, y por qué su precio cambia todos los días?\n\nEn este video:\n- Por qué los ceros de una moneda no importan\n- Cómo funciona el precio del dinero\n- Razón 1: la inflación\n- Razón 2: las tasas de interés\n- Razón 3: la confianza\n- Razón 4: lo que un país le vende al mundo (y el petróleo)\n- La historia del peso mexicano\n- ¿Una moneda fuerte es mejor?\n\nLos tipos de cambio del video son aproximados y cambian todos los días. Contenido educativo, no asesoría financiera. Cuéntame en los comentarios: ¿a cuánto viste el dólar la última vez?",
+  "hashtags": ["#Dinero", "#PesoMexicano", "#Dolar", "#EducacionFinanciera", "#Economia"],
+  "etiquetas": [
+    "por qué las monedas valen distinto", "tipo de cambio", "por qué sube el dólar", "peso mexicano",
+    "dólar vs peso", "qué es la inflación", "tasas de interés", "banxico", "petrodólar",
+    "crisis de 1994", "economía explicada", "educación financiera"
+  ],
+  "capitulos": {
+    "GANCHO": "¿Por qué cada moneda vale distinto?",
+    "DE QUÉ VA ESTO": "Qué mueve una moneda",
+    "SUSCRÍBETE": "Suscríbete",
+    "LOS CEROS NO IMPORTAN": "Los ceros no importan",
+    "UN PRECIO COMO CUALQUIER OTRO": "Un precio como cualquier otro",
+    "RAZÓN 1: LA INFLACIÓN": "Razón 1: la inflación",
+    "RAZÓN 2: LAS TASAS DE INTERÉS": "Razón 2: las tasas de interés",
+    "RAZÓN 3: LA CONFIANZA": "Razón 3: la confianza",
+    "RAZÓN 4: LO QUE LE VENDES AL MUNDO": "Razón 4: lo que le vendes al mundo",
+    "EN MÉXICO": "La historia del peso mexicano",
+    "¿FUERTE ES MEJOR?": "¿Una moneda fuerte es mejor?",
+    "LA LECCIÓN": "La lección",
+    "CIERRE": "¿A cuánto viste el dólar?"
+  },
+  "miniatura": {
+    "expresion": "sorprendido y confundido, cejas levantadas",
+    "postura": "de pie sosteniendo un billete de dólar en una mano y una montaña de billetes extranjeros en la otra",
+    "objeto": "billetes de varias monedas volando y un letrero de casa de cambio con flechas arriba y abajo",
+    "texto": ["¿POR QUÉ", "VALEN DISTINTO?"]
+  }
+}
