@@ -1,0 +1,38 @@
+{
+  "tema": "la crisis financiera de 2008 contada paso a paso: dinero barato, préstamos para cualquiera (préstamos ninja), los paquetes de deudas vendidos al mundo, el sello de calidad falso de las calificadoras, la fiesta de las casas, la caída de los precios, la quiebra de Lehman Brothers, el golpe mundial, el rescate de 700 mil millones y la lección para tu dinero",
+  "titulos": [
+    "La Crisis De 2008 Explicada Fácil: Cómo Casi Se Cae El Mundo",
+    "Cómo Unos Préstamos Fáciles Casi Tumban La Economía Mundial",
+    "La Mentira Que Causó La Crisis De 2008"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "En 2008, millones de personas perdieron su casa y su trabajo en cuestión de meses. Y todo empezó con algo que parecía buenísimo: préstamos fáciles para que cualquiera pudiera comprar una casa. Esta es la historia, paso a paso y sin palabras raras.\n\nEn este video:\n- Dinero barato\n- Préstamos para cualquiera\n- El paquete mágico de deudas\n- El sello de calidad falso\n- La fiesta de las casas\n- Cuando las casas bajaron\n- El día que cayó Lehman Brothers\n- El golpe al mundo entero\n- El rescate\n- La lección para tu dinero\n\nCifras redondeadas. Contenido educativo, no asesoría financiera. Cuéntame en los comentarios: ¿tú o tu familia sintieron esa crisis?",
+  "hashtags": ["#Crisis2008", "#Economia", "#HistoriaDelDinero", "#EducacionFinanciera", "#FinanzasPersonales"],
+  "etiquetas": [
+    "crisis de 2008", "crisis financiera 2008 explicada", "lehman brothers", "crisis hipotecaria",
+    "burbuja inmobiliaria", "préstamos subprime", "cómo pasó la crisis de 2008", "gran recesión",
+    "historia de las crisis", "economía explicada fácil", "educación financiera", "finanzas personales"
+  ],
+  "capitulos": {
+    "GANCHO": "Préstamos fáciles para todos",
+    "DE QUÉ VA ESTO": "La crisis de 2008 paso a paso",
+    "SUSCRÍBETE": "Suscríbete",
+    "DINERO BARATO": "Dinero barato",
+    "PRÉSTAMOS PARA CUALQUIERA": "Préstamos para cualquiera",
+    "EL PAQUETE MÁGICO": "El paquete mágico",
+    "EL SELLO FALSO": "El sello de calidad falso",
+    "LA FIESTA": "La fiesta",
+    "CUANDO LAS CASAS BAJARON": "Cuando las casas bajaron",
+    "EL DÍA QUE CAYÓ LEHMAN": "El día que cayó Lehman Brothers",
+    "EL MUNDO ENTERO": "El golpe al mundo entero",
+    "EL RESCATE": "El rescate",
+    "LA LECCIÓN": "La lección",
+    "CIERRE": "¿Sentiste la crisis?"
+  },
+  "miniatura": {
+    "expresion": "asustado, con las manos en la cabeza",
+    "postura": "de pie frente a un castillo de naipes hecho de casas que se está cayendo",
+    "objeto": "un castillo de naipes de casitas derrumbándose y una gráfica roja hacia abajo",
+    "texto": ["CRISIS 2008", "EXPLICADA"]
+  }
+}
