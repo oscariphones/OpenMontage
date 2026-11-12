@@ -60,7 +60,31 @@ def eventos(scenes, sin_pop):
             pose_prev = nombre
         if sc.get("walk"):
             ev.append(("swish", float(sc["walk"][0]), "caminata"))
-        for it in items(sc.get("g")):
+        # FABRICA_3: entradas / salidas caminando, cameo y modos de pantalla completa
+        if sc.get("enter"):
+            ev.append(("swish", float(sc["a"]), "entra caminando"))
+        if sc.get("exit"):
+            ev.append(("swish", float(sc["b"]) - 1.2, "sale caminando"))
+        cam = sc.get("cameo") or {}
+        for k, (t, nombre, *_) in enumerate(cam.get("poses") or []):
+            ev.append(("swish", float(t if k else sc["a"]), f"cameo {nombre}"))
+        if sc.get("punch") and sc["punch"].get("text"):
+            ev.append(("click", float(sc["punch"].get("t", sc["a"] + 0.5)), "punch " + str(sc["punch"]["text"])))
+        modo = sc.get("mode")
+        if modo == "graph":
+            for k, p in enumerate(sc.get("pts") or []):
+                ev.append(("click" if k == 0 else "pop", float(p[0]), f"grafica punto {k + 1}"))
+        elif modo == "breakdown":
+            ev.append(("pop", float(sc.get("t0", sc["a"] + 0.3)), "desglose"))
+            for k, p in enumerate(sc.get("parts") or []):
+                ev.append(("click", float(p[3]), f"parte 0{k + 1} {p[0]}"))
+            if sc.get("total"):
+                ev.append(("click", float(sc["total"][3]), "total"))
+        elif modo == "maze":
+            ev.append(("pop", float(sc.get("t0", sc["a"] + 0.3)), f"trampa {sc.get('kind', 'maze')}"))
+            for b in sc.get("beats") or []:
+                ev.append(("click", float(b[0]), str(b[1])))
+        for it in list(items(sc.get("g"))) + list(items(sc.get("g2"))):
             t = it.get("t", sc["a"])
             if t is None: continue
             if it.get("c") is not None or it.get("big") is not None or (it.get("n") is not None and it.get("w") is None and it.get("p") is None):

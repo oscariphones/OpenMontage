@@ -1,5 +1,6 @@
 """Assemble the fondos-indexados film as HyperFrames compositions f1..fN from the shared 2D kit.
    python film2d/build.py [f1 f2 ...]   (times are real narration seconds: identity retime)
+   MODES_V1 (FABRICA_3): also copies film2d/modes.js (graph / breakdown / maze scenes) into every part.
    ILUS_V1: 2D illustrations (PNG with alpha / SVG) from assets/ilustraciones/ (repo library) and projects/<p>/assets/ilustraciones/
    (per-project override) are copied into each part, downscaled if huge (render RAM), and listed in ilus.js for the engine."""
 import json, re, shutil, struct, subprocess, sys
@@ -51,7 +52,7 @@ tpl = (H / "template.tpl").read_text(encoding="utf-8")
 for name in (sys.argv[1:] or list(PARTS)):
     a, b = PARTS[name]; d = HF / name; (d / "assets").mkdir(parents=True, exist_ok=True)
     for f in ["ink-theater.js", "ink-pose.js", "ink-grid.js"]: shutil.copy(IT / f, d / f)
-    for f in ["props.js", "kitshim.js", "widgets.js", "engine.js", "spec.js", "gsap.min.js"]: shutil.copy(H / f, d / f)
+    for f in ["props.js", "kitshim.js", "widgets.js", "modes.js", "engine.js", "spec.js", "gsap.min.js"]: shutil.copy(H / f, d / f)
     shutil.copy(IT / "assets/patrickhand.ttf", d / "assets/patrickhand.ttf"); shutil.copy(IT / "assets/OFL.txt", d / "assets/OFL.txt")
     ilus, ad = {}, d / "assets/ilus"
     if ad.exists(): shutil.rmtree(ad)

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- ENGINE_V2 LAYOUT_2 -->
+<!-- ENGINE_V2 LAYOUT_2 FABRICA_3 -->
 <html lang="es" data-resolution="landscape">
   <head>
     <meta charset="UTF-8" />
@@ -13,6 +13,7 @@
     <script src="kitshim.js"></script>
     <script src="props.js"></script>
     <script src="widgets.js"></script>
+    <script src="modes.js"></script>
     <script src="engine.js"></script>
     <script src="spec.js"></script>
     <style>
@@ -37,6 +38,25 @@
       .ig-big.green, .ig-note.green { color: var(--green); } .ig-big.grey, .ig-note.grey { color: var(--grey); } .ig-big.cold, .ig-note.cold { color: var(--cold); }
       .stamp { border-width: 6px; letter-spacing: 2px; }
       svg, .ig-chip { filter: url(#boil); }
+      /* FABRICA_3: Stickman alone (centred) + full-stage modes (graph / breakdown / maze) + corner cameo. No blur filters: glows are gradients */
+      .L-c { --cols: 1fr; }
+      /* Stick-Action punch: Stickman cell + a free cell with 1-3 giant words / one big figure (auto-fitted, never over him or the subtitles) */
+      .L-cp { --cols: 0.8fr 1.45fr; } .L-pc { --cols: 1.45fr 0.8fr; }
+      .ig-cell.punch { align-items: center; justify-content: center; padding: 0 48px 70px; --k: 1; }
+      .ig-punch { font-size: calc(min(var(--k, 1), 2.2) * 165px); line-height: 0.98; text-align: center; max-width: 100%; color: var(--ink);
+        text-transform: uppercase; letter-spacing: 1px; word-break: keep-all; overflow-wrap: normal; }
+      .ig-punch.red { color: var(--red); text-shadow: 0 0 40px rgba(255,90,95,.40); }
+      .ig-punch.orange { color: var(--orange); text-shadow: 0 0 40px rgba(255,138,31,.40); }
+      .ig-punch.green { color: var(--green); text-shadow: 0 0 40px rgba(61,220,151,.40); }
+      .ig-punch.grey { color: var(--grey); } .ig-punch.cold { color: var(--cold); }
+      .ig-scene.L-mode { display: block; }
+      .ig-scene.L-mode::after { display: none; }
+      .ig-mode { position: absolute; left: 0; right: 0; top: 0; bottom: 30px; }
+      .ig-mode > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+      .ig-mode svg.flat, .ig-mode svg.flat * { filter: none; }
+      .ig-cameo { position: absolute; bottom: 0; width: 230px; height: 360px; }
+      .ig-cameo.left { left: 0; } .ig-cameo.right { right: 0; }
+      .ig-cameo > svg { width: 100%; height: 100%; display: block; overflow: visible; }
     </style>
   </head>
   <body>

@@ -1,4 +1,8 @@
-/* Film engine V2.2 "Layout 2.0" + FABRICA_2 FABRICA_2.1 (camera punch-in on the Stickman at each pose change, softer window pans, slow push-in drift
+/* FABRICA_3 (retention): scenes alternate 4 visual formats. sc.mode = "graph" | "breakdown" | "maze" draws a full-stage animated
+ *   graphic (film2d/modes.js) with an optional small Stickman cameo (sc.cameo = { pos: "left"|"right", poses: [[t, pose], ...] });
+ *   Stick-Action: layout "c" (Stickman alone) always with sc.punch (giant 1-3 words / big figure in the free cell, layout cp / pc), sc.enter / sc.exit = "left" | "right" (walks in / out),
+ *   and the tension poses shock / facepalm / stop (ink-pose.js). Specs without these fields render exactly as FABRICA_2.1.
+ * Film engine V2.2 "Layout 2.0" + FABRICA_2 FABRICA_2.1 (camera punch-in on the Stickman at each pose change, softer window pans, slow push-in drift
  *   on holds longer than CAM.holdMax so there are no long static shots; the soft defocused backdrop lives in ink-grid.js). (premium finance: tech-grid backdrop, kinetic captions, procedural eases, inertial text, glow on green/orange;
  *   2.0 = full 2D illustrations from the asset library (window.ILUS, built by film2d/build.py), floating windows that group each graphic cell,
  *   and a UI camera that jumps between windows with aggressive ease-in-out pans/zooms). Turns the declarative SCENES spec into strict CSS-grid scenes + one GSAP timeline.
@@ -107,15 +111,52 @@
   function fit(cell) { var k = 2.2; for (var i = 0; i < 30; i++) { cell.style.setProperty("--k", k.toFixed(3)); if (!overflows(cell)) return k; k *= 0.93; } return k; }
 
   // ---------- scene ----------
+  // ---------- FABRICA_3: full-stage mode scenes (graph / breakdown / maze) ----------
+  function sceneTiming(el, sc) {
+    var t0 = T(sc.a), t1 = T(sc.b), last = sc.b >= PB - 1e-3;
+    tl.set(el, { display: el.classList.contains("L-mode") ? "block" : "grid", autoAlpha: 0 }, Math.max(0, t0 - 0.05));
+    tl.to(el, { autoAlpha: 1, duration: 0.4, ease: G.ease("ink.snap", "power2.out") }, Math.max(0, t0 - 0.05));
+    if (!last) { tl.to(el, { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, Math.max(0, t1 - 0.3)); tl.set(el, { display: "none" }, t1 + 0.03); }
+    el.style.display = "none";
+  }
+  // small Stickman in a corner of a mode scene: it reacts (poses) but never covers the graphic (the mode reserves its column)
+  function cameo(stage, sc, cam) {
+    var box = document.createElement("div"); box.className = "ig-cameo " + (cam.pos === "right" ? "right" : "left"); stage.appendChild(box);
+    var svg = K.el("svg", { viewBox: "0 0 360 560", preserveAspectRatio: "xMidYMax meet" }); box.appendChild(svg);
+    if (cam.pos === "right") svg.style.transform = "scaleX(-1)";          // faces the graphic
+    var ps = cam.poses || [[sc.a, "point"]], names = {}; ps.forEach(function (p) { names[p[1]] = 1; });
+    var fig = root.InkPose.create(svg, { poses: root.InkPose.pick(Object.keys(names)), color: C.ink, stroke: 9 });
+    fig.set(ps[0][1]);
+    ps.slice(1).forEach(function (p) { fig.to(tl, p[1], T(p[0]), { fx: p[2] || "bounce" }); });
+    fig.breathe(tl, T(sc.a), T(sc.b));
+    box.style.opacity = 0; G.slide(tl, box, T(sc.a) + 0.1, { x: cam.pos === "right" ? 140 : -140 });
+  }
+  function modeScene(sc) {
+    var el = document.createElement("div"); el.className = "ig-scene L-mode M-" + sc.mode; el.dataset.id = sc.id || (sc.a + ""); scenesEl.appendChild(el);
+    var stage = document.createElement("div"); stage.className = "ig-mode"; el.appendChild(stage);
+    var svg = K.el("svg", { viewBox: "0 0 1700 760", preserveAspectRatio: "xMidYMid meet" }); svg.setAttribute("class", "flat"); stage.appendChild(svg);
+    var cam = sc.cameo || null;
+    if (!root.MODES || !root.MODES[sc.mode]) E.missing.push("modo " + sc.mode);
+    else root.MODES[sc.mode](svg, sc, { tl: tl, T: T, C: C, camL: !!cam && cam.pos !== "right", camR: !!cam && cam.pos === "right" });
+    if (cam) cameo(stage, sc, cam);
+    E.shots.push({ t: T(sc.a), r: null });          // wide framing; the camera planner adds its slow push-in drift on holds > CAM.holdMax
+    sceneTiming(el, sc);
+  }
+
   E.scene = function (sc) {
     if (!(sc.a >= PA - 1e-6 && sc.b <= PB + 1e-6)) return;
     E.cur = sc;
-    var el = document.createElement("div"), lay = sc.L || "cg"; el.className = "ig-scene L-" + lay; el.dataset.id = sc.id || (sc.a + ""); scenesEl.appendChild(el);
+    if (sc.mode && sc.mode !== "stick") { modeScene(sc); return; }
+    var lay = sc.L || "cg";
+    // Stick-Action: the Stickman alone ("c") always shares the screen with a giant punch text, on the side opposite to where he walks
+    if (sc.punch && lay === "c") lay = (sc.punch.side || ((sc.exit || sc.enter) === "right" ? "left" : "right")) === "left" ? "pc" : "cp";
+    var el = document.createElement("div"); el.className = "ig-scene L-" + lay; el.dataset.id = sc.id || (sc.a + ""); scenesEl.appendChild(el);
     var cells = [], hasChar = lay.indexOf("c") >= 0, order = lay.split("");
-    var gIdx = 0, charCell = null, gfxCells = [], side = hasChar ? (lay.charAt(0) === "c" ? 1 : -1) : 0;   // side: where the camera drifts (toward the Stickman)
+    var gIdx = 0, charCell = null, gfxCells = [], punchCell = null, side = hasChar ? (lay.charAt(0) === "c" ? 1 : -1) : 0;   // side: where the camera drifts (toward the Stickman)
     order.forEach(function (ch) {
       var cell = document.createElement("div");
       if (ch === "c") { cell.className = "ig-cell end char"; charCell = cell; }
+      else if (ch === "p") { cell.className = "ig-cell gfx punch"; punchCell = cell; }
       else { cell.className = "ig-cell gfx"; gfxCells.push(cell); }
       el.appendChild(cell);
     });
@@ -124,10 +165,19 @@
     if (charCell) {
       var svg = K.el("svg", { viewBox: "0 0 360 560", preserveAspectRatio: "xMidYMax meet" }); charCell.appendChild(svg);
       if (sc.side === "right" || lay.charAt(0) !== "c") svg.style.transform = "scaleX(-1)";
-      var names = {}; (sc.poses || [[sc.a, "idle"]]).forEach(function (p) { names[p[1]] = 1; }); if (sc.walk) { names.walkA = names.walkP = names.walkB = 1; }
-      fig = root.InkPose.create(svg, { poses: root.InkPose.pick(Object.keys(names)), color: C.ink, stroke: 8 });
+      var names = {}; (sc.poses || [[sc.a, "idle"]]).forEach(function (p) { names[p[1]] = 1; }); if (sc.walk || sc.enter || sc.exit) { names.walkA = names.walkP = names.walkB = 1; }
+      var holder = K.el("g", {}, svg);                 // FABRICA_3: holder flips the figure to face the way it walks (enter / exit)
+      fig = root.InkPose.create(holder, { poses: root.InkPose.pick(Object.keys(names)), color: C.ink, stroke: 8 });
       var ps = sc.poses || [[sc.a, "idle"]];
       fig.set(ps[0][1]);
+      var face = (sc.side === "right" || lay.charAt(0) !== "c") ? -1 : 1, WD = WALK_IN;
+      var turn = function (dir, t) { tl.set(holder, { attr: { transform: dir === face ? "translate(0 0)" : "translate(360 0) scale(-1 1)" } }, t); };
+      if (sc.enter) {                                  // Stick-Action: walks in from off-screen during the first WALK_IN seconds
+        var din = sc.enter === "right" ? -1 : 1, e0 = T(sc.a), e1 = e0 + WD; charCell.style.overflow = "visible";
+        turn(din, e0); fig.walk(tl, e0, e1); fig.cut(tl, ps[0][1], e1); turn(face, e1);
+        tl.set(svg, { xPercent: -din * 140 }, Math.max(0, e0 - 0.06));
+        tl.fromTo(svg, { xPercent: -din * 140 }, { xPercent: 0, duration: WD, ease: "power1.out", immediateRender: false }, e0);
+      }
       // chronological events (poses + the walk cycle) so the figure's state is tracked in time order
       var ev = ps.slice(1).map(function (q) { return { t: q[0], pose: q[1], fx: q[2] }; });
       if (sc.walk) ev.push({ t: sc.walk[0], walk: sc.walk });
@@ -142,6 +192,11 @@
           fig.cut(tl, base, w1);                       // stop walking in the scene's base pose
         } else { fig.to(tl, e.pose, T(e.t), { fx: e.fx || "bounce" }); base = e.pose; }
       });
+      if (sc.exit) {                                   // Stick-Action: walks out during the last WALK_IN seconds of the scene
+        var dout = sc.exit === "left" ? -1 : 1, x0 = T(sc.b) - WD - 0.1; charCell.style.overflow = "visible";
+        turn(dout, x0); fig.walk(tl, x0, T(sc.b));
+        tl.fromTo(svg, { xPercent: 0 }, { xPercent: dout * 140, duration: WD, ease: "power1.in", immediateRender: false }, x0);
+      }
       fig.breathe(tl, T(sc.a), T(sc.b));
       if (sc.ice) { var ice = K.el("rect", { x: 40, y: 20, width: 280, height: 540, rx: 26, fill: "rgba(127,200,255,0.10)", stroke: C.cold, "stroke-width": 6, opacity: 0 }, svg); tl.fromTo(ice, { opacity: 0 }, { opacity: 1, duration: 1.2, immediateRender: false }, T(sc.ice)); }
     }
@@ -167,6 +222,8 @@
       });
     });
     gfxCells.forEach(fit);
+    var punchR = null;
+    if (punchCell && sc.punch && root.MODES && root.MODES.punch) { root.MODES.punch(punchCell, sc, { tl: tl, T: T, C: C }); var pk = fit(punchCell) * 0.88; punchCell.style.setProperty("--k", pk.toFixed(3)); punchR = rel(punchCell.firstChild); }   // 12 % headroom: stamp-in + slow push stay inside the cell
     var t0 = T(sc.a), t1 = T(sc.b), last = sc.b >= PB - 1e-3;
     var audit = G.audit(el); audit.scene = sc.id || sc.a; E.audit.push(audit);   // measured on the final (fully grown) layout
     wins.forEach(function (w) {
@@ -176,18 +233,18 @@
     });
     var charR = fig ? figBox(svg) : null, nItems = flat(gspec[0]).length + flat(gspec[1]).length;
     // no window: wide shot, or straight onto the Stickman when the scene is only the character
-    if (!wins.length) E.shots.push(charR && !nItems ? { t: T(sc.a), r: charR, kind: "char" } : { t: T(sc.a), r: null });
+    if (!wins.length) E.shots.push(charR && !nItems && !sc.enter && !punchR ? { t: T(sc.a), r: charR, kind: "char" } : { t: T(sc.a), r: null });
     // FABRICA_2: the camera planner (E.camera) punches in on this Stickman inside static stretches: at a pose change when possible,
     // otherwise in a gap between bullets on any hold longer than CAM.holdMax. It never covers a bullet landing (text must be readable).
-    if (charR) E.spots.push({ a: T(sc.a), b: T(sc.b), r: charR, dx: side, wins: wins.map(function (w) { return w.r; }),
-      poses: (sc.poses || []).map(function (q) { return T(q[0]); }),
+    // FABRICA_3: no punch-in while the Stickman is walking in / out of frame
+    var spA = T(sc.a) + (sc.enter ? WALK_IN + 0.2 : 0), spB = T(sc.b) - (sc.exit ? WALK_IN + 0.3 : 0);
+    if (charR && (!(sc.enter || sc.exit) || spB - spA > 1.5)) E.spots.push({ a: spA, b: spB, r: charR, dx: side, wins: wins.map(function (w) { return w.r; }).concat(punchR ? [punchR] : []),   // a punch-in keeps the punch text in frame
+      poses: (sc.poses || []).map(function (q) { return T(q[0]); }).filter(function (t) { return t >= spA && t <= spB; }),
       items: flat(gspec[0]).concat(flat(gspec[1])).map(function (it) { return T(it.t == null ? sc.a : it.t); }).sort(function (x, y) { return x - y; }) });
     // scene show/hide on the timeline (display toggled so only the active scene costs layout/paint)
-    tl.set(el, { display: "grid", autoAlpha: 0 }, Math.max(0, t0 - 0.05));
-    tl.to(el, { autoAlpha: 1, duration: 0.4, ease: G.ease("ink.snap", "power2.out") }, Math.max(0, t0 - 0.05));
-    if (!last) { tl.to(el, { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, Math.max(0, t1 - 0.3)); tl.set(el, { display: "none" }, t1 + 0.03); }
-    el.style.display = "none";
+    sceneTiming(el, sc);
   };
+  var WALK_IN = 1.1;
   // ---------- responsive window: rows that arrive later start collapsed; the window grows (height + width) just before each row ----------
   var GROW = { lead: 0.42, dur: 0.38, gap: 24 };
   function grow(w, tWin) {

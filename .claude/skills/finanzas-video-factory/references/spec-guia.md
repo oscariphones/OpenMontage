@@ -66,3 +66,52 @@ sc(S(5), S(7), "cg", [[S(5), "point"], [S(6), "worry"]], [          // dos poses
 - Demasiadas filas o chips muy largos (la celda no cabe y el texto sale de la ventana): parte la idea en dos escenas.
 - Un `t` fuera de `[a, b]` de su escena (`chk_items.cjs` lo rechaza). Pasa sobre todo cuando cambia la voz.
 - Frases con índice equivocado: cuenta solo las líneas de texto del guion.
+
+## FABRICA_3: formatos visuales que alternan (retención)
+
+El motor (marca `FABRICA_3`, `film2d/modes.js`) tiene, además de la escena clásica (personaje + ventana), estos formatos. Todos los tiempos son absolutos (`S(k) + s`) y deben caer dentro de `[a, b - 0.5]` de su escena (`chk_items.cjs` lo revisa). Las escenas de modo usan layout `"g"`, `poses: []` y `filas: []`.
+
+### Modo Graph: gráfica de línea + contador que sube o baja
+```js
+sc(S(15), S(17), "g", [], [], { mode: "graph", k: "red", title: "tu deuda con la app", cl: "lo que debes", f: { pre: "$" },
+  pts: [[S(15) + 0.6, 5000, "mes 1"], [S(15) + 2.4, 9000, "mes 3"], [S(16) + 0.8, 16000, "mes 6"]],
+  cameo: { pos: "right", poses: [[S(15), "worry"], [S(16) + 1.0, "shock"]] } });
+```
+- `pts`: 2-6 puntos `[t, valor, "etiqueta abajo" opcional]`. El contador grande va de un valor al siguiente mientras la línea se dibuja; puede bajar.
+- `f`: formato del número (`pre: "$"`, `suf: " %"`, `dec: 1`). `vals: false` oculta los números sobre cada punto. `min` / `max` fijan la escala.
+- Úsalo solo con cifras del guion (deuda que crece, intereses, inflación, comparación de montos).
+
+### Modo Breakdown: desglose 01, 02, 03
+```js
+sc(S(20), S(24), "g", [], [], { mode: "breakdown", title: "lo que no te dicen", center: ["préstamo", "$5,000"], ck: "orange", t0: S(20) + 0.4,
+  parts: [["intereses", "$2,400", "red", S(20) + 2.6], ["comisión", "$600", "red", S(21) + 0.8], ["seguro forzoso", "$350", "red", S(22) + 0.8]],
+  total: ["lo que pagas", "$8,350", "red", S(23) + 0.8] });
+```
+- 2-5 `parts` `[texto, monto o "", color, t]`; cada una llega con su línea conectora y su número. `total` es opcional.
+- Ideal para revelar las partes ocultas de una deuda, un impuesto, un recibo de nómina o un negocio. Abarca varias frases (una parte por frase).
+
+### Modo Minimalist-Maze: trampas en geometría limpia
+```js
+sc(S(1), S(3), "g", [], [], { mode: "maze", kind: "maze", k: "red", title: "la trampa", t0: S(1) + 0.3,
+  beats: [[S(1) + 2.4, "parece fácil salir", "orange"], [S(2) + 1.0, "pero la salida está cerrada", "red"]] });
+```
+- `kind: "maze"`: un punto recorre un laberinto y choca con la salida cerrada. `"rings"`: anillos que se cierran uno por cada beat. `"nodes"`: red de nodos (`nodes: ["tu sueldo", ...]`, `hub: "la app"`) donde puntos brillantes llevan el dinero al centro en cada beat.
+- `beats`: hasta 4 frases cortas que aparecen a la derecha con la voz.
+
+### Stick-Action: el personaje se mueve y reacciona (siempre con texto gigante)
+```js
+sc(S(12), S(13), "c", [[S(12), "look"], [S(12) + 1.6, "shock"]], [], { enter: "left", punch: { text: "$0", k: "red", t: S(12) + 1.6 } });
+sc(S(35), S(36), "c", [[S(35), "facepalm"], [S(35) + 2.2, "stop"]], [], { exit: "right", punch: { text: "SI TODOS CUMPLEN", k: "orange", t: S(35) + 0.6 } });
+```
+- Layout `"c"` = el personaje solo, para reacciones fuertes. **Siempre** lleva `punch`: un texto gigante de alto impacto (1 a 3 palabras clave o una cifra grande, en mayúsculas automáticas) que llena el espacio libre. El motor parte la pantalla en dos celdas (personaje + texto) y lo ajusta solo a su celda, con un 12 % de holgura para el golpe de entrada.
+- El texto va del lado contrario a por donde el personaje entra o sale caminando (automático; `punch.side: "left" | "right"` lo fuerza). `audit_dyn.cjs` falla con `PUNCH_OVER_CHAR` si toca la silueta del personaje y con `PUNCH_OVER_CAPS` si baja a los subtítulos; `chk_items.cjs` falla si falta el punch o si tiene más de 3 palabras.
+- **Duración: máximo 1 o 2 frases cortas de transición** (`chk_items.cjs` falla si la escena abarca 3 frases o más). Es un respiro con golpe visual entre explicaciones, no una escena para explicar.
+- `enter: "left" | "right"`: entra caminando (1.1 s) al inicio de la escena; la primera pose extra va al menos 1.2 s después. `exit: "left" | "right"`: sale caminando al final. Escena de 3 s o más (4.5 s si entra y sale).
+- Poses de tensión nuevas: `shock` (se echa para atrás), `facepalm` (mano en la cara), `stop` (palmas al frente: "¡alto!").
+- `cameo: { pos, poses }` pone al personaje chico en una esquina de un modo de pantalla completa, reaccionando sin tapar la gráfica.
+
+### Regla de alternancia (obligatoria desde FABRICA_3)
+- Cada video usa los 4 formatos: al menos 1 Graph, 1 Breakdown, 1 Maze y 2 escenas Stick-Action (layout `"c"` con su `punch`, de 1 o 2 frases cortas).
+- Nunca más de 2 escenas clásicas (personaje + ventana) seguidas; intercala un modo o una escena Stick-Action.
+- El gancho puede abrir con un Maze o un Graph (sin ventanas), y la sección SUSCRÍBETE sigue siendo una escena clásica con el sello.
+- Elige la pose por la tensión de la frase: dato que asusta, `shock`; error tonto, `facepalm`; advertencia, `stop`; alivio, `cheer`; duda, `think`.

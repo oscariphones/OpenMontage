@@ -61,6 +61,16 @@ Antes de dar el video por bueno:
 
 En el reporte di qué verificaste y qué no. Normalmente no viste el video entero en movimiento ni escuchaste la mezcla completa, y los tiempos de las palabras de los subtítulos son proporcionales, no medidos. Al terminar, mueve la transcripción usada fuera de `transcripciones_pendientes/` solo si el usuario ya lo hace así; si no, menciónalo.
 
+## FABRICA_3: formatos que alternan (retención, decisión del usuario 2026-11-12)
+
+Las escenas ya no son siempre el personaje a la izquierda con una ventana a la derecha. `spec.js` alterna 4 formatos (sintaxis y ejemplos en `references/spec-guia.md`, sección FABRICA_3):
+1. **Graph**: gráfica de línea a pantalla completa con un contador que sube o baja con las cifras del guion.
+2. **Breakdown**: desglose con líneas conectoras y etiquetas `01`, `02`, `03` que revelan las partes ocultas de una deuda, un impuesto o un negocio.
+3. **Minimalist-Maze**: laberinto, anillos que se cierran o red de nodos con puntos brillantes para representar la trampa.
+4. **Stick-Action**: el personaje solo, entrando o saliendo caminando, con poses de tensión (`shock`, `facepalm`, `stop`), **siempre acompañado de un texto gigante** (`punch`: 1 a 3 palabras clave o una cifra grande) en el espacio libre, y que dura **máximo 1 o 2 frases cortas de transición**. También puede aparecer como cameo en una esquina de los otros modos.
+
+Cada video usa los 4 formatos y nunca más de 2 escenas clásicas seguidas. El motor lo pone `fabrica_video.py` desde la plantilla (marca `FABRICA_3`); los brillos son degradados radiales, nunca filtros de desenfoque (RAM del render). Las tres auditorías (`chk_items`, `audit_dyn`, `cam_check`) revisan también los modos.
+
 ## Reglas Fábrica 2.0
 
 Estas tres reglas son obligatorias en cada video. Cada una tiene una parte que hace el motor o el script y otra que depende de cómo diseñes `spec.js`. Si diseñas sin pensar en ellas, el motor no tiene con qué trabajar.

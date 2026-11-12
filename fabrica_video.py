@@ -258,7 +258,7 @@ def main():
 
     print("[1] plantilla")
     if P != PLANTILLA:
-        for f in ["hyperframes/audit_dyn.cjs", "hyperframes/chk_items.cjs", "hyperframes/cam_check.cjs", "hyperframes/render_film2d.sh"] + [f"film2d/{x}" for x in ["engine.js", "kitshim.js", "widgets.js", "template.tpl", "gsap.min.js", "props.js", "build.py"]]:
+        for f in ["hyperframes/audit_dyn.cjs", "hyperframes/chk_items.cjs", "hyperframes/cam_check.cjs", "hyperframes/render_film2d.sh"] + [f"film2d/{x}" for x in ["engine.js", "kitshim.js", "widgets.js", "modes.js", "template.tpl", "gsap.min.js", "props.js", "build.py"]]:
             if not (P / f).exists():
                 (P / f).parent.mkdir(parents=True, exist_ok=True); shutil.copy(PLANTILLA / f, P / f)
     vw = P / "voice.py"          # voz oficial: envoltorio de scripts/voice.py (clon Chatterbox de referencia_voz.wav.wav); nunca otro sintetizador
@@ -270,11 +270,12 @@ def main():
     # Motor 2.2 "Layout 2.0" (fondo tech-grid, subtitulos cineticos, texto inercial, glow; ilustraciones 2D de assets/ilustraciones/, ventanas
     # flotantes y camara UI que salta entre ventanas): los proyectos con motor viejo se actualizan desde la plantilla por marca de version.
     # ink-grid.js / ink-pose.js los copia film2d/build.py desde ink-theater/ en cada build.
+    # FABRICA_3: modos de escena graph / breakdown / maze (film2d/modes.js), cameo y Stick-Action; los spec.js sin modos se ven igual que antes.
     if P != PLANTILLA:
-        for f, marca in (("film2d/engine.js", "FABRICA_2.1"), ("film2d/template.tpl", "LAYOUT_2"), ("film2d/build.py", "ILUS_V1"), ("hyperframes/audit_dyn.cjs", "AUDIT_V2"), ("film2d/widgets.js", "FLAT_V1"), ("hyperframes/cam_check.cjs", "CAM_CHECK_V2")):
+        for f, marca in (("film2d/engine.js", "FABRICA_3"), ("film2d/modes.js", "MODES_V1"), ("film2d/template.tpl", "FABRICA_3"), ("film2d/build.py", "MODES_V1"), ("hyperframes/audit_dyn.cjs", "AUDIT_V3"), ("hyperframes/chk_items.cjs", "CHK_V2"), ("film2d/widgets.js", "FLAT_V1"), ("hyperframes/cam_check.cjs", "CAM_CHECK_V3")):
             dst = P / f
             if marca not in dst.read_text(encoding="utf-8"):
-                print(f"  layout 2.0: actualizo {f}"); shutil.copy(PLANTILLA / f, dst)
+                print(f"  motor: actualizo {f}"); shutil.copy(PLANTILLA / f, dst)
 
     if a.prueba_audio:
         print(f"[prueba de audio] primeros {a.prueba_audio:.0f} s")

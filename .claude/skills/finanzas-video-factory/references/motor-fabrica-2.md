@@ -34,3 +34,11 @@ Estos parámetros viven en `CAM` (`charPunch`, `charCenter`, `loosePunch`, `loos
 Los recortes durante un zoom se informan aparte (`recorte_en_zoom`) y no hacen fallar el chequeo: el borde de la ventana sale un máximo del ~5 % de su ancho. Con `--list` muestra todos los movimientos (`win`, `char`, `back`, `drift`) con sus tiempos, que es lo primero que hay que mirar si algo se ve raro.
 
 Referencia en `riqueza-generacional` (2026-10-12): 33 zooms al Stickman en 201 s, 3 derivas, 0 tramos estáticos de más de 5 s, 0 ventanas fuera de cuadro, recorte máximo durante el zoom 4.1 % del ancho, auditoría 0 issues.
+
+
+## FABRICA_3 (modos de escena)
+- `film2d/modes.js` dibuja Graph / Breakdown / Maze en un SVG de 1700 x 760 (el área de escena sobre los subtítulos), clase `flat` (sin el filtro boil). Brillos: degradados radiales; cero `filter: blur` / `backdrop-filter`.
+- Contadores: GSAP con una función setter (no `onUpdate`), para que el número sea correcto en cada fotograma buscado por el render.
+- Transformaciones de SVG que giran o escalan alrededor de un punto: tween de atributo (`attr: { transform: "rotate(a cx cy)" }`), no `svgOrigin` en varios tweens del mismo elemento (con eso los anillos se iban de lugar).
+- Cámara: una escena de modo es un plano general (`r: null`); el planificador le pone la deriva lenta si dura más de 5 s. El cameo no recibe zoom.
+- Stick-Action: el personaje va dentro de un `<g>` que se voltea con `transform` para mirar hacia donde camina; sin zoom mientras entra o sale.

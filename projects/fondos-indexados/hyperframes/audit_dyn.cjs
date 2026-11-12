@@ -1,5 +1,7 @@
 // Dynamic layout audit: seeks the GSAP timeline every STEP seconds and checks the REAL visible geometry.
 // Reports overlaps between visible items (union of their drawn shapes / chip box) and items leaving their cell.
+// AUDIT_V3 (FABRICA_3): Stick-Action punch text (.ig-punch) must never touch the Stickman's drawn figure (PUNCH_OVER_CHAR) nor the visible subtitles (PUNCH_OVER_CAPS).
+// AUDIT_V3 (FABRICA_3): items of full-stage modes (graph / breakdown / maze) must stay inside the scene area (never under the subtitles).
 // AUDIT_V2 (Layout 2.0): also measures 2D illustrations (<img>) and fails if spec.js asks for an illustration that is not in the library.
 // Usage: node audit_dyn.cjs <dir> [step=0.4]
 const path = require("path");
@@ -39,6 +41,15 @@ const EXE = "C:/Users/oslem/.cache/hyperframes/chrome/chrome-headless-shell/win6
           if (w > 6 && h > 6) out.issues.push({ t: +t.toFixed(2), scene: sc.dataset.id, a: boxes[i].name, b: boxes[j].name, area: Math.round(w * h) });
         }
         const cells = [...sc.querySelectorAll(".ig-cell")];
+        const stage = document.getElementById("scenes").getBoundingClientRect();
+        const capTop = Math.min(1080, ...[...document.querySelectorAll("#caps .ig-page")].filter(vis).map((p) => p.getBoundingClientRect().top));
+        sc.querySelectorAll(".ig-punch").forEach((p) => {
+          if (!vis(p)) return; const r = p.getBoundingClientRect(), pb = { x0: r.left, y0: r.top, x1: r.right, y1: r.bottom }, cc = sc.querySelector(".ig-cell.char");
+          const fb = cc ? unionOf(cc) : null;
+          if (fb) { const w = Math.min(pb.x1, fb.x1) - Math.max(pb.x0, fb.x0), h = Math.min(pb.y1, fb.y1) - Math.max(pb.y0, fb.y0); if (w > 0 && h > 0) out.issues.push({ t: +t.toFixed(2), scene: sc.dataset.id, a: p.textContent, b: "PUNCH_OVER_CHAR" }); }
+          if (pb.y1 > capTop - 4) out.issues.push({ t: +t.toFixed(2), scene: sc.dataset.id, a: p.textContent, b: "PUNCH_OVER_CAPS" });
+        });
+        boxes.forEach((o) => { if (o.e.closest(".ig-mode") && (o.b.x0 < stage.left - 6 || o.b.x1 > stage.right + 6 || o.b.y0 < stage.top - 6 || o.b.y1 > stage.bottom + 6)) out.issues.push({ t: +t.toFixed(2), scene: sc.dataset.id, a: o.name, b: "OUT_OF_STAGE" }); });
         boxes.forEach((o) => { const cell = o.e.closest(".ig-cell"); if (!cell) return; const cr = cell.getBoundingClientRect(); if (o.b.x0 < cr.left - 6 || o.b.x1 > cr.right + 6 || o.b.y0 < cr.top - 6 || o.b.y1 > cr.bottom + 6) out.issues.push({ t: +t.toFixed(2), scene: sc.dataset.id, a: o.name, b: "OUT_OF_CELL" }); });
       });
     }
