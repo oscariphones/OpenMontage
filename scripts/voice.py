@@ -25,7 +25,7 @@ def en_letras(n):
 
 # Siglas como se dicen en voz alta: Chatterbox las lee mal si van en mayusculas (impuestos-isr, 2026-10-21: "ISR" sonaba "Elisar", "RFC" sonaba "Turese").
 SIGLAS = {"LISR": "ley del i ese erre", "ISR": "i ese erre", "RFC": "erre efe ce", "IMSS": "ims", "ISSSTE": "isste",
-          "SAT": "sat", "CAT": "cat", "IVA": "iva", "UMA": "uma", "CURP": "curp", "AFORE": "afore", "INFONAVIT": "infonavit", "MX": "eme equis", "McDonald's": "mac dónalds", "Whittaker": "uítaker", "FIBRAS": "fibras", "FIBRA": "fibra", "Lehman Brothers": "líman bróders", "Lehman": "líman", "Bernie": "bérni", "Madoff": "méidof", "Ponzi": "ponsi", "Blockbuster": "blokbáster", "Netflix": "nétflix", "Reed": "rid", "Hastings": "jéistings", "Nasdaq": "násdak", "United": "yunáited"}
+          "SAT": "sat", "CAT": "cat", "IVA": "iva", "UMA": "uma", "CURP": "curp", "AFORE": "afore", "INFONAVIT": "infonavit", "MX": "eme equis", "McDonald's": "mac dónalds", "Whittaker": "uítaker", "FIBRAS": "fibras", "FIBRA": "fibra", "Lehman Brothers": "líman bróders", "Lehman": "líman", "Bernie": "bérni", "Madoff": "méidof", "Ponzi": "ponsi", "Blockbuster": "blokbáster", "Netflix": "nétflix", "Reed": "rid", "Hastings": "jéistings", "Nasdaq": "násdak", "United": "yunáited", "Google": "gúgol", "YouTube": "yutúb", "iPhone": "áifon", "GameStop": "guéimstop", "Reddit": "rédit", "Wall Street": "uol strit", "Melvin": "mélvin", "Robinhood": "róbin jud", "IKEA": "ikéa", "FEMSA": "fémsa", "Warren": "uórren", "Buffett": "bófet"}
 
 
 def para_voz(texto):
