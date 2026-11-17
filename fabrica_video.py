@@ -272,7 +272,7 @@ def main():
     # ink-grid.js / ink-pose.js los copia film2d/build.py desde ink-theater/ en cada build.
     # FABRICA_3: modos de escena graph / breakdown / maze (film2d/modes.js), cameo y Stick-Action; los spec.js sin modos se ven igual que antes.
     if P != PLANTILLA:
-        for f, marca in (("film2d/engine.js", "FABRICA_3"), ("film2d/modes.js", "MODES_V1"), ("film2d/template.tpl", "FABRICA_3"), ("film2d/build.py", "MODES_V1"), ("hyperframes/audit_dyn.cjs", "AUDIT_V3"), ("hyperframes/chk_items.cjs", "CHK_V2"), ("film2d/widgets.js", "FLAT_V1"), ("hyperframes/cam_check.cjs", "CAM_CHECK_V3")):
+        for f, marca in (("film2d/engine.js", "FABRICA_3.1"), ("film2d/modes.js", "MODES_V1"), ("film2d/template.tpl", "FABRICA_3"), ("film2d/build.py", "MODES_V1"), ("hyperframes/audit_dyn.cjs", "AUDIT_V3"), ("hyperframes/chk_items.cjs", "CHK_V2"), ("film2d/widgets.js", "FLAT_V1"), ("hyperframes/cam_check.cjs", "CAM_CHECK_V3.1")):
             dst = P / f
             if marca not in dst.read_text(encoding="utf-8"):
                 print(f"  motor: actualizo {f}"); shutil.copy(PLANTILLA / f, dst)

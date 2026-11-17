@@ -1,3 +1,4 @@
+// CAM_CHECK_V3.1 (FABRICA_3): a Stick-Action punch text (.ig-punch) out of frame is a hard failure even during a Stickman punch-in.
 // CAM_CHECK_V3 (FABRICA_3): the labels / numbers of full-stage modes (.ig-mode .item) get the same frame + subtitle check as windows.
 // FABRICA_2 camera check (CAM_CHECK_V2): lists the camera moves (window pans, Stickman punch-ins, hold drifts) and seeks the timeline every STEP s
 // verifying that every visible floating window stays inside the frame and above the subtitles while the camera moves
@@ -23,7 +24,7 @@ const EXE = "C:/Users/oslem/.cache/hyperframes/chrome/chrome-headless-shell/win6
       const capTop = Math.min(1080, ...[...caps.querySelectorAll(".ig-page")].filter(vis).map((p) => p.getBoundingClientRect().top));
       document.querySelectorAll(".ig-win, .ig-mode .item, .ig-punch").forEach((w) => {
         if (!vis(w)) return; const r = w.getBoundingClientRect();
-        const zoom = moves.some((m, i) => m.kind === "char" && moves[i + 1] && t >= m.t0 && t <= moves[i + 1].t0 + moves[i + 1].d);
+        const zoom = !w.classList.contains("ig-punch") && moves.some((m, i) => m.kind === "char" && moves[i + 1] && t >= m.t0 && t <= moves[i + 1].t0 + moves[i + 1].d);   // a cropped punch text is always a hard failure
         if (r.left < -2 || r.right > 1922 || r.top < -2 || r.bottom > Math.min(1082, capTop + 8)) bad.push({ zoom, t: +t.toFixed(2), l: Math.round(r.left), r: Math.round(r.right), top: Math.round(r.top), bot: Math.round(r.bottom), capTop: Math.round(capTop) });
       });
     }

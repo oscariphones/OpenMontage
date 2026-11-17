@@ -1,4 +1,4 @@
-/* FABRICA_3 (retention): scenes alternate 4 visual formats. sc.mode = "graph" | "breakdown" | "maze" draws a full-stage animated
+/* FABRICA_3.1 (punch text never cropped by a loose punch-in) FABRICA_3 (retention): scenes alternate 4 visual formats. sc.mode = "graph" | "breakdown" | "maze" draws a full-stage animated
  *   graphic (film2d/modes.js) with an optional small Stickman cameo (sc.cameo = { pos: "left"|"right", poses: [[t, pose], ...] });
  *   Stick-Action: layout "c" (Stickman alone) always with sc.punch (giant 1-3 words / big figure in the free cell, layout cp / pc), sc.enter / sc.exit = "left" | "right" (walks in / out),
  *   and the tension poses shock / facepalm / stop (ink-pose.js). Specs without these fields render exactly as FABRICA_2.1.
@@ -223,7 +223,7 @@
     });
     gfxCells.forEach(fit);
     var punchR = null;
-    if (punchCell && sc.punch && root.MODES && root.MODES.punch) { root.MODES.punch(punchCell, sc, { tl: tl, T: T, C: C }); var pk = fit(punchCell) * 0.88; punchCell.style.setProperty("--k", pk.toFixed(3)); punchR = rel(punchCell.firstChild); }   // 12 % headroom: stamp-in + slow push stay inside the cell
+    if (punchCell && sc.punch && root.MODES && root.MODES.punch) { root.MODES.punch(punchCell, sc, { tl: tl, T: T, C: C }); var pk = fit(punchCell) * 0.88; punchCell.style.setProperty("--k", pk.toFixed(3)); punchR = rel(punchCell.firstChild); punchR.noCrop = true; }   // 12 % headroom: stamp-in + slow push stay inside the cell
     var t0 = T(sc.a), t1 = T(sc.b), last = sc.b >= PB - 1e-3;
     var audit = G.audit(el); audit.scene = sc.id || sc.a; E.audit.push(audit);   // measured on the final (fully grown) layout
     wins.forEach(function (w) {
@@ -306,7 +306,8 @@
       var s2 = +(fr.s * (CAM.charPunch[i] + dp)).toFixed(4), y2 = Math.round(fr.y - (H / 2) * (s2 - fr.s));
       var head = sx(fx, fr.s, fr.x), x2 = head + (W / 2 - head) * cc - W / 2 - (fx - W / 2) * s2, lo = -1e9, hi = 1e9, ok = true;
       sp.wins.forEach(function (w) {
-        hi = Math.min(hi, W + L0 - 12 - sx(w.x + w.w, s2, 0)); lo = Math.max(lo, 12 - L0 - sx(w.x, s2, 0));
+        var mg = w.noCrop ? 70 : 12;                 // FABRICA_3.1: a punch text keeps 70 px of air to the frame edge during a punch-in
+        hi = Math.min(hi, W + L0 - mg - sx(w.x + w.w, s2, 0)); lo = Math.max(lo, mg - L0 - sx(w.x, s2, 0));
         if (sy(w.y, s2, y2) < 8) ok = false;
       });
       if (!ok || lo > hi) continue;
@@ -315,6 +316,7 @@
       if (hx < 120 - L0 || hx > W + L0 - 120 || sy(hy, s2, y2) < 8) continue;
       return { x: x2, y: y2, s: s2 };
     }
+    if (sp.wins.some(function (w) { return w.noCrop; })) return null;   // FABRICA_3: a Stick-Action punch text is never cropped (no loose reaction shot)
     // reaction shot fallback (window framed tight, Stickman at the edge): head to 25 % of the width; a window may leave the frame
     // by up to 5 % of its width (its inner padding: text is never cut) for this ~1 s shot; no bullet lands meanwhile
     for (i = 0; i < CAM.loosePunch.length; i++) {
