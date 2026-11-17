@@ -1,0 +1,52 @@
+{
+  "tema": "el engaño de la llamada del banco en México: el número que parece real, el cargo falso, el guion del estafador, por qué funciona (miedo y prisa), el código que autoriza en lugar de cancelar, la cuenta segura, las apps de control remoto, los enlaces falsos, la regla de oro y qué hacer si ya caíste",
+  "titulos": [
+    "El Engaño De La Llamada Del Banco (Te Vacían La Cuenta)",
+    "El Engaño Del Código: Así Te Roban En 5 Minutos",
+    "Te Habla Tu Banco... Y No Es Tu Banco: El Engaño"
+  ],
+  "titulo_elegido": 0,
+  "descripcion": "Te suena el celular y en la pantalla aparece el nombre de tu banco. Una voz amable te dice que detectaron un cargo de quince mil pesos. En menos de cinco minutos, esa llamada te puede dejar la cuenta en ceros. Te explico paso por paso cómo funciona el engaño y la regla que te protege.\n\nEn este video:\n- El guion del estafador\n- Por qué funciona\n- El código es la llave\n- Otras versiones\n- La regla de oro\n- Si ya caíste\n\nContenido educativo, no asesoría financiera. Compártelo con tus papás y tus abuelos. Cuéntame en los comentarios: ¿te han hecho una llamada así?",
+  "hashtags": [
+    "#FraudeTelefonico",
+    "#Estafas",
+    "#FinanzasPersonales",
+    "#Mexico",
+    "#EducacionFinanciera"
+  ],
+  "etiquetas": [
+    "llamada falsa del banco",
+    "fraude telefónico",
+    "estafa del banco",
+    "código por mensaje",
+    "nip banco",
+    "cuenta segura estafa",
+    "cómo evitar fraudes",
+    "condusef fraude",
+    "estafas en méxico",
+    "educación financiera",
+    "finanzas personales"
+  ],
+  "capitulos": {
+    "GANCHO": "Te habla tu banco",
+    "DE QUÉ VA ESTO": "De qué va esto",
+    "SUSCRÍBETE": "Suscríbete",
+    "EL GUION DEL ESTAFADOR": "El guion del estafador",
+    "POR QUÉ FUNCIONA": "Por qué funciona",
+    "EL CÓDIGO ES LA LLAVE": "El código es la llave",
+    "OTRAS VERSIONES": "Otras versiones",
+    "LA REGLA DE ORO": "La regla de oro",
+    "SI YA CAÍSTE": "Si ya caíste",
+    "LA LECCIÓN": "La lección",
+    "CIERRE": "¿Te han llamado así?"
+  },
+  "miniatura": {
+    "expresion": "asustado, con el celular en la oreja",
+    "postura": "de pie hablando por teléfono mientras una sombra con antifaz le susurra",
+    "objeto": "un celular con una llamada entrante de 'Tu Banco' y un candado abierto",
+    "texto": [
+      "NO ES",
+      "TU BANCO"
+    ]
+  }
+}
